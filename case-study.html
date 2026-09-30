@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Widget Builder — Case Study — Riya Shrestha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:wght@400&family=42dot+Sans:wght@400;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="case-study.css?v=25" />
+<link rel="stylesheet" href="transition.css?v=5" />
+</head>
+<body>
+<div class="page-transition" id="pageTransition" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <a href="index.html#work" class="nav-link active" data-text="work"><span class="txt">work</span></a>
+    <a href="play.html" class="nav-link" data-text="play"><span class="txt">play</span></a>
+    <a href="about.html" class="nav-link" data-text="about"><span class="txt">about</span></a>
+    <a href="https://drive.google.com/file/d/16zGjUE4d-RITe7CPfnRIvR9W6uvLbXZW/view?usp=sharing" class="nav-link" data-text="resume" target="_blank" rel="noopener"><span class="txt">resume</span></a>
+  </nav>
+
+  <nav class="cs-toc" id="csToc">
+    <a href="#overview" class="cs-toc-link" data-target="overview">Overview</a>
+    <a href="#problem" class="cs-toc-link" data-target="problem">Problem</a>
+    <a href="#approach" class="cs-toc-link" data-target="approach">Approach</a>
+    <a href="#outcome" class="cs-toc-link" data-target="outcome">Outcome</a>
+  </nav>
+
+  <main class="cs-content">
+
+  <header class="cs-hero">
+    <p class="cs-eyebrow">Case Study — Product Design</p>
+    <h1 class="cs-title">Widget Builder</h1>
+    <p class="cs-dek">Making a low-code platform actually low-code — a configurable widget system that let customers build 16+ dashboard components without engineering support.</p>
+
+    <div class="cs-meta">
+      <div class="cs-meta-item">
+        <p class="cs-meta-label">Role</p>
+        <p class="cs-meta-value">Product Designer</p>
+      </div>
+      <div class="cs-meta-item">
+        <p class="cs-meta-label">Timeline</p>
+        <p class="cs-meta-value">6 months</p>
+      </div>
+      <div class="cs-meta-item">
+        <p class="cs-meta-label">Team</p>
+        <p class="cs-meta-value">2 PM, 4 Eng, 1 Design</p>
+      </div>
+      <div class="cs-meta-item">
+        <p class="cs-meta-label">Impact</p>
+        <p class="cs-meta-value">75% reduction in eng. work</p>
+      </div>
+    </div>
+  </header>
+
+  <figure class="cs-media cs-media--hero">
+    <img src="assets/project-main.png" alt="Widget Builder dashboard overview" />
+  </figure>
+
+  <section class="cs-section" id="overview">
+    <p class="cs-label">Overview</p>
+    <h2 class="cs-section-head">A self-serve widget system, built to replace a multi-week engineering queue.</h2>
+    <p>Our platform's customers were engineering teams building internal dashboards — and every new component request went through a multi-week backlog. Widget Builder reimagines that workflow as a self-serve system: a configurable library of chart, table, and metric widgets that product teams can assemble, style, and ship without writing a line of code.</p>
+    <p>I led the design end-to-end, from early workflow mapping through the final component library, partnering closely with engineering to make sure every configuration choice mapped to something we could actually ship.</p>
+  </section>
+
+  <figure class="cs-media cs-media--wide">
+    <img src="https://picsum.photos/seed/widgetbuilder-1/1600/900" alt="" />
+  </figure>
+
+  <section class="cs-section" id="problem">
+    <p class="cs-label">Problem</p>
+    <h2 class="cs-section-head">Every dashboard request needed an engineer, and the queue grew faster than we could clear it.</h2>
+    <p>Every dashboard request — a new chart type, a different data cut, a rearranged layout — required an engineer to hand-build it. That created a queue that grew faster than the team could clear it, and it meant the people who understood the data best (the product teams) had the least control over how it was presented.</p>
+    <p>We needed a system flexible enough to cover the long tail of real requests, but constrained enough that "no-code" didn't quietly become "no-code, except when it doesn't work."</p>
+  </section>
+
+  <div class="cs-media-grid">
+    <figure class="cs-media">
+      <img src="https://picsum.photos/seed/widgetbuilder-2/900/1100" alt="" />
+    </figure>
+    <figure class="cs-media">
+      <img src="https://picsum.photos/seed/widgetbuilder-3/900/1100" alt="" />
+    </figure>
+  </div>
+
+  <section class="cs-section" id="approach">
+    <p class="cs-label">Approach</p>
+    <h2 class="cs-section-head">Auditing two years of requests turned an open-ended canvas into a constrained set of primitives.</h2>
+    <p>I started by auditing two years of past dashboard requests to find the actual shape of the problem — most requests were combinations of a small set of primitives (metric, trend, breakdown, table) rather than truly bespoke designs. That let us design a constrained set of widget types instead of an open-ended canvas.</p>
+    <p>Each widget got a configuration panel exposing exactly the choices that mattered — data source, grouping, comparison period — and nothing else. Engineering and I iterated on the config schema together so every option in the UI mapped directly to a supported system capability.</p>
+  </section>
+
+  <figure class="cs-media cs-media--wide">
+    <img src="assets/hero-top.png" alt="" />
+  </figure>
+
+  <section class="cs-section" id="outcome">
+    <p class="cs-label">Outcome</p>
+    <h2 class="cs-section-head">16 components later, the one-off dashboard backlog is effectively gone.</h2>
+    <p>Widget Builder shipped with 16 configurable components covering roughly 90% of historical requests. Product teams now assemble and adjust their own dashboards directly, and the engineering backlog for one-off chart requests is effectively gone.</p>
+  </section>
+
+  <section class="cs-stats">
+    <div class="cs-stat">
+      <p class="cs-stat-num">75%</p>
+      <p class="cs-stat-caption">reduction in engineering customization work</p>
+    </div>
+    <div class="cs-stat">
+      <p class="cs-stat-num">16+</p>
+      <p class="cs-stat-caption">configurable dashboard components shipped</p>
+    </div>
+    <div class="cs-stat">
+      <p class="cs-stat-num">90%</p>
+      <p class="cs-stat-caption">of historical requests now self-serve</p>
+    </div>
+  </section>
+
+  <footer class="cs-footer">
+    <p class="cs-footer-label">Thanks for reading</p>
+    <a href="index.html#work" class="cs-footer-title">Back to all work &rarr;</a>
+  </footer>
+
+  </main>
+
+  <script>
+    // Highlights the table-of-contents link for whichever section is
+    // currently most in view, matching the scrollspy behavior on the
+    // reference layout this page's TOC is modeled on.
+    (function () {
+      var links = Array.prototype.slice.call(document.querySelectorAll('.cs-toc-link'));
+      var sections = links
+        .map(function (link) { return document.getElementById(link.dataset.target); })
+        .filter(Boolean);
+      if (!links.length || !sections.length || typeof IntersectionObserver === 'undefined') return;
+
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            links.forEach(function (link) {
+              link.classList.toggle('active', link.dataset.target === entry.target.id);
+            });
+          });
+        },
+        { rootMargin: '-20% 0px -70% 0px' }
+      );
+      sections.forEach(function (section) { observer.observe(section); });
+    })();
+  </script>
+
+<script src="transition.js?v=6"></script>
+</body>
+</html>

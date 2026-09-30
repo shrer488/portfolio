@@ -1,0 +1,98 @@
+/* Full-viewport frosted-glass overlay, see fog.js. Inert and invisible
+   until .is-active; sits above the page (z-index 500+) but below the
+   9999 page-transition shutter so navigating away is unaffected.
+
+   Exact same recipe as transition.css's page-transition shutters — same
+   tint color/opacity, same blur and saturate values — just applied to
+   one full-viewport layer instead of two sliding halves. The erasable
+   "hole" fog.js wipes into this comes from mask-image, pushed in from an
+   offscreen canvas as a raster PNG data URL — not a CSS gradient, since
+   gradient masks are what lost their alpha when combined with
+   backdrop-filter on the case study pages' edge blur. */
+.fog-blur {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  pointer-events: none;
+  opacity: 0;
+  background: rgba(240, 240, 238, 0.5);
+  backdrop-filter: blur(40px) saturate(140%);
+  -webkit-backdrop-filter: blur(40px) saturate(140%);
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  transition: opacity 0.4s ease;
+  cursor: none;
+}
+
+.fog-blur.is-active {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.fog-blur.is-clearing {
+  opacity: 0;
+}
+
+/* The flower icon (assets/cursor.svg, same one as the "Click" hint),
+   enlarged and following the pointer via fog.js — stands in for the
+   system cursor, which is set to none while fogged. */
+.fog-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 501;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  /* brightness(0) collapses the icon's own black fill to pure black
+     (a no-op here, it's already black), invert(1) flips that to white —
+     recolors the flat-color SVG without needing a second asset. */
+  filter: brightness(0) invert(1) drop-shadow(0 3px 8px rgba(0, 0, 0, 0.35));
+}
+
+.fog-cursor.is-visible {
+  opacity: 1;
+}
+
+.fog-wipe-btn {
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  z-index: 502;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: none;
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.fog-wipe-btn:hover {
+  opacity: 0.85;
+}
+
+.fog-wipe-btn.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+body.fog-active {
+  cursor: none;
+  -webkit-user-select: none;
+  user-select: none;
+}

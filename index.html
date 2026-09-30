@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Riya Shrestha — Product Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:wght@400&family=Fraunces:opsz,wght@9..144,400&family=42dot+Sans:wght@400;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="transition.css?v=5" />
+<link rel="stylesheet" href="styles.css?v=46" />
+<link rel="stylesheet" href="fog.css?v=8" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Observer.min.js" defer></script>
+</head>
+<body>
+<div class="page-transition" id="pageTransition" aria-hidden="true"></div>
+<div class="stage" id="stage">
+<div class="page">
+
+  <nav class="nav">
+    <span class="nav-logo">R.</span>
+    <div class="nav-tabs">
+      <a href="#work" class="nav-link active" data-text="work"><span class="txt">work</span></a>
+      <a href="play.html" class="nav-link" data-text="play"><span class="txt">play</span></a>
+      <a href="about.html" class="nav-link" data-text="about"><span class="txt">about</span></a>
+      <a href="https://drive.google.com/file/d/16zGjUE4d-RITe7CPfnRIvR9W6uvLbXZW/view?usp=sharing" class="nav-link" data-text="resume" target="_blank" rel="noopener"><span class="txt">resume</span></a>
+    </div>
+  </nav>
+
+  <div class="bg-tint"></div>
+
+  <section class="hero" id="work">
+    <div class="hero-number-wrap">
+      <div class="hero-number" id="heroNumber">
+        <span class="digit-slot" data-pos="0"><span class="digit-strip"><span class="digit-val">0</span></span></span>
+        <span class="digit-slot" data-pos="1"><span class="digit-strip"><span class="digit-val">1</span></span></span>
+      </div>
+    </div>
+
+    <div class="profile">
+      <div class="profile-photo">
+        <img src="assets/profile.png" alt="Riya Shrestha" />
+      </div>
+      <div class="profile-info">
+        <h1 class="profile-name">Riya Shrestha</h1>
+        <p class="profile-role">Product Designer</p>
+        <p class="profile-bio">Designer working across complex systems, AI-powered experiences, and workflows that need a little untangling.</p>
+      </div>
+    </div>
+
+    <div class="carousel-wrap">
+      <div class="carousel" id="carousel">
+        <div class="slide is-active" data-index="0" data-href="case-study-widget-builder.html">
+          <div class="slide-inner">
+            <img class="slide-img" src="assets/clevero-hero-device.webp" alt="Clevero Widget Builder dashboard, shown on a tablet" style="object-fit: contain; background: #fff;" />
+            <img class="slide-blur" src="assets/clevero-hero-device.webp" alt="" aria-hidden="true" style="object-fit: contain; background: #fff;" />
+            <video class="slide-video" muted loop playsinline preload="none" src="assets/clevero-widgets-frame.mp4"></video>
+          </div>
+        </div>
+
+        <div class="slide below" data-index="1" data-href="case-study-kurti-video-agent.html">
+          <div class="slide-inner">
+            <img class="slide-img" src="assets/kurti-agent-hero.svg" alt="Kurti Video Agent — WhatsApp in, edited TikTok out" style="object-fit: contain; background: #fff;" />
+            <img class="slide-blur" src="assets/kurti-agent-hero.svg" alt="" aria-hidden="true" style="object-fit: contain; background: #fff;" />
+          </div>
+        </div>
+
+        <div class="slide" data-index="2" data-href="case-study-pro-data-dashboard.html">
+          <div class="slide-inner">
+            <img class="slide-img" src="assets/hero-top.png" alt="PRO Data Dashboard on a laptop" />
+            <img class="slide-blur" src="assets/hero-top.png" alt="" aria-hidden="true" />
+            <video class="slide-video" muted loop playsinline preload="none" src="assets/pdd-hero-video.mp4"></video>
+          </div>
+        </div>
+
+        <div class="slide" data-index="3" data-href="case-study-pro-challenges.html">
+          <div class="slide-inner">
+            <img class="slide-img" src="assets/pro-challenges-hero.jpg" alt="Programiz PRO Challenges shown on a laptop, displaying a Pronic number coding challenge" />
+            <img class="slide-blur" src="assets/pro-challenges-hero.jpg" alt="" aria-hidden="true" />
+          </div>
+        </div>
+
+        <div class="slide above" data-index="4" data-href="case-study-pinterest-basket.html">
+          <div class="slide-inner">
+            <img class="slide-img" src="assets/pin-hero.png" alt="Pinterest Basket — dragging pins into a basket" />
+            <img class="slide-blur" src="assets/pin-hero.png" alt="" aria-hidden="true" />
+            <video class="slide-video" muted loop playsinline preload="none" src="assets/pin-hero-video.mp4"></video>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-bottom-blur" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="home-top-blur" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+    <article class="project-details">
+      <div class="project-panel is-active" data-index="0">
+        <div class="project-summary">
+          <h2 class="project-title">Widget Builder: Making Clevero dashboards configurable without code</h2>
+          <p class="project-desc">Clevero's clients needed developer help to customize their dashboards. As sole designer, I built a widget system that let them build views around their own business records &mdash; no code, no dev ticket.</p>
+        </div>
+        <div class="project-meta">
+          <div class="meta-block">
+            <p class="meta-label">FEATURES</p>
+            <div class="meta-list">
+              <p>Design Systems</p>
+              <p>B2B SaaS</p>
+              <p>Configuration UI</p>
+              <p>Progressive Disclosure</p>
+            </div>
+          </div>
+          <div class="meta-block">
+            <p class="meta-label">IMPACT</p>
+            <p class="meta-stat">Heavy</p>
+            <p class="meta-caption">daily use reported by customers post-launch</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-panel" data-index="1">
+        <div class="project-summary">
+          <h2 class="project-title">Kurti Video Agent: Turning raw footage into TikTok-ready videos in 7 minutes</h2>
+          <p class="project-desc">My dad runs a clothing business in Nepal with ~15,000 TikTok followers, and spent 1&ndash;2 hours a night editing his own videos. I built an AI agent that turns his raw footage into a short-form video with a ready-to-copy caption &mdash; sent and received over WhatsApp.</p>
+        </div>
+        <div class="project-meta">
+          <div class="meta-block">
+            <p class="meta-label">FEATURES</p>
+            <div class="meta-list">
+              <p>AI Agents</p>
+              <p>WhatsApp Automation</p>
+              <p>Video Pipeline</p>
+              <p>Solo Build</p>
+            </div>
+          </div>
+          <div class="meta-block">
+            <p class="meta-label">IMPACT</p>
+            <p class="meta-stat">~7 min</p>
+            <p class="meta-caption">down from 1&ndash;2 hours of nightly editing</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-panel" data-index="2">
+        <div class="project-summary">
+          <h2 class="project-title">PRO Data Dashboard: Making product data accessible across Programiz</h2>
+          <p class="project-desc">An internal KPI dashboard covering user growth, sales, support and traffic, cutting analyst data requests by 50&ndash;75% and letting teams check performance themselves.</p>
+        </div>
+        <div class="project-meta">
+          <div class="meta-block">
+            <p class="meta-label">FEATURES</p>
+            <div class="meta-list">
+              <p>Data Visualization</p>
+              <p>User Research</p>
+              <p>Iteration</p>
+              <p>Internal Tools</p>
+            </div>
+          </div>
+          <div class="meta-block">
+            <p class="meta-label">IMPACT</p>
+            <p class="meta-stat">50&ndash;75%</p>
+            <p class="meta-caption">reduction in analyst data requests</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-panel" data-index="3">
+        <div class="project-summary">
+          <h2 class="project-title">Programiz PRO Challenges: Fighting a 3-month user lifetime with gamified coding challenges</h2>
+          <p class="project-desc">The average Programiz PRO subscriber learned a language, then left within 3 months. I led design on PRO Challenges &mdash; XP, a leaderboard and streaks &mdash; from concept through a public alpha that solved 500+ challenges on day one.</p>
+        </div>
+        <div class="project-meta">
+          <div class="meta-block">
+            <p class="meta-label">FEATURES</p>
+            <div class="meta-list">
+              <p>Gamification</p>
+              <p>EdTech</p>
+              <p>Reward Systems</p>
+              <p>0&rarr;1 Feature</p>
+            </div>
+          </div>
+          <div class="meta-block">
+            <p class="meta-label">IMPACT</p>
+            <p class="meta-stat">500+</p>
+            <p class="meta-caption">challenges solved on day one of the alpha</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-panel" data-index="4">
+        <div class="project-summary">
+          <h2 class="project-title">Pinterest Basket: Designing for how people actually think</h2>
+          <p class="project-desc">A speculative Pinterest feature that lets users drop pins into a basket before committing to a board, with 90% of workshop participants saying they'd use it.</p>
+        </div>
+        <div class="project-meta">
+          <div class="meta-block">
+            <p class="meta-label">FEATURES</p>
+            <div class="meta-list">
+              <p>User Research</p>
+              <p>Interaction Design</p>
+              <p>AI Integration</p>
+              <p>Prototyping</p>
+            </div>
+          </div>
+          <div class="meta-block">
+            <p class="meta-label">IMPACT</p>
+            <p class="meta-stat">90%</p>
+            <p class="meta-caption">of participants said they would use Basket</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <div class="cursor-hint">
+      <span class="cursor-label">Click</span>
+      <img class="cursor-icon" src="assets/cursor.svg" alt="" />
+    </div>
+
+    <div class="view-cursor" id="viewCursor" aria-hidden="true">
+      <span>View</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 11L11 3M11 3H4.5M11 3V9.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+  </section>
+
+</div>
+</div>
+<script src="script.js?v=79" defer></script>
+<script src="transition.js?v=6"></script>
+<script src="fog.js?v=5" defer></script>
+</body>
+</html>

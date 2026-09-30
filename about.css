@@ -1,0 +1,397 @@
+:root {
+  --ink: #000;
+  --ink-70: rgba(0, 0, 0, 0.7);
+  --ink-40: rgba(0, 0, 0, 0.4);
+  --bg: #fafafa;
+  --font-sans: '42dot Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Bodoni Moda SC', 'Times New Roman', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* Identical to the homepage nav — same markup, same rules, fixed here
+   since this page real-scrolls on short viewports. */
+.nav {
+  position: fixed;
+  left: 32px;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  text-transform: lowercase;
+  z-index: 50;
+}
+
+.nav-link {
+  position: relative;
+  display: inline-block;
+  color: var(--ink-70);
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.nav-link:hover {
+  opacity: 0.7;
+}
+
+.nav-link.active {
+  font-size: 20px;
+  line-height: 0.9;
+  opacity: 1;
+}
+
+.nav-link::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: inherit;
+  filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  mask-image: linear-gradient(to bottom, black 0%, black 10%, transparent 10%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 10%, transparent 10%);
+}
+
+.nav-link.active::before,
+.nav-link:hover::before {
+  opacity: 1;
+}
+
+.nav-link .txt {
+  position: relative;
+  display: inline-block;
+}
+
+/* Three columns, matching the Figma frame: the fixed nav sits in its own
+   ~110px-wide strip on the left; the text column starts well clear of it
+   (padding-left, not the nav's own 32px) so the two never overlap at any
+   scroll position; the photo fills whatever's left (1fr) instead of a
+   percentage flex-basis — some browsers don't clamp a percentage
+   flex-basis against max-width correctly, which let the text column
+   overflow its 820px cap on wide screens and left a dead gap before the
+   photo. Grid with minmax(0, min(...)) doesn't have that bug. The whole
+   row is pinned to the viewport height — only the text column scrolls
+   internally when its content overflows, so the photo never moves. */
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, min(57%, 820px)) 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Block, not flex — a flex column with a fixed height and overflow:auto
+   treats each child's min-height as 0 (per spec) and will shrink items
+   to fit instead of scrolling, which is what was squashing the avatar
+   down to 0px. Plain block stacking doesn't have that failure mode. */
+.about-content {
+  height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 56px 96px 56px 244px;
+}
+
+.about-content::-webkit-scrollbar {
+  display: none;
+}
+
+.about-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.about-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-heading {
+  margin: 0 0 4px;
+  max-width: 286px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--ink-70);
+}
+
+/* 286px matches the Figma frame's own "hug" width for this intro block
+   (avatar + heading + bio) — at the content column's full width, these
+   lines were running 2-3x longer than the design, which is what read as
+   the type being the wrong size even though the font-size itself was
+   close; a much longer line at the same size just looks different. */
+.about-bio {
+  margin: 0 0 8px;
+  max-width: 286px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-70);
+}
+
+.about-bio + .about-bio {
+  margin-bottom: 0;
+}
+
+/* A generous gap before this section, and the caption sits beside the
+   photo row (vertically centered) rather than stacked below it. The
+   last photo runs larger than the rest, like a featured/selected shot.
+   A fixed height (matching the largest a photo ever gets) keeps this
+   row's own height constant, so growing a photo on hover never pushes
+   the timeline below it up or down. */
+.about-snap {
+  margin-top: 128px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.about-snap-photos {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.about-snap-photos img {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: width 0.12s ease, height 0.12s ease, filter 0.12s ease, opacity 0.12s ease;
+}
+
+/* Hovering one photo enlarges it and blurs its neighbors — matches the
+   Figma hover state (node 10:1077), where the un-hovered photos in the
+   row fade/blur out while the hovered one grows. Sizing up width/height
+   (not transform:scale) so the flex row actually reflows around it
+   instead of the enlarged photo overlapping its neighbors. */
+.about-snap-photos:hover img {
+  filter: blur(2px);
+  opacity: 0.6;
+}
+
+.about-snap-photos img:hover {
+  filter: blur(0);
+  opacity: 1;
+  width: 68px;
+  height: 68px;
+}
+
+/* The clicked photo stays enlarged even after the mouse moves away —
+   size (not a border) is the "this one is selected" cue. But while
+   hovering the row, only the actually-hovered photo should be big —
+   the selected one shrinks back to normal like the rest unless it's
+   the one being hovered. */
+.about-snap-photos img.is-selected {
+  width: 68px;
+  height: 68px;
+}
+
+.about-snap-photos:hover img.is-selected {
+  width: 40px;
+  height: 40px;
+}
+
+.about-snap-photos img.is-selected:hover {
+  width: 68px;
+  height: 68px;
+}
+
+.about-snap-caption {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-40);
+  max-width: 160px;
+}
+
+.about-timeline {
+  margin-top: 104px;
+  /* Matches the Figma frame's narrower row width — full content-column
+     width let the description text run on one long line instead of the
+     two short ones the design wraps to. */
+  max-width: 460px;
+}
+
+.about-timeline-label {
+  margin: 0 0 28px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+}
+
+.about-timeline-row {
+  display: grid;
+  grid-template-columns: 104px 1fr;
+  gap: 16px;
+  padding: 14px 0;
+}
+
+.about-timeline-row + .about-timeline-row {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.about-timeline-year {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.about-timeline-desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-70);
+}
+
+.about-timeline-desc a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--ink-40);
+  text-underline-offset: 2px;
+}
+
+.about-timeline-desc a:hover {
+  color: var(--ink);
+  text-decoration-color: var(--ink);
+}
+
+/* Lives in the nav column, fixed 24px above the bottom of the frame so
+   it stays put while the text column scrolls underneath it. */
+.about-social {
+  position: fixed;
+  left: 32px;
+  bottom: 24px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.about-social a {
+  color: var(--ink-70);
+  display: inline-flex;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.about-social a:hover {
+  color: var(--ink);
+  transform: scale(1.2);
+}
+
+.about-photo {
+  position: relative;
+  cursor: none;
+}
+
+.about-photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Replaces the system cursor entirely (see cursor:none above) — tracks
+   the mouse position (about.js) and is centered on it via transform,
+   so it reads as "the cursor became this tooltip" rather than a card
+   sitting in a fixed corner. */
+.about-photo-tooltip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+  width: 210px;
+  padding: 14px;
+  background: var(--bg);
+  border-radius: 3px;
+  box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.about-photo:hover .about-photo-tooltip {
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  .about {
+    display: block;
+    height: auto;
+    overflow: visible;
+  }
+
+  .about-content {
+    height: auto;
+    overflow: visible;
+    padding: 140px 24px 48px;
+  }
+
+  .about-photo {
+    height: 60vh;
+  }
+
+  /* The nav is fixed and everything else stacks below it once the
+     3-column layout collapses — pin the social icons to the opposite
+     corner so they don't sit on top of the avatar/heading. */
+  .about-social {
+    left: auto;
+    right: 24px;
+    top: 24px;
+    flex-direction: row;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav {
+    left: 24px;
+    top: 20px;
+  }
+
+  .about-content {
+    padding: 120px 20px 40px;
+  }
+
+  .about-timeline-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

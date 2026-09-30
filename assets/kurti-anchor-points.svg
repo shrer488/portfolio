@@ -1,0 +1,47 @@
+<svg width="700" height="200" viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="200" fill="#ffffff" />
+
+  <g font-family="Arial, sans-serif" font-size="10" fill="#111111" text-anchor="middle">
+    <!-- frame template -->
+    <!-- head nod 1 -->
+    <rect x="10" y="40" width="110" height="90" rx="6" fill="#f4f4f5" />
+    <circle cx="65" cy="75" r="16" fill="#d8d8db" />
+    <path d="M55 100 q10 8 20 0" stroke="#8a8a8e" stroke-width="2" fill="none" stroke-linecap="round" />
+    <text x="65" y="146" font-weight="700">Head nod</text>
+
+    <path d="M124 85 L 146 85" stroke="#111111" stroke-width="1.5" />
+    <path d="M139 78 L149 85 L139 92" stroke="#111111" stroke-width="1.5" fill="none" />
+
+    <!-- top -->
+    <rect x="152" y="40" width="110" height="90" rx="6" fill="#f4f4f5" />
+    <path d="M195 60 h30 l8 14 -8 6 v34 h-30 v-34 l-8 -6 z" fill="#a78bfa" opacity="0.5" />
+    <text x="207" y="146" font-weight="700">Top</text>
+
+    <path d="M266 85 L 288 85" stroke="#111111" stroke-width="1.5" />
+    <path d="M281 78 L291 85 L281 92" stroke="#111111" stroke-width="1.5" fill="none" />
+
+    <!-- bottom -->
+    <rect x="294" y="40" width="110" height="90" rx="6" fill="#f4f4f5" />
+    <path d="M335 62 q14 0 14 14 q4 16 8 30 h-12 l-6 -20 -6 20 h-12 q4 -14 8 -30 q0 -14 6 -14z" fill="#a78bfa" opacity="0.5" />
+    <text x="349" y="146" font-weight="700">Bottom</text>
+
+    <path d="M408 85 L 430 85" stroke="#111111" stroke-width="1.5" />
+    <path d="M423 78 L433 85 L423 92" stroke="#111111" stroke-width="1.5" fill="none" />
+
+    <!-- shawl -->
+    <rect x="436" y="40" width="110" height="90" rx="6" fill="#f4f4f5" />
+    <path d="M470 60 q20 10 40 0 q-4 30 -8 46 l-12 -10 -12 10 q-4 -16 -8 -46z" fill="#a78bfa" opacity="0.5" />
+    <text x="491" y="146" font-weight="700">Shawl</text>
+
+    <path d="M550 85 L 572 85" stroke="#111111" stroke-width="1.5" />
+    <path d="M565 78 L575 85 L565 92" stroke="#111111" stroke-width="1.5" fill="none" />
+
+    <!-- head nod 2 -->
+    <rect x="578" y="40" width="112" height="90" rx="6" fill="#f4f4f5" />
+    <circle cx="634" cy="75" r="16" fill="#d8d8db" />
+    <path d="M624 100 q10 8 20 0" stroke="#8a8a8e" stroke-width="2" fill="none" stroke-linecap="round" />
+    <text x="634" y="146" font-weight="700">Head nod</text>
+  </g>
+
+  <text x="350" y="180" font-family="Arial, sans-serif" font-size="10" fill="#8a8a8e" text-anchor="middle">Anchor points · the reusable editing template</text>
+</svg>

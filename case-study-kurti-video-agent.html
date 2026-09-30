@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kurti Video Agent — Case Study — Riya Shrestha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:wght@400&family=42dot+Sans:wght@400;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="case-study.css?v=69" />
+<link rel="stylesheet" href="transition.css?v=5" />
+</head>
+<body>
+<div class="page-transition" id="pageTransition" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <a href="index.html#work" class="nav-link active" data-text="work"><span class="txt">work</span></a>
+    <a href="play.html" class="nav-link" data-text="play"><span class="txt">play</span></a>
+    <a href="about.html" class="nav-link" data-text="about"><span class="txt">about</span></a>
+    <a href="https://drive.google.com/file/d/16zGjUE4d-RITe7CPfnRIvR9W6uvLbXZW/view?usp=sharing" class="nav-link" data-text="resume" target="_blank" rel="noopener"><span class="txt">resume</span></a>
+  </nav>
+
+  <nav class="cs-toc" id="csToc">
+    <a href="#overview" class="cs-toc-link" data-target="overview">Overview</a>
+    <a href="#problem" class="cs-toc-link" data-target="problem">Context &amp; problem</a>
+    <a href="#idea" class="cs-toc-link" data-target="idea">Idea</a>
+    <a href="#challenges" class="cs-toc-link" data-target="challenges">Challenges</a>
+    <a href="#impact" class="cs-toc-link" data-target="impact">Impact</a>
+  </nav>
+
+  <main class="cs-content">
+
+  <header class="cs-hero">
+    <p class="cs-eyebrow">Case Study — AI &times; Product Design</p>
+    <h1 class="cs-title">Kurti Video Agent: Turning raw footage into TikTok-ready videos in 7 minutes</h1>
+    <p class="cs-dek">Cut editing time from 1&ndash;2 hours to about 7 minutes, with ~95% fewer caption errors.</p>
+
+    <div class="cs-meta">
+      <div class="cs-meta-item">
+        <p class="cs-meta-label">Role</p>
+        <p class="cs-meta-value">Product Designer &amp; Builder</p>
+      </div>
+      <div class="cs-meta-item">
+        <p class="cs-meta-label">Input</p>
+        <p class="cs-meta-value">Raw footage + kurti name, over WhatsApp</p>
+      </div>
+      <div class="cs-meta-item">
+        <p class="cs-meta-label">Built with</p>
+        <p class="cs-meta-value">Claude, Claude Code, Gemini Flash, GPT-4o Vision, n8n, FFmpeg, Twilio, Google Drive</p>
+      </div>
+      <div class="cs-meta-item">
+        <p class="cs-meta-label">Outcome</p>
+        <p class="cs-meta-value">1&ndash;2 hrs &rarr; ~7 min, ~95% fewer caption errors</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="cs-section" id="overview">
+    <p class="cs-label">Overview</p>
+    <h2 class="cs-section-head">Raw footage in, a TikTok-ready video and caption out &mdash; in about 7 minutes.</h2>
+    <p>The Kurti Video Agent takes long, unedited product footage and a kurti name, then returns a short-form video with a ready-to-copy caption. It classifies the footage, uses editing patterns learned from reference videos, selects and assembles the best clips, then delivers the finished content through WhatsApp &mdash; reducing the process from 1&ndash;2 hours to around 7 minutes while keeping the style recognizable to the person who originally created it.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline">
+    <img src="assets/kurti-editing-timeline.svg" alt="A long raw clip trimmed down to a short, finished video" />
+  </figure>
+  <p class="cs-media-caption">1:36 of raw footage, cut down to a 37-second edit.</p>
+
+  <div class="cs-chat-mock" aria-hidden="true">
+    <div class="cs-chat-header">
+      <span class="cs-chat-avatar">SK</span>
+      <div>
+        <p class="cs-chat-name">Dad</p>
+        <p class="cs-chat-status">Kurti Video Agent</p>
+      </div>
+    </div>
+    <div class="cs-chat-body">
+      <div class="cs-chat-bubble cs-chat-bubble--in">
+        <span class="cs-chat-clip">Raw clip &mdash; 1:36, kurti name</span>
+      </div>
+      <div class="cs-chat-bubble cs-chat-bubble--out">
+        <span class="cs-chat-clip">37s edited video + ready-to-copy caption</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="cs-section" id="problem">
+    <p class="cs-label">Context &amp; problem</p>
+    <h2 class="cs-section-head">So my dad is a TikToker.</h2>
+    <p>He runs a clothing business in Nepal and has built an audience of around 15,000 followers by making videos about the kurtis he sells.</p>
+    <p>When I lived in Nepal, I helped film and edit those videos. After I moved to New York, I taught him how to do everything himself.</p>
+    <p>I was proud of him, but the process took a lot out of his day:</p>
+  </section>
+
+  <div class="cs-edge-cases">
+    <div class="cs-edge-case">
+      <strong>Time</strong>
+      <span>Editing each video took 1&ndash;2 hours.</span>
+    </div>
+    <div class="cs-edge-case">
+      <strong>Effort</strong>
+      <span>After working at the store all day, he came home and spent his evenings reviewing footage, selecting clips and editing.</span>
+    </div>
+    <div class="cs-edge-case">
+      <strong>Errors</strong>
+      <span>English is not his first language, so his captions frequently had typos.</span>
+    </div>
+  </div>
+
+  <section class="cs-section">
+    <p>At first, the problem looked simple: make video editing faster.</p>
+    <p class="cs-thesis" style="margin-top: 32px;">Once I started working on it, I realized the system would need to understand how he edits, what information matters in each video and which decisions should remain under his control.</p>
+  </section>
+
+  <section class="cs-section" id="idea">
+    <p class="cs-label">Idea</p>
+    <h2 class="cs-section-head">Take a raw product video and a kurti name. Return a TikTok-ready edit with a caption.</h2>
+  </section>
+
+  <figure class="cs-media cs-media--inline">
+    <img src="assets/kurti-io-flow.svg" alt="Input: raw footage and kurti name. Output: TikTok-ready video and caption" />
+  </figure>
+
+  <section class="cs-section">
+    <p>I focused on one creator and one repeatable workflow so I could test the idea before investing in a larger system.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin-left: 0;">
+    <img src="assets/kurti-architecture.png" alt="Kurti Video Agent workflow: a one-time setup that builds style profiles from reference videos, and a per-video runtime that classifies, cuts, verifies and captions footage sent over WhatsApp" />
+  </figure>
+
+  <section class="cs-section" id="challenges">
+    <p class="cs-label">Challenges</p>
+    <h2 class="cs-section-head">1. Building it on a small budget.</h2>
+    <p>This was a passion project, so I wanted to prove the agent could work before paying for expensive models and infrastructure.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 720px; margin: -40px 0 -40px 0;">
+    <img src="assets/kurti-budget-swap.jpg" alt="Tools tested and swapped based on cost and efficiency: GPT-4o to Gemini Flash, a dedicated database to Google Drive, cloud infrastructure to my own laptop as the server, a paid WhatsApp integration to a free Tally form" />
+  </figure>
+
+  <section class="cs-section" style="padding-top: 88px;">
+    <p>Instead of asking AI to scan my dad's entire TikTok account, I handpicked 15&ndash;20 strong reference videos and organized them in a spreadsheet. This made the workflow faster, cheaper and easier to control.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: -24px 0 0 0;">
+    <video src="assets/kurti-spreadsheet.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Screen recording of the reference-video spreadsheet, with TikTok links grouped by outfit type" style="width: 100%; height: auto; border-radius: 4px; border: 1px solid rgba(0, 0, 0, 0.1); display: block;"></video>
+  </figure>
+
+  <section class="cs-section">
+    <p class="cs-thesis">These decisions kept the first version close to $0 per month while I tested the core idea.</p>
+  </section>
+
+  <section class="cs-section">
+    <h2 class="cs-section-head">2. Teaching AI how to edit like him.</h2>
+    <p>My first attempt used reference videos and timestamps to tell the AI where to cut. But every recording had different timing, so the results were inconsistent.</p>
+    <p>I shifted from timing references to visual anchor points. For a full kurti set, the agent learned to look for:</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline">
+    <img src="assets/kurti-anchor-points.svg" alt="Anchor point sequence: head nod, top, bottom, shawl, head nod" />
+  </figure>
+
+  <section class="cs-section">
+    <p>These anchor points became a reusable editing template. I also grouped the reference videos by product type, so the agent could classify new footage and apply the most relevant editing pattern:</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline">
+    <img src="assets/kurti-spreadsheet.svg" alt="Reference-video spreadsheet, grouped by type: full sets, tops, color variety, multiple kurtis" />
+  </figure>
+
+  <figure class="cs-media cs-media--inline">
+    <img src="assets/kurti-caption-template.svg" alt="Caption template filled in from the kurti name, delivered as editable text" />
+  </figure>
+
+  <section class="cs-section">
+    <p class="cs-thesis">Instead of asking the AI to "make a good video," I gave it examples, anchor points and clear rules for shaping the edit.</p>
+  </section>
+
+  <section class="cs-section">
+    <h2 class="cs-section-head">3. Designing a workflow he would actually use.</h2>
+    <p>The first version used a Tally form for submitting the video and kurti name, with Google Drive for retrieving the result. It helped me test the agent quickly, but user testing showed that my dad would not use the workflow independently &mdash; it required too many unfamiliar steps outside the apps he already used. And because the video was being uploaded to Google Drive multiple times, the quality of the video was degrading.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: -24px 0 0 0;">
+    <img src="assets/kurti-tally-flow-new.jpg" alt="Tally flow: upload footage to Drive, fill out Tally form, Gmail, wait for edited video email, copy caption, go to Drive, download video &mdash; loses video quality with every Drive upload" />
+  </figure>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: 24px 0 0 0;">
+    <video src="assets/kurti-tally-demo.mp4" poster="assets/kurti-tally-demo-poster.jpg" controls playsinline preload="metadata" aria-label="Screen recording of the first version: submitting footage and a kurti name through a Tally form and retrieving the result from Google Drive" style="width: 100%; height: auto; border-radius: 4px; border: 1px solid rgba(0, 0, 0, 0.1); display: block;"></video>
+  </figure>
+
+  <figure class="cs-media cs-media--inline">
+    <img src="assets/kurti-tally-vs-whatsapp.svg" alt="Tally flow: upload to Drive, fill out form, check mail, download video, versus WhatsApp flow: send video and kurti name, wait, get video and caption" />
+  </figure>
+
+  <section class="cs-section">
+    <p>Since he used WhatsApp every day, I moved the entire experience there. He could send the raw footage and kurti name, then receive the edited video and caption in the same conversation.</p>
+    <p class="cs-thesis" style="margin-top: 32px;">The agent became easier to use because it fit into his existing behavior.</p>
+  </section>
+
+  <section class="cs-section" id="impact">
+    <p class="cs-label">Impact</p>
+    <h2 class="cs-section-head">7 minutes per video, ~95% fewer caption errors &mdash; and a style he couldn't tell apart from his own.</h2>
+  </section>
+
+  <section class="cs-stats">
+    <div class="cs-stat">
+      <p class="cs-stat-num">~7 min</p>
+      <p class="cs-stat-caption">down from 1&ndash;2 hours of editing</p>
+    </div>
+    <div class="cs-stat">
+      <p class="cs-stat-num">1:36 &rarr; 37s</p>
+      <p class="cs-stat-caption">raw footage to finished video</p>
+    </div>
+    <div class="cs-stat">
+      <p class="cs-stat-num">95%</p>
+      <p class="cs-stat-caption">fewer caption errors</p>
+    </div>
+  </section>
+
+  <section class="cs-section">
+    <p>The agent created an editing style my dad could not distinguish from his own.</p>
+  </section>
+
+  <div class="cs-quote">
+    <p>&ldquo;AI made it just like mine.&rdquo;</p>
+    <cite>&mdash; My dad</cite>
+  </div>
+
+  <footer class="cs-footer">
+    <p class="cs-footer-label">Thanks for reading</p>
+    <a href="case-study-pro-data-dashboard.html" class="cs-footer-title">Go to Next Project: PRO Data Dashboard &rarr;</a>
+  </footer>
+
+  </main>
+
+  <script>
+    // Highlights the table-of-contents link for whichever section is
+    // currently most in view, matching the scrollspy behavior on the
+    // reference layout this page's TOC is modeled on.
+    (function () {
+      var links = Array.prototype.slice.call(document.querySelectorAll('.cs-toc-link'));
+      var sections = links
+        .map(function (link) { return document.getElementById(link.dataset.target); })
+        .filter(Boolean);
+      if (!links.length || !sections.length || typeof IntersectionObserver === 'undefined') return;
+
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            links.forEach(function (link) {
+              link.classList.toggle('active', link.dataset.target === entry.target.id);
+            });
+          });
+        },
+        { rootMargin: '-20% 0px -70% 0px' }
+      );
+      sections.forEach(function (section) { observer.observe(section); });
+    })();
+  </script>
+
+<div class="cs-bottom-blur" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+<script src="transition.js?v=6"></script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Widget Builder — Case Study — Riya Shrestha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:wght@400&family=42dot+Sans:wght@400;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="case-study.css?v=69" />
+<link rel="stylesheet" href="transition.css?v=5" />
+</head>
+<body>
+<div class="page-transition" id="pageTransition" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <a href="index.html#work" class="nav-link active" data-text="work"><span class="txt">work</span></a>
+    <a href="play.html" class="nav-link" data-text="play"><span class="txt">play</span></a>
+    <a href="about.html" class="nav-link" data-text="about"><span class="txt">about</span></a>
+    <a href="https://drive.google.com/file/d/16zGjUE4d-RITe7CPfnRIvR9W6uvLbXZW/view?usp=sharing" class="nav-link" data-text="resume" target="_blank" rel="noopener"><span class="txt">resume</span></a>
+  </nav>
+
+  <nav class="cs-toc" id="csToc">
+    <a href="#overview" class="cs-toc-link" data-target="overview">Overview</a>
+    <a href="#problem" class="cs-toc-link" data-target="problem">Problem</a>
+    <a href="#starting-point" class="cs-toc-link" data-target="starting-point">Starting point</a>
+    <a href="#editor" class="cs-toc-link" data-target="editor">Editor</a>
+    <a href="#data" class="cs-toc-link" data-target="data">Connecting data</a>
+    <a href="#outcome" class="cs-toc-link" data-target="outcome">Outcome</a>
+  </nav>
+
+  <main class="cs-content">
+
+  <header class="cs-hero">
+    <p class="cs-eyebrow">Case Study — Product Design</p>
+    <h1 class="cs-title">Widget Builder: Making Clevero dashboards configurable without code</h1>
+    <p class="cs-dek">Used heavily by customers day to day, replacing a request-a-developer workflow with self-serve configuration.</p>
+  </header>
+
+  <figure class="cs-media cs-media--hero">
+    <img src="assets/clevero-reveal.gif" alt="The Clevero widget editor, revealing its layered panels over an atmospheric background" />
+  </figure>
+
+  <div class="cs-meta">
+    <div class="cs-meta-item">
+      <p class="cs-meta-label">Role</p>
+      <p class="cs-meta-value">Sole Product Designer</p>
+    </div>
+    <div class="cs-meta-item">
+      <p class="cs-meta-label">Team</p>
+      <p class="cs-meta-value">Product Manager<br />Engineer</p>
+    </div>
+    <div class="cs-meta-item">
+      <p class="cs-meta-label">Product</p>
+      <p class="cs-meta-value">Business software for Australian service businesses</p>
+    </div>
+    <div class="cs-meta-item">
+      <p class="cs-meta-label">Impact</p>
+      <p class="cs-meta-value">Used heavily by customers, day to day</p>
+    </div>
+  </div>
+
+  <section class="cs-section" id="overview">
+    <p>Clevero's clients needed developer help to customize their dashboards. I designed a widget system that let them build views around their own business records without writing code. After launch, the PM reported heavy daily use, with clients using dashboards to surface operational tasks and create reports.</p>
+  </section>
+
+  <section class="cs-section" id="problem" style="padding-bottom: 0;">
+    <p class="cs-label">Problem</p>
+    <h2 class="cs-section-head">Customization meant waiting on a developer.</h2>
+    <p>Clevero brings customer management, projects, scheduling, billing, and other operational work into one platform. But adapting its dashboard involved a manual process.</p>
+    <p>Clients requested widgets through their PM, who created a support ticket for a developer. Clarifying requirements meant further back-and-forth, leaving clients waiting and adding to engineering's workload. Clients could create widgets independently, but that required code.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: 56px 0 24px;">
+    <img src="assets/clevero-workflow-before.png" alt="Before: client requests a widget through their PM, who files a support ticket for a developer, with back-and-forth to clarify requirements" />
+  </figure>
+
+  <section class="cs-section" style="padding-top: 0; padding-bottom: 0;">
+    <p class="cs-thesis" style="margin: 96px 0; font-weight: 400;">I focused on making <strong>widgets configurable around clients' own records</strong>. Expanding the library alone would cover more requests, but clients would still need help whenever their requirements fell outside those options.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: 24px 0;">
+    <img src="assets/clevero-workflow-after.png" alt="After: the client chooses a widget, connects their records, and configures the view themselves" />
+  </figure>
+
+  <section class="cs-section" id="starting-point">
+    <p class="cs-label">Starting point</p>
+    <h2 class="cs-section-head">Starting with what clients already needed.</h2>
+    <p>I worked with the PM to choose an initial set based on current and past client requests. It included charts, tables, number summaries, lists, and Kanban boards, with room to add more later.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 860px; margin: 24px 0;">
+    <video src="assets/clevero-widgets-frame.mp4" autoplay muted loop playsinline preload="metadata" aria-label="The initial widget set — charts, tables, number summaries, lists, and Kanban boards — moving into frame" style="width: 100%; height: auto; border-radius: 4px; border: 1px solid rgba(0, 0, 0, 0.1); display: block;"></video>
+  </figure>
+
+  <section class="cs-section">
+    <p>So the harder question became:</p>
+
+    <div class="cs-quote cs-quote--question">
+      <p>How do we make configuration familiar across widgets with different requirements?</p>
+    </div>
+
+    <p>A table might need averages and conditional colors, while a chart needed layout choices and comparisons. Each needed appropriate controls within a structure clients could learn once and return to.</p>
+  </section>
+
+  <section class="cs-section" id="editor">
+    <p class="cs-label">Editor</p>
+    <h2 class="cs-section-head">Giving each setting a clearer place.</h2>
+    <p>My first draft relied heavily on toggles, with similar settings repeated across graph types. As I added options, the panel became cluttered. I was concerned that users would struggle to understand what a setting changed &mdash; or find it again later.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 960px;">
+    <img src="assets/clevero-configuration.jpg" alt="Early exploration of the widget editor, with toggles repeated across graph types, next to the revised, structured configuration panel" />
+  </figure>
+  <p class="cs-media-caption">The early exploration repeated options across graph types. The revised editor separated layout selection from data configuration.</p>
+
+  <section class="cs-section">
+    <p>I reorganized the editor around headings and controls, layout choices, and data and styling settings.</p>
+  </section>
+
+  <div class="cs-diagram">
+    <p class="cs-diagram-title">The reorganized editor</p>
+    <div class="cs-diagram-cols">
+      <div>
+        <p class="cs-diagram-col-head">Headings &amp; controls</p>
+        <div class="cs-diagram-col-items">
+          <span>Simple toggles</span>
+          <span>e.g. show a heading</span>
+        </div>
+      </div>
+      <div>
+        <p class="cs-diagram-col-head">Layout choices</p>
+        <div class="cs-diagram-col-items">
+          <span>Visual thumbnails</span>
+          <span>of available layouts</span>
+        </div>
+      </div>
+      <div>
+        <p class="cs-diagram-col-head">Data &amp; styling</p>
+        <div class="cs-diagram-col-items">
+          <span>Record source</span>
+          <span>Calculation</span>
+          <span>Comparison</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="cs-section">
+    <p class="cs-thesis">This gave settings a consistent place while allowing each widget to have the options it needed.</p>
+  </section>
+
+  <section class="cs-section" id="data">
+    <p class="cs-label">Connecting data</p>
+    <h2 class="cs-section-head">Connecting the view to the client's records.</h2>
+    <p>Clients could define both what a widget displayed and where its data came from. In the example below, the primary value uses a sum of the Total Value field from a filtered set of order records.</p>
+  </section>
+
+  <figure class="cs-media cs-media--wide">
+    <img src="assets/clevero-data.jpg" alt="The primary-value editor connected to a live ARR widget preview and its layout and styling panel" />
+  </figure>
+
+  <section class="cs-section">
+    <p>The preview stayed alongside the editor, keeping the widget visible while clients worked through its settings. Shared configuration patterns supported different widget types, while their layouts and content controls accommodated specific needs.</p>
+  </section>
+
+  <section class="cs-section" id="outcome">
+    <p class="cs-label">Outcome</p>
+    <h2 class="cs-section-head">Clients configure their own dashboards. No dev ticket required.</h2>
+    <p>Clients could configure their dashboards and create reports themselves, giving them more control over how they viewed their operational data.</p>
+    <p>The PM reported that customers were using the feature heavily day to day &mdash; putting operational tasks in front of staff and creating reports to support decisions.</p>
+  </section>
+
+  <figure class="cs-media cs-media--wide">
+    <img src="assets/clevero-adoption.jpg" alt="Quote card: &quot;It's used heavily by customers now day to day.&quot; — Jaemes McArthur, Product Manager, Clevero" />
+  </figure>
+
+  <section class="cs-section">
+    <p class="cs-thesis">The project gave clients a way to adapt their dashboards within the available configuration options, without starting a development request for each change.</p>
+  </section>
+
+  <figure class="cs-media cs-media--wide">
+    <img src="assets/clevero-widget-hero.jpg" alt="The finished Clevero widget editor" />
+  </figure>
+
+  <footer class="cs-footer">
+    <p class="cs-footer-label">Thanks for reading</p>
+    <a href="case-study-kurti-video-agent.html" class="cs-footer-title">Go to Next Project: Kurti Video Agent &rarr;</a>
+  </footer>
+
+  </main>
+
+  <script>
+    // Highlights the table-of-contents link for whichever section is
+    // currently most in view, matching the scrollspy behavior on the
+    // reference layout this page's TOC is modeled on.
+    (function () {
+      var links = Array.prototype.slice.call(document.querySelectorAll('.cs-toc-link'));
+      var sections = links
+        .map(function (link) { return document.getElementById(link.dataset.target); })
+        .filter(Boolean);
+      if (!links.length || !sections.length || typeof IntersectionObserver === 'undefined') return;
+
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            links.forEach(function (link) {
+              link.classList.toggle('active', link.dataset.target === entry.target.id);
+            });
+          });
+        },
+        { rootMargin: '-20% 0px -70% 0px' }
+      );
+      sections.forEach(function (section) { observer.observe(section); });
+    })();
+  </script>
+
+<div class="cs-bottom-blur" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+<script src="transition.js?v=6"></script>
+</body>
+</html>

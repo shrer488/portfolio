@@ -1,0 +1,1061 @@
+:root {
+  --ink: #000;
+  --ink-70: rgba(0, 0, 0, 0.7);
+  --ink-40: rgba(0, 0, 0, 0.4);
+  --bg: #fafafa;
+  --font-sans: '42dot Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Bodoni Moda SC', 'Times New Roman', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--font-sans);
+}
+
+/* Fixed 1440x838 canvas (the Figma reference), uniformly scaled to fit the
+   viewport by script.js. A single scale factor for both axes means nothing
+   stretches; scaling to fit (not fill) means nothing is cut off. Any leftover
+   margin matches the page background, so it reads as seamless rather than a
+   visible gap. */
+.stage {
+  position: relative;
+  width: 1440px;
+  flex: 0 0 auto;
+}
+
+.page {
+  position: relative;
+  width: 1440px;
+  height: 838px;
+  background: var(--bg);
+  overflow: hidden;
+  transform-origin: top left;
+}
+
+.bg-tint {
+  position: absolute;
+  inset: 0;
+  width: 1440px;
+  height: 838px;
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+/* Nav */
+.nav {
+  position: absolute;
+  left: 32px;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  text-transform: lowercase;
+  z-index: 5;
+}
+
+/* Mobile-only elements (see the 780px media query at the bottom of this
+   file) — inert here so adding them to the markup has zero effect on the
+   desktop layout. .nav-tabs uses display:contents specifically so its
+   .nav-link children lay out exactly as if they were still direct
+   children of .nav's flex column, unchanged from before this wrapper
+   existed. */
+.nav-logo {
+  display: none;
+}
+
+.nav-tabs {
+  display: contents;
+}
+
+.nav-link {
+  position: relative;
+  display: inline-block;
+  color: var(--ink-70);
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.nav-link:hover {
+  opacity: 0.7;
+}
+
+.nav-link.active {
+  font-size: 20px;
+  line-height: 0.9;
+  opacity: 1;
+}
+
+/* Progressive blur, capped at 2px: a blurred duplicate of the text (via
+   ::before, using the data-text attribute so the content isn't repeated in
+   markup) sits behind the real text, but is itself masked to only the top
+   10% of its height and fully erased below that — not just hidden behind
+   the sharp copy. That matters because text antialiasing leaves every glyph
+   edge semi-transparent; if the blurred copy were simply left in place
+   underneath a "fully opaque" sharp copy, it would bleed through as a faint
+   halo around every letter, not just the top. Masking it away entirely
+   below 10% means there's nothing left to bleed through, so the bottom 90%
+   renders as plain, clean text. Applies to the active "work" item always,
+   and to any link on hover (hover keeps its own dimmer 0.7 opacity above,
+   rather than jumping to full black like the active item). */
+.nav-link::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: inherit;
+  filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  mask-image: linear-gradient(to bottom, black 0%, black 10%, transparent 10%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 10%, transparent 10%);
+}
+
+.nav-link.active::before,
+.nav-link:hover::before {
+  opacity: 1;
+}
+
+.nav-link .txt {
+  position: relative;
+  display: inline-block;
+}
+
+/* Hero section (project 01) */
+.hero {
+  position: relative;
+  width: 1440px;
+  height: 838px;
+}
+
+.hero-number-wrap {
+  /* Backlogged, not removed — delete this line to bring it back. */
+  display: none;
+  position: absolute;
+  left: -70px;
+  top: 0;
+  height: 100%;
+  align-items: center;
+}
+
+.hero-number {
+  display: flex;
+  font-family: 'Fraunces', var(--font-display);
+  font-size: 210.599px;
+  line-height: 0.994;
+  color: var(--ink);
+  white-space: nowrap;
+  user-select: none;
+  opacity: 0.2;
+}
+
+/* Odometer-style digit roll (inspired by the classic "digit strip" number
+   animation technique): each digit position is a fixed-height window that
+   clips a vertical stack of digits; script.js animates the stack's
+   translateY so the old digit scrolls out and the new one scrolls in,
+   instead of the text just swapping instantly. */
+.digit-slot {
+  position: relative;
+  overflow: hidden;
+  width: 1ch;
+  height: 0.994em;
+}
+
+.digit-strip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.digit-val {
+  display: block;
+  width: 1ch;
+  height: 0.994em;
+  line-height: 0.994em;
+  text-align: center;
+}
+
+.profile {
+  position: absolute;
+  left: 32px;
+  top: 586px;
+  width: 290px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 13.213px;
+  z-index: 4;
+}
+
+.profile-photo {
+  width: 44px;
+  height: 48.889px;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.profile-photo img {
+  width: 100%;
+  height: 120%;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.profile-name {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.2;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.profile-role {
+  margin: 2px 0 0;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-70);
+}
+
+.profile-bio {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.2;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Carousel: five slides positioned by a GSAP timeline (the "verticalLoop"
+   helper, MIT-licensed, from GreenSock's public helper-function library)
+   instead of native scroll. Native `overflow-y: auto` scrolling — even with
+   scroll-snap removed — was fundamentally fighting itself: real inertial
+   scroll physics from the OS, our own JS reading/writing scrollTop every
+   frame, and DOM clones for the infinite loop were three different systems
+   all touching the same scroll position, and every attempt to smooth one
+   surfaced a new edge case in another (see script.js history). GSAP moves
+   everything via `transform: translateY`, which is compositor-only (no
+   layout, no scroll-physics fighting), and its loop helper wraps
+   infinitely through modular arithmetic — no clones, no boundary
+   detection, no correction jumps needed at all.
+
+   Each .slide is a fixed-size, invisible "slot" (script.js relies on every
+   slot reporting the same stable height so the loop's internal math stays
+   correct — it does NOT expect slots to resize). The actual visible,
+   variously-sized image lives in .slide-inner, absolutely positioned and
+   centered within its slot, so resizing it for the focus effect never
+   touches the slot's own layout or shifts any sibling — the reflow that
+   used to cascade through every slide below the one currently animating is
+   gone entirely. */
+.carousel-wrap {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 700px;
+  height: 100%;
+  transform: translateX(-50%);
+  overflow: hidden;
+  z-index: 3;
+  /* On first paint the browser can render one or two frames where this
+     box's own overflow:hidden hasn't clipped its stacked children yet
+     (most visible right as web fonts swap in and force a reflow) — every
+     slide briefly shows in full, unclipped document flow, blur mask and
+     all, before settling into the intended 3-slide peek. Staying hidden
+     until script.js's window-load handler adds .is-ready (once fonts and
+     layout have actually settled) skips straight past that frame instead
+     of painting it. */
+  visibility: hidden;
+}
+
+.carousel-wrap.is-ready {
+  visibility: visible;
+}
+
+/* Same glass-style progressive blur as the case study pages' bottom edge
+   (twelve flat, unmasked backdrop-filter layers of decreasing height and
+   increasing strength — mask-image plus backdrop-filter is unreliable
+   across browsers, and simple addition undercounts how strong stacked
+   blurs compound). Scoped to the carousel's own width and centered the
+   same way it is (left: 50%, width: 700px, translateX(-50%)) instead of
+   the full hero width, so it never reaches the profile block sitting in
+   the bottom-left of the hero. */
+.home-bottom-blur {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 700px;
+  height: 72px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.home-bottom-blur span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+}
+
+.home-bottom-blur span:nth-child(1) { height: 72px; backdrop-filter: blur(0.06px); -webkit-backdrop-filter: blur(0.06px); }
+.home-bottom-blur span:nth-child(2) { height: 66px; backdrop-filter: blur(0.2px); -webkit-backdrop-filter: blur(0.2px); }
+.home-bottom-blur span:nth-child(3) { height: 60px; backdrop-filter: blur(0.41px); -webkit-backdrop-filter: blur(0.41px); }
+.home-bottom-blur span:nth-child(4) { height: 54px; backdrop-filter: blur(0.69px); -webkit-backdrop-filter: blur(0.69px); }
+.home-bottom-blur span:nth-child(5) { height: 48px; backdrop-filter: blur(1.03px); -webkit-backdrop-filter: blur(1.03px); }
+.home-bottom-blur span:nth-child(6) { height: 42px; backdrop-filter: blur(1.44px); -webkit-backdrop-filter: blur(1.44px); }
+.home-bottom-blur span:nth-child(7) { height: 36px; backdrop-filter: blur(1.9px); -webkit-backdrop-filter: blur(1.9px); }
+.home-bottom-blur span:nth-child(8) { height: 30px; backdrop-filter: blur(2.41px); -webkit-backdrop-filter: blur(2.41px); }
+.home-bottom-blur span:nth-child(9) { height: 24px; backdrop-filter: blur(2.98px); -webkit-backdrop-filter: blur(2.98px); }
+.home-bottom-blur span:nth-child(10) { height: 18px; backdrop-filter: blur(3.6px); -webkit-backdrop-filter: blur(3.6px); }
+.home-bottom-blur span:nth-child(11) { height: 12px; backdrop-filter: blur(4.28px); -webkit-backdrop-filter: blur(4.28px); }
+.home-bottom-blur span:nth-child(12) { height: 6px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+
+/* Same effect, flipped: anchored to the top of the carousel instead of
+   the bottom, so each layer grows DOWN from the top edge rather than up
+   from the bottom — strongest right at the top, fading out toward the
+   middle of the carousel. */
+.home-top-blur {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 700px;
+  height: 40px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.home-top-blur span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  display: block;
+}
+
+.home-top-blur span:nth-child(1) { height: 40px; backdrop-filter: blur(0.06px); -webkit-backdrop-filter: blur(0.06px); }
+.home-top-blur span:nth-child(2) { height: 37px; backdrop-filter: blur(0.2px); -webkit-backdrop-filter: blur(0.2px); }
+.home-top-blur span:nth-child(3) { height: 33px; backdrop-filter: blur(0.41px); -webkit-backdrop-filter: blur(0.41px); }
+.home-top-blur span:nth-child(4) { height: 30px; backdrop-filter: blur(0.69px); -webkit-backdrop-filter: blur(0.69px); }
+.home-top-blur span:nth-child(5) { height: 27px; backdrop-filter: blur(1.03px); -webkit-backdrop-filter: blur(1.03px); }
+.home-top-blur span:nth-child(6) { height: 23px; backdrop-filter: blur(1.44px); -webkit-backdrop-filter: blur(1.44px); }
+.home-top-blur span:nth-child(7) { height: 20px; backdrop-filter: blur(1.9px); -webkit-backdrop-filter: blur(1.9px); }
+.home-top-blur span:nth-child(8) { height: 17px; backdrop-filter: blur(2.41px); -webkit-backdrop-filter: blur(2.41px); }
+.home-top-blur span:nth-child(9) { height: 13px; backdrop-filter: blur(2.98px); -webkit-backdrop-filter: blur(2.98px); }
+.home-top-blur span:nth-child(10) { height: 10px; backdrop-filter: blur(3.6px); -webkit-backdrop-filter: blur(3.6px); }
+.home-top-blur span:nth-child(11) { height: 7px; backdrop-filter: blur(4.28px); -webkit-backdrop-filter: blur(4.28px); }
+.home-top-blur span:nth-child(12) { height: 3px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+
+.carousel {
+  position: relative;
+  height: 100%;
+  /* verticalLoop (script.js) measures the gap before the first slide to use
+     as the seam spacing where the loop wraps from the last slide back to
+     the first. Our slides space themselves with margin-bottom (a gap AFTER
+     each one), so without this there's nothing before slide 0 to measure —
+     the wrap seam collapsed to ~0px gap, causing the last/first slides to
+     visibly overlap when the loop passes through that point. The fix is a
+     margin-top on the first slide (below) rather than padding here, since
+     padding would inflate this element's own offsetHeight and throw off
+     verticalLoop's center-on-active math; overflow:hidden just stops that
+     margin from collapsing into this element's own box, so it isn't lost.
+     .carousel-wrap already clips to the same box, so this changes nothing
+     visually beyond preventing that collapse. */
+  overflow: hidden;
+}
+
+/* The slot height (350px) is deliberately smaller than the active image's
+   446px — .slide-inner is absolutely positioned, so the active image is
+   allowed to overflow its own slot by up to 48px on each side (exactly the
+   margin below) without colliding with the neighboring slot. A slot as
+   tall as the active state would leave far too much empty padding around
+   every smaller, inactive image, ballooning the visible gap between peeking
+   images well past the intended 48px. */
+.slide {
+  position: relative;
+  width: 100%;
+  height: 350px;
+  margin-bottom: 48px;
+}
+
+/* Gives the loop's wrap seam (last slide back to first) the same 48px gap
+   every other consecutive pair has — see the comment on .carousel above. */
+.slide[data-index="0"] {
+  margin-top: 48px;
+}
+
+.slide-inner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  border-radius: 1.5px;
+  /* Matches TRANSITION_DURATION / TRANSITION_EASE in script.js — the same
+     values drive the settle tween and the hero number's digit roll, so
+     all three (image size, carousel position, number) finish together. */
+  transition: width 0.9s cubic-bezier(0.39, 0.575, 0.565, 1),
+    height 0.9s cubic-bezier(0.39, 0.575, 0.565, 1);
+}
+
+.slide-img,
+.slide-blur,
+.slide-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Hovering an image plays its video in place of the static shot. Hidden by
+   default and cross-fades in over the image (script.js calls .play()/
+   .pause() to match — opacity alone doesn't start/stop playback). */
+.slide-video {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.slide-inner:hover .slide-video {
+  opacity: 1;
+}
+
+/* All peeking (non-active) slides share one size. The above/below gap
+   depends on both the active slide's size and whichever slide is peeking
+   next to it (48px margin + each side's overflow/inset past the shared
+   350px slot), so if peek sizes differed per slide (as they used to, one
+   size per index), different above/below pairings produced different
+   visible gaps as the loop scrolled. A single shared peek size makes every
+   pairing produce the same gap. */
+.slide .slide-inner {
+  width: 340px;
+  height: 220px;
+}
+
+.slide.is-active .slide-inner {
+  width: 676px;
+  height: 446px;
+}
+
+/* Progressive blur: a single blurred duplicate image (regular `filter:
+   blur()`, not `backdrop-filter`) sits on top of the sharp one and fades
+   out via a mask gradient. Five stacked backdrop-filter layers looked nicer
+   but were the main source of scroll jank — backdrop-filter has to
+   resample everything composited behind it on every single frame, and we
+   had up to 20 of those live at once (4 peeking slides x 5 layers). One
+   plain `filter: blur()` layer per slide is dramatically cheaper to
+   composite and still reads as a directional fade. "above"/"below" (set by
+   script.js based on position relative to the active index) pick which
+   edge stays sharp; the layer fades to fully transparent on the active
+   slide. */
+.slide-blur {
+  filter: blur(8px);
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.slide.is-active .slide-blur {
+  opacity: 0;
+}
+
+/* Confines the blur to a 24px band right at the outer edge (the one
+   nearest the top/bottom of the frame) — everywhere else stays fully
+   transparent so the sharp image underneath shows through untouched.
+   The previous gradient ("transparent 0%, black 70%") faded in across
+   70% of the whole image, so the blur covered most of it, reading as a
+   dirty/washed-out cast rather than an edge effect. */
+.slide.above .slide-blur {
+  mask-image: linear-gradient(to top, transparent 0, transparent calc(100% - 24px), black 100%);
+  -webkit-mask-image: linear-gradient(to top, transparent 0, transparent calc(100% - 24px), black 100%);
+}
+
+.slide.below .slide-blur {
+  mask-image: linear-gradient(to bottom, transparent 0, transparent calc(100% - 24px), black 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent calc(100% - 24px), black 100%);
+}
+
+/* On top of the sharp/blur gradient above, the whole peeking slide (both
+   layers) also fades out toward its outer edge — the edge nearest the top
+   or bottom of the screen, farthest from the focused center. Without this
+   the image just gets cut off in a hard rectangle against the page
+   background; this dissolves it into the background instead, so there's no
+   sharp box edge at the top/bottom of the screen. Only applies to peeking
+   slides — the active one keeps its clean rectangular edges. */
+.slide.above .slide-inner {
+  mask-image: linear-gradient(to top, black 55%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, black 55%, transparent 100%);
+}
+
+.slide.below .slide-inner {
+  mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+}
+
+.project-details {
+  position: absolute;
+  left: 1098px;
+  top: calc(50% - 223px);
+  width: 265px;
+  height: 446px;
+  z-index: 4;
+}
+
+/* No opacity transition here on purpose: a fast scroll gesture can change
+   the active slide many times in quick succession, and a mid-flight fade
+   getting interrupted by the next switch left two panels' text visibly
+   overlapping mid-fade. An instant swap can never be caught half-done. */
+.project-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.project-panel.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.project-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.project-title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.1667;
+  color: var(--ink);
+}
+
+.project-desc {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.3333;
+  color: var(--ink-70);
+}
+
+.project-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+}
+
+.meta-block p {
+  margin: 0;
+}
+
+.meta-label {
+  font-size: 12px;
+  line-height: 1.3333;
+  color: var(--ink-40);
+  margin-bottom: 4px !important;
+}
+
+.meta-list {
+  display: flex;
+  flex-direction: column;
+  color: var(--ink-70);
+  font-size: 12px;
+  line-height: 1.3333;
+}
+
+.meta-stat {
+  font-size: 26px;
+  line-height: normal;
+  color: var(--ink-70);
+  white-space: nowrap;
+}
+
+.meta-caption {
+  font-size: 12px;
+  line-height: 1.3333;
+  color: var(--ink-70);
+  width: 135px;
+}
+
+.cursor-hint {
+  position: absolute;
+  left: 1350px;
+  top: 789px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 5;
+}
+
+.cursor-label {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.3333;
+  color: var(--ink-70);
+  white-space: nowrap;
+}
+
+.cursor-icon {
+  width: 21.688px;
+  height: 21.178px;
+}
+
+/* Follows the mouse (position set in script.js) and replaces the system
+   cursor while hovering an image — script.js sets cursor:none on
+   .slide-inner for that, since a real cursor showing underneath this
+   would look like two cursors stacked. translate(-50%, -50%) centers it
+   on the pointer rather than trailing from a corner. */
+.view-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--bg);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.view-cursor.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Large screens (>=1440px): the left column (nav, "01", profile) stays
+   pinned at its literal Figma pixel position — it never grows. The carousel
+   keeps a fixed size at every width (the scroll/focus mechanics matter more
+   here than fluid scaling); the project-details panel rides alongside the
+   active slide, offset by half its width, using the same formula the old
+   static layout used. */
+@media (min-width: 1440px) {
+  html, body {
+    overflow: visible;
+    height: auto;
+    min-height: 100%;
+  }
+
+  .stage {
+    width: 100%;
+    height: 838px;
+  }
+
+  .page,
+  .hero,
+  .bg-tint {
+    width: 100%;
+    height: 838px;
+  }
+
+  .project-details {
+    left: calc(50% + 378px + 0.17343 * (100vw - 1440px));
+  }
+
+  .cursor-hint {
+    left: auto;
+    right: clamp(28.312px, calc(28.312px + 0.02583 * (100vw - 1440px)), 200px);
+    top: 789px;
+  }
+}
+
+/* Large screens with limited vertical space (short laptop window, browser
+   chrome eating into the viewport, etc). Instead of scrolling to reveal the
+   bottom of the 838px-tall design, the page fills the actual viewport
+   height. The "01" numeral and the center image+details group re-center
+   themselves automatically (their positions above are all relative to
+   .hero's own 50%, which now equals 50vh instead of 419px) — only the
+   profile block and cursor hint need an explicit override here, switching
+   from a fixed top offset to hugging the bottom edge so they never get
+   pushed off-screen. */
+@media (min-width: 1440px) and (max-height: 800px) {
+  html, body {
+    overflow: hidden;
+    height: 100%;
+  }
+
+  .stage,
+  .page,
+  .hero,
+  .bg-tint {
+    height: 100vh;
+  }
+
+  .profile {
+    top: auto;
+    bottom: 24px;
+  }
+
+  .cursor-hint {
+    top: auto;
+    bottom: 24px;
+  }
+}
+
+
+/* Mobile (matches about.css/play.css/case-study.css's own 780px
+   breakpoint). Below this, script.js stops applying its scale-transform
+   entirely (see MOBILE_BREAKPOINT there) — this is a real stacked layout
+   at the canvas's natural, unscaled size, not the tablet range's uniform
+   shrink of the 1440px desktop canvas.
+
+   Follows the Figma mobile-project-detail frame (node 2:6): a sticky
+   header, one full card image per project instead of the desktop's
+   peeking neighbors, the "01" index sized down to sit right above the
+   title, feature tags as wrapped pill chips, the impact stat inline with
+   its caption, and the profile moved into a footer card at the bottom. */
+@media (max-width: 780px) {
+  /* Only html scrolls. The base (non-mobile) rule sets overflow:hidden on
+     BOTH html and body — overriding overflow-y on both here (an earlier
+     pass did exactly that) leaves two independent scroll containers
+     nested inside each other, and position:sticky's containing-block
+     math doesn't resolve properly across that: .nav never actually stuck,
+     it just scrolled away like a normal element despite `position:
+     sticky` being set. Giving body plain visible overflow (not its own
+     auto/scrolling box) and a block display — rather than desktop's flex
+     centering, which was also shifting a since-overflowing .stage's
+     effective top out of view — leaves exactly one real scroll container
+     for sticky to anchor to. */
+  html {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: auto;
+  }
+
+  body {
+    display: block;
+    overflow: visible;
+    height: auto;
+    min-height: 100%;
+  }
+
+  .stage {
+    width: 100%;
+  }
+
+  .page {
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+
+  .bg-tint {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* The "keep the nav sticky" part: a real in-flow header (not the
+     desktop's absolutely-positioned overlay) that pins itself to the top
+     of the viewport as the rest of the page scrolls underneath it. */
+  .nav {
+    position: sticky;
+    left: 0;
+    top: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 16px 24px;
+    background: var(--bg);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    z-index: 10;
+  }
+
+  .nav-logo {
+    display: inline-block;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--ink);
+    opacity: 1;
+  }
+
+  .nav-tabs {
+    display: flex;
+    gap: 12px;
+  }
+
+  .nav-link {
+    font-size: 14px;
+  }
+
+  .nav-link.active {
+    font-size: 14px;
+  }
+
+  .hero {
+    position: static;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Visual order independent of DOM order — the image comes first, then
+     the shrunk-down "01", then the title/description/features/impact,
+     then the profile card at the very end (it's the FIRST element in the
+     markup on desktop, where it sits beside the carousel instead). */
+  .carousel-wrap {
+    order: 1;
+  }
+
+  .hero-number-wrap {
+    order: 2;
+  }
+
+  .project-details {
+    order: 3;
+  }
+
+  .profile {
+    order: 4;
+  }
+
+  .carousel-wrap {
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: 100%;
+    height: 260px;
+  }
+
+  /* Only the active slide is ever visible on mobile — no peeking
+     neighbors — so every slide can share one size instead of the
+     desktop's separate active/peek dimensions, and switching between
+     them is a plain opacity crossfade rather than a width/height resize. */
+  .slide {
+    height: 260px;
+    margin-bottom: 24px;
+  }
+
+  .slide[data-index="0"] {
+    margin-top: 24px;
+  }
+
+  .slide .slide-inner,
+  .slide.is-active .slide-inner {
+    width: min(320px, 82vw);
+    height: 210px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .slide.is-active .slide-inner {
+    opacity: 1;
+    box-shadow: 0 12px 24px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .slide-blur,
+  .slide.above .slide-inner,
+  .slide.below .slide-inner {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .hero-number-wrap {
+    position: static;
+    left: auto;
+    top: auto;
+    height: auto;
+    width: 100%;
+    padding: 0 24px;
+    justify-content: flex-start;
+  }
+
+  .hero-number {
+    font-size: 48px;
+  }
+
+  .project-details {
+    position: static;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+  }
+
+  /* The desktop version stacks every panel via position:absolute so only
+     one is ever visible at once (see the comment on .project-panel up
+     top) — that relies on .project-details having a fixed height none of
+     the (non-contributing, absolutely-positioned) panels affect. Static,
+     auto-height mobile layout can't support that: with every panel still
+     absolutely stacked, .project-details would collapse to 0 height.
+     Swapping via display instead keeps the same "instant swap, never a
+     mid-fade" behavior that comment explains, just via a mechanism that
+     lets the active panel take up real, in-flow space. */
+  .project-panel {
+    position: static;
+    display: none;
+    opacity: 1;
+    pointer-events: auto;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .project-panel.is-active {
+    display: flex;
+  }
+
+  .project-summary {
+    padding: 0 24px;
+    gap: 8px;
+  }
+
+  .project-title {
+    font-size: 22px;
+    line-height: 28px;
+  }
+
+  .project-desc {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .project-meta {
+    gap: 0;
+  }
+
+  /* One divider above FEATURES, another above IMPACT — matches the two
+     hairlines in the Figma frame (between description/features and
+     between features/impact) without needing separate line elements. */
+  .meta-block {
+    padding: 16px 24px 0;
+    margin-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .meta-label {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  .meta-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .meta-list p {
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .meta-stat {
+    font-size: 26px;
+  }
+
+  .meta-caption {
+    width: auto;
+    max-width: 220px;
+  }
+
+  /* Stat and caption run inline together, but the IMPACT label above
+     them still needs its own full-width line — flex-wrap plus forcing
+     the label to a 100% flex-basis puts it on its own row while the
+     other two flow onto the line after it. */
+  .meta-block:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 8px;
+  }
+
+  .meta-block:last-child .meta-label {
+    flex-basis: 100%;
+  }
+
+  .profile {
+    position: static;
+    left: auto;
+    top: auto;
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px;
+    margin-top: 8px;
+    background: #f9fafb;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .profile-photo {
+    width: 56px;
+    height: 62px;
+  }
+
+  .profile-name {
+    font-size: 18px;
+    white-space: normal;
+  }
+
+  .profile-role {
+    font-size: 10px;
+  }
+
+  .profile-bio {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  /* A hover hint and a custom cursor that follows the mouse are both
+     meaningless without a mouse — touch has no hover state to hint at,
+     and no pointer to draw a replacement for. */
+  .cursor-hint,
+  .view-cursor {
+    display: none;
+  }
+}

@@ -1,0 +1,51 @@
+<svg width="700" height="460" viewBox="0 0 700 460" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="460" fill="#ffffff" />
+
+  <!-- phone frame -->
+  <rect x="250" y="40" width="200" height="380" rx="28" fill="#111111" />
+  <rect x="260" y="60" width="180" height="340" rx="16" fill="#efeae2" />
+
+  <!-- chat header -->
+  <rect x="260" y="60" width="180" height="44" fill="#f4f4f5" />
+  <circle cx="284" cy="82" r="13" fill="#111111" />
+  <text x="284" y="86" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#ffffff" text-anchor="middle">SK</text>
+  <text x="306" y="79" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#111111">Dad</text>
+  <text x="306" y="91" font-family="Arial, sans-serif" font-size="8" fill="#8a8a8e">Kurti Video Agent</text>
+
+  <!-- incoming bubble: raw clip -->
+  <rect x="270" y="118" width="140" height="46" rx="8" fill="#ffffff" />
+  <text x="280" y="136" font-family="Arial, sans-serif" font-size="8.5" fill="#4a4a4a">Raw clip &#8212; 3 outfits,</text>
+  <text x="280" y="148" font-family="Arial, sans-serif" font-size="8.5" fill="#4a4a4a">no cuts</text>
+
+  <!-- outgoing bubble: edited result -->
+  <rect x="280" y="176" width="150" height="58" rx="8" fill="#d9fdd3" />
+  <text x="290" y="194" font-family="Arial, sans-serif" font-size="8.5" fill="#111111">Edited video + caption</text>
+  <text x="290" y="206" font-family="Arial, sans-serif" font-size="8.5" fill="#111111">+ #salwarkurtahouse</text>
+  <text x="290" y="218" font-family="Arial, sans-serif" font-size="8.5" fill="#111111">#fyp</text>
+
+  <!-- second exchange -->
+  <rect x="270" y="246" width="120" height="34" rx="8" fill="#ffffff" />
+  <text x="280" y="267" font-family="Arial, sans-serif" font-size="8.5" fill="#4a4a4a">Kurti name(s)</text>
+
+  <rect x="290" y="292" width="140" height="34" rx="8" fill="#d9fdd3" />
+  <text x="300" y="313" font-family="Arial, sans-serif" font-size="8.5" fill="#111111">Ready to post &#10003;</text>
+
+  <!-- pipeline labels either side of the phone -->
+  <text x="60" y="150" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#111111">Segmentation</text>
+  <text x="60" y="168" font-family="Arial, sans-serif" font-size="10" fill="#8a8a8e">GPT-4o &#183; profile-aware</text>
+
+  <text x="60" y="220" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#111111">Rough cut</text>
+  <text x="60" y="238" font-family="Arial, sans-serif" font-size="10" fill="#8a8a8e">ffmpeg</text>
+
+  <text x="60" y="290" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#111111">Verify cut</text>
+  <text x="60" y="308" font-family="Arial, sans-serif" font-size="10" fill="#8a8a8e">Claude Sonnet</text>
+
+  <text x="480" y="150" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#111111">Hashtag builder</text>
+  <text x="480" y="168" font-family="Arial, sans-serif" font-size="10" fill="#8a8a8e">Claude + web search</text>
+
+  <text x="480" y="220" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#111111">Caption ready</text>
+  <text x="480" y="238" font-family="Arial, sans-serif" font-size="10" fill="#8a8a8e">assembled &#183; max 5</text>
+
+  <text x="480" y="290" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#111111">WhatsApp out</text>
+  <text x="480" y="308" font-family="Arial, sans-serif" font-size="10" fill="#8a8a8e">Twilio &#183; .mp4</text>
+</svg>

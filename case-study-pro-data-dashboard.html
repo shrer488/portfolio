@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PRO Data Dashboard — Case Study — Riya Shrestha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:wght@400&family=42dot+Sans:wght@400;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="case-study.css?v=69" />
+<link rel="stylesheet" href="transition.css?v=5" />
+</head>
+<body>
+<div class="page-transition" id="pageTransition" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <a href="index.html#work" class="nav-link active" data-text="work"><span class="txt">work</span></a>
+    <a href="play.html" class="nav-link" data-text="play"><span class="txt">play</span></a>
+    <a href="about.html" class="nav-link" data-text="about"><span class="txt">about</span></a>
+    <a href="https://drive.google.com/file/d/16zGjUE4d-RITe7CPfnRIvR9W6uvLbXZW/view?usp=sharing" class="nav-link" data-text="resume" target="_blank" rel="noopener"><span class="txt">resume</span></a>
+  </nav>
+
+  <nav class="cs-toc" id="csToc">
+    <a href="#overview" class="cs-toc-link" data-target="overview">Overview</a>
+    <a href="#problem" class="cs-toc-link" data-target="problem">Problem</a>
+    <a href="#research" class="cs-toc-link" data-target="research">Research</a>
+    <a href="#ideation" class="cs-toc-link" data-target="ideation">Ideation</a>
+    <a href="#design" class="cs-toc-link" data-target="design">Design</a>
+    <a href="#finaldesign" class="cs-toc-link" data-target="finaldesign">Final Design</a>
+    <a href="#outcome" class="cs-toc-link" data-target="outcome">Outcome</a>
+  </nav>
+
+  <main class="cs-content">
+
+  <header class="cs-hero">
+    <p class="cs-eyebrow">Case Study — Product Design</p>
+    <h1 class="cs-title">PRO Data Dashboard: Making product data accessible across Programiz</h1>
+    <p class="cs-dek">Cut analyst data requests by 50&ndash;75%, letting teams check user growth, sales, support, and traffic themselves.</p>
+  </header>
+
+  <figure class="cs-media cs-media--hero">
+    <video src="assets/pdd-hero-video.mp4" autoplay muted loop playsinline aria-label="PRO Data Dashboard shown on a laptop, displaying KPI cards for users, sales, support and traffic"></video>
+  </figure>
+
+  <div class="cs-meta">
+    <div class="cs-meta-item">
+      <p class="cs-meta-label">Role</p>
+      <p class="cs-meta-value">Lead Designer<br />Project Manager</p>
+    </div>
+    <div class="cs-meta-item">
+      <p class="cs-meta-label">Duration</p>
+      <p class="cs-meta-value">3 months (2023)</p>
+    </div>
+    <div class="cs-meta-item">
+      <p class="cs-meta-label">Team</p>
+      <p class="cs-meta-value">Riya<br />Saurav<br />Shirish<br />Arjun<br />Udayan</p>
+    </div>
+    <div class="cs-meta-item">
+      <p class="cs-meta-label">Impact</p>
+      <p class="cs-meta-value">50&ndash;75% fewer analyst requests</p>
+    </div>
+  </div>
+
+  <section class="cs-section" id="overview" style="padding-bottom: 0;">
+    <p class="cs-label">Overview</p>
+    <h2 class="cs-section-head">What is PRO Data Dashboard?</h2>
+    <p>The PRO Data Dashboard is an internal tool that gives Programiz teams a quick view of the company's most important KPIs: user growth, sales, support issues, and traffic sources.</p>
+    <p>It helped reduce analyst data requests by 50&ndash;75%, giving stakeholders and employees direct access to how the platform is performing day-to-day and making faster decisions.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 760px; margin: 64px 0 96px;">
+    <img src="assets/pdd-tv-mockup.jpg?v=2" alt="The PRO Data Dashboard shown on a wall-mounted screen, used as the company's live KPI display" />
+  </figure>
+
+  <section class="cs-section" id="problem" style="padding-bottom: 0;">
+    <p class="cs-label">Background &amp; problem</p>
+    <h2 class="cs-section-head">Why did Programiz need a Data Dashboard?</h2>
+    <p>Programiz is an edtech platform that helps beginners learn programming through tutorials and tools. Programiz PRO is their paid product with structured, hands-on coding courses.</p>
+    <p>As Programiz PRO grew, access to performance data became a bottleneck across teams. The company relied on a single data analyst to handle all data requests, which created several challenges. The data analyst received on average 4 requests per week from the team.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: 56px 0;">
+    <img src="assets/pdd-personas.png?v=2" alt="Research map connecting five roles: stakeholder, product designer, strategist, sales, and support, to the data analyst and their most common questions" style="background: #f4f4f5;" />
+  </figure>
+
+  <section class="cs-section" style="padding: 32px 0;">
+    <p>This led to problems like&hellip;</p>
+  </section>
+
+  <div class="cs-media-grid" style="grid-template-columns: repeat(3, 1fr); gap: 32px; max-width: 960px; margin-top: 56px;">
+    <figure class="cs-media">
+      <img src="assets/pdd-problem-bottleneck.jpg" alt="The data analyst receiving requests radiating in from every team" style="aspect-ratio: 966 / 924; object-fit: cover; border: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 32px;" />
+      <p class="cs-media-caption" style="text-align: left; font-size: 16px; margin: 0;"><strong style="display: block; font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 4px;">Data bottleneck</strong> Reliance on one analyst put load on the analyst as well as affected the workflow.</p>
+    </figure>
+    <figure class="cs-media">
+      <img src="assets/pdd-problem-slow-decisions.jpg" alt="Chat messages showing a stakeholder waiting a week for requested data" style="aspect-ratio: 966 / 924; object-fit: cover; border: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 32px;" />
+      <p class="cs-media-caption" style="text-align: left; font-size: 16px; margin: 0;"><strong style="display: block; font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 4px;">Slow decisions</strong> Limited access to timely data delayed important discussions.</p>
+    </figure>
+    <figure class="cs-media">
+      <img src="assets/pdd-problem-misalignment.jpg" alt="A strategist and stakeholder disconnected, each holding a different sport icon" style="aspect-ratio: 966 / 924; object-fit: cover; border: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 32px;" />
+      <p class="cs-media-caption" style="text-align: left; font-size: 16px; margin: 0;"><strong style="display: block; font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 4px;">Misalignment</strong> No shared visibility, leaving employees without context.</p>
+    </figure>
+  </div>
+
+  <section class="cs-section">
+    <p>So the harder question became:</p>
+
+    <div class="cs-quote cs-quote--question">
+      <p>How might we give teams direct access to performance data without relying on a single analyst?</p>
+    </div>
+  </section>
+
+  <section class="cs-section" id="research" style="padding-bottom: 0;">
+    <p class="cs-label">Research &amp; synthesis</p>
+    <h2 class="cs-section-head">User interviews to identify data needs</h2>
+    <p>The main answers I was trying to find were: what kind of data the users need and why they needed it, where the data was coming from, and whether it was possible to get the data users needed.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 1080px; margin: 64px 0 96px;">
+    <img src="assets/pdd-persona-grid.jpg" alt="Six personas: Data Analyst, Strategist, Stakeholder, Sales, Product Designer, and Support, each with the question they needed the dashboard to answer" />
+  </figure>
+
+  <section class="cs-section" style="padding-top: 0;">
+    <p>After gathering all the data needs, they were categorized into 4 main KPIs:</p>
+    <ul class="cs-list">
+      <li><strong>1. User Acquisition.</strong> How many users were actually signing up to PRO?</li>
+      <li><strong>2. Sales.</strong> How many and what type of PRO subscriptions were being sold and recurring?</li>
+      <li><strong>3. Traffic.</strong> Where are the users coming from?</li>
+      <li><strong>4. Support.</strong> What was being reported the most?</li>
+    </ul>
+  </section>
+
+  <section class="cs-section" id="ideation" style="padding-bottom: 0;">
+    <p class="cs-label">Ideation</p>
+    <h2 class="cs-section-head">Why a dashboard, not something else</h2>
+    <p>Since this was an internal company product, the stakeholders had predetermined it was going to be a Dashboard: a bird's-eye view of Programiz PRO's performance in the market. Other options were considered and set aside.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 1080px; margin: 64px 0 96px;">
+    <img src="assets/pdd-ideation-options.jpg?v=2" alt="The Dashboard concept next to the other options considered and set aside: a newsletter, a Microsoft Teams integration, and a daily standup presentation" />
+  </figure>
+
+  <section class="cs-section" id="design" style="padding-bottom: 0;">
+    <p class="cs-label">Design &amp; iteration</p>
+    <h2 class="cs-section-head">Phase 1/2: low-fi wireframe aimed to visualize the data for each of the KPIs</h2>
+    <p>The design followed two main ideas:</p>
+    <ul class="cs-list">
+      <li><strong>1.</strong> Each KPI would be shown through its own individual chart, which could be expanded to have a bigger view, so it was easier to get information at a glance.</li>
+      <li><strong>2.</strong> Scrolling further in the page would reveal data specific to the teams of Programiz, like marketing, content, etc., so everyone could benefit from the dashboard.</li>
+    </ul>
+  </section>
+
+  <div class="cs-carousel" style="max-width: 1080px; margin-top: 64px;">
+    <div class="cs-carousel-viewport">
+      <div class="cs-carousel-track">
+        <figure class="cs-carousel-slide">
+          <img src="assets/pdd-annotated-kpi-grid.jpg" alt="Annotated KPI overview showing search, date filters, and one major chart per KPI" />
+        </figure>
+        <figure class="cs-carousel-slide">
+          <img src="assets/pdd-annotated-kpi-expanded.jpg" alt="A KPI chart expanded to a larger view" />
+        </figure>
+        <figure class="cs-carousel-slide">
+          <img src="assets/pdd-annotated-department.jpg" alt="Scrolling further reveals department-specific data, like content performance by language" />
+        </figure>
+      </div>
+    </div>
+    <button class="cs-carousel-arrow cs-carousel-prev" aria-label="Previous slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+    <button class="cs-carousel-arrow cs-carousel-next" aria-label="Next slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+    <div class="cs-carousel-dots">
+      <button class="cs-carousel-dot is-active" aria-label="Go to slide 1"></button>
+      <button class="cs-carousel-dot" aria-label="Go to slide 2"></button>
+      <button class="cs-carousel-dot" aria-label="Go to slide 3"></button>
+    </div>
+  </div>
+
+  <section class="cs-section">
+    <p>Some feedback later, it was revealed that:</p>
+  </section>
+
+  <div class="cs-carousel" style="max-width: 1080px; margin-top: 32px;">
+    <div class="cs-carousel-viewport">
+      <div class="cs-carousel-track">
+        <figure class="cs-carousel-slide">
+          <img src="assets/pdd-feedback-1.jpg" alt="Annotated feedback: a double date filter can be confusing and too much for an MVP" />
+        </figure>
+        <figure class="cs-carousel-slide">
+          <img src="assets/pdd-feedback-2.jpg" alt="Annotated feedback: the dashboard would be used as a screensaver for the company display, so it had to be single page" />
+        </figure>
+      </div>
+    </div>
+    <button class="cs-carousel-arrow cs-carousel-prev" aria-label="Previous slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+    <button class="cs-carousel-arrow cs-carousel-next" aria-label="Next slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+    <div class="cs-carousel-dots">
+      <button class="cs-carousel-dot is-active" aria-label="Go to slide 1"></button>
+      <button class="cs-carousel-dot" aria-label="Go to slide 2"></button>
+    </div>
+  </div>
+
+  <section class="cs-section">
+    <h2 class="cs-section-head">Phase 2/2: high-fi wireframes with feedback implementation and visual language</h2>
+    <p>As it was a Programiz product, it made sense to use the company's design system, which is modern and approachable with fun accent colors on the charts.</p>
+    <p>The new wireframes had 2 major changes based on the feedback we received in Phase 1:</p>
+    <ul class="cs-list">
+      <li><strong>1.</strong> More context to KPI charts so users could understand where the data was coming from and compare it to other metrics.</li>
+      <li><strong>2.</strong> Since this was now going to be used as a screensaver in the company's display instead of a scroll view, it was turned into a single-screen layout.</li>
+    </ul>
+  </section>
+
+  <figure class="cs-media cs-media--wide">
+    <img src="assets/pdd-hifi-final.png" alt="Final high-fidelity PRO Data Dashboard showing Users Acquired, Sales, Traffic Source, and Customer Support with full context on each card" />
+  </figure>
+
+  <section class="cs-section">
+    <h2 class="cs-section-head" style="font-size: 22px;">Adding context to KPIs</h2>
+  </section>
+
+  <div class="cs-carousel" style="max-width: 920px; margin-top: 32px;">
+    <div class="cs-carousel-viewport">
+      <div class="cs-carousel-track">
+        <figure class="cs-carousel-slide">
+          <img src="assets/pdd-kpi-context-1.jpg" alt="Users Acquired card annotated with lifetime user count, visits, registrations, sign-up rate, and week-over-week comparison" />
+        </figure>
+        <figure class="cs-carousel-slide">
+          <img src="assets/pdd-kpi-context-2.jpg" alt="Sales card annotated with total sales breakdown by direct vs. recurring, and trial-to-payment rate" />
+        </figure>
+        <figure class="cs-carousel-slide">
+          <img src="assets/pdd-kpi-context-3.jpg" alt="Traffic Source and Customer Support cards annotated with top source, top country, and highest issue category" />
+        </figure>
+        <figure class="cs-carousel-slide">
+          <img src="assets/pdd-kpi-context-4.jpg" alt="Status bar and single date filter annotated as additional context for the screensaver display" />
+        </figure>
+      </div>
+    </div>
+    <button class="cs-carousel-arrow cs-carousel-prev" aria-label="Previous slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+    <button class="cs-carousel-arrow cs-carousel-next" aria-label="Next slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+    <div class="cs-carousel-dots">
+      <button class="cs-carousel-dot is-active" aria-label="Go to slide 1"></button>
+      <button class="cs-carousel-dot" aria-label="Go to slide 2"></button>
+      <button class="cs-carousel-dot" aria-label="Go to slide 3"></button>
+      <button class="cs-carousel-dot" aria-label="Go to slide 4"></button>
+    </div>
+  </div>
+
+  <section class="cs-section" id="finaldesign" style="padding-bottom: 48px;">
+    <p class="cs-label">Final design</p>
+    <h2 class="cs-section-head">The final, screensaver-ready dashboard</h2>
+    <p>Installed on a wall-mounted display at the Programiz office, the dashboard runs as a live screensaver, always showing the team's most current KPIs at a glance. It's also fully responsive, so anyone can pull up the same view on their own phone.</p>
+  </section>
+
+  <figure class="cs-media cs-media--wide">
+    <img src="assets/pdd-final-tv.jpg" alt="The final PRO Data Dashboard running as a screensaver on a wall-mounted display" />
+  </figure>
+
+  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 32px; margin-top: 48px; max-width: 1260px;">
+    <figure class="cs-media" style="margin: 0;">
+      <img src="assets/pdd-final-login.jpg" alt="Login screen for the PRO Data Dashboard, with Google sign-in and email/password fields" style="aspect-ratio: 4 / 3; width: 100%; height: 100%; object-fit: cover;" />
+    </figure>
+    <figure class="cs-media" style="margin: 0;">
+      <img src="assets/pdd-final-laptop.jpg" alt="The final PRO Data Dashboard shown on a laptop, displaying KPI cards for users, sales, support and traffic" style="aspect-ratio: 4 / 3; width: 100%; height: 100%; object-fit: cover;" />
+    </figure>
+  </div>
+
+  <figure class="cs-media cs-media--wide" style="margin-top: 48px; margin-bottom: 48px;">
+    <img src="assets/pdd-final-phones-still.jpg" alt="The PRO Data Dashboard's responsive mobile view shown across three phones" />
+  </figure>
+
+  <section class="cs-section" id="outcome" style="padding-bottom: 0;">
+    <p class="cs-label">Outcome</p>
+    <h2 class="cs-section-head">Cut analyst data requests by 50&ndash;75%</h2>
+    <p>Teams now access data independently, looping in the analyst only when deeper investigation is needed.</p>
+    <div class="cs-bar-chart">
+      <div class="cs-bar-chart-bars">
+        <div class="cs-bar cs-bar--before" style="height: 210px;">
+          <span class="cs-bar-value">4</span>
+          <span class="cs-bar-caption">requests per week</span>
+        </div>
+        <div class="cs-bar cs-bar--after" style="height: 130px;">
+          <span class="cs-bar-value">1&ndash;2</span>
+          <span class="cs-bar-caption">requests per week</span>
+        </div>
+      </div>
+      <div class="cs-bar-chart-labels">
+        <span>Before</span>
+        <span>After</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cs-section" style="padding-bottom: 0;">
+    <h2 class="cs-section-head">Shifted the workflow</h2>
+    <p>Decision makers now check the dashboard first and only loop in the analyst when deeper data is needed.</p>
+  </section>
+
+  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 32px; max-width: 1260px; margin-top: 32px;">
+    <figure class="cs-media cs-workflow-card" style="margin: 0;">
+      <p class="cs-workflow-label" style="color: #b5453f;">Before: Ask analyst &rarr; Wait &rarr; Get data &rarr; Decide</p>
+      <img src="assets/pdd-workflow-before.jpg?v=4" alt="Before: each team individually asking the data analyst for answers" style="aspect-ratio: auto; width: 100%; height: auto;" />
+    </figure>
+    <figure class="cs-media cs-workflow-card" style="margin: 0;">
+      <p class="cs-workflow-label" style="color: #3f8a54;">After: Check dashboard &rarr; Decide &rarr; Ask analyst if needed</p>
+      <img src="assets/pdd-workflow-after.jpg?v=3" alt="After: every team checking the PRO Data Dashboard directly" style="aspect-ratio: auto; width: 100%; height: auto;" />
+    </figure>
+  </div>
+
+  <footer class="cs-footer" style="border-top: none; padding-top: 192px;">
+    <p class="cs-footer-label">Thanks for reading</p>
+    <a href="case-study-pro-challenges.html" class="cs-footer-title">Go to Next Project: PRO Challenges &rarr;</a>
+  </footer>
+
+  </main>
+
+  <script>
+    // Highlights the table-of-contents link for whichever section is
+    // currently most in view, matching the scrollspy behavior on the
+    // reference layout this page's TOC is modeled on.
+    (function () {
+      var links = Array.prototype.slice.call(document.querySelectorAll('.cs-toc-link'));
+      var sections = links
+        .map(function (link) { return document.getElementById(link.dataset.target); })
+        .filter(Boolean);
+      if (!links.length || !sections.length || typeof IntersectionObserver === 'undefined') return;
+
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            links.forEach(function (link) {
+              link.classList.toggle('active', link.dataset.target === entry.target.id);
+            });
+          });
+        },
+        { rootMargin: '-20% 0px -70% 0px' }
+      );
+      sections.forEach(function (section) { observer.observe(section); });
+    })();
+
+    Array.prototype.slice.call(document.querySelectorAll('.cs-carousel')).forEach(function (carousel) {
+      var track = carousel.querySelector('.cs-carousel-track');
+      var slides = Array.prototype.slice.call(carousel.querySelectorAll('.cs-carousel-slide'));
+      var dots = Array.prototype.slice.call(carousel.querySelectorAll('.cs-carousel-dot'));
+      var prevBtn = carousel.querySelector('.cs-carousel-prev');
+      var nextBtn = carousel.querySelector('.cs-carousel-next');
+      var index = 0;
+
+      function goTo(i) {
+        index = Math.max(0, Math.min(slides.length - 1, i));
+        track.style.transform = 'translateX(calc(-' + (index * 100) + '% - ' + (index * 20) + 'px))';
+        dots.forEach(function (dot, d) { dot.classList.toggle('is-active', d === index); });
+        slides.forEach(function (slide, s) { slide.classList.toggle('is-active', s === index); });
+        prevBtn.style.display = index === 0 ? 'none' : 'flex';
+        nextBtn.style.display = index === slides.length - 1 ? 'none' : 'flex';
+      }
+
+      prevBtn.addEventListener('click', function () { goTo(index - 1); });
+      nextBtn.addEventListener('click', function () { goTo(index + 1); });
+      dots.forEach(function (dot, d) { dot.addEventListener('click', function () { goTo(d); }); });
+      goTo(0);
+    });
+  </script>
+
+<div class="cs-bottom-blur" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+<script src="transition.js?v=6"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<svg width="700" height="320" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="320" fill="#ffffff" />
+
+  <!-- Tally column -->
+  <text x="175" y="30" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#111111" text-anchor="middle">Tally</text>
+  <g font-family="Arial, sans-serif" font-size="10.5" fill="#4a4a4a">
+    <rect x="30" y="46" width="290" height="28" rx="14" fill="#f4f4f5" />
+    <text x="45" y="64">1. Upload footage to Drive</text>
+    <rect x="30" y="80" width="290" height="28" rx="14" fill="#f4f4f5" />
+    <text x="45" y="98">2. Fill out Tally form</text>
+    <rect x="30" y="114" width="290" height="28" rx="14" fill="#f4f4f5" />
+    <text x="45" y="132">3. Go to mail</text>
+    <rect x="30" y="148" width="290" height="28" rx="14" fill="#f4f4f5" />
+    <text x="45" y="166">4. Wait for edited-video email</text>
+    <rect x="30" y="182" width="290" height="28" rx="14" fill="#f4f4f5" />
+    <text x="45" y="200">5. Copy caption</text>
+    <rect x="30" y="216" width="290" height="28" rx="14" fill="#f4f4f5" />
+    <text x="45" y="234">6. Go to Drive</text>
+    <rect x="30" y="250" width="290" height="28" rx="14" fill="#f4f4f5" />
+    <text x="45" y="268">7. Download video</text>
+  </g>
+  <text x="175" y="300" font-family="Arial, sans-serif" font-size="10" fill="#c0392b" text-anchor="middle">Quality drops each Drive upload</text>
+
+  <line x1="350" y1="20" x2="350" y2="300" stroke="#e2e2e5" />
+
+  <!-- WhatsApp column -->
+  <text x="525" y="30" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#111111" text-anchor="middle">WhatsApp</text>
+  <g font-family="Arial, sans-serif" font-size="10.5" fill="#111111">
+    <rect x="380" y="50" width="290" height="34" rx="17" fill="#d9fdd3" />
+    <text x="400" y="71">1. Send video + kurti name</text>
+
+    <path d="M525 90 L525 108" stroke="#8a8a8e" stroke-width="1.5" />
+
+    <rect x="380" y="112" width="290" height="34" rx="17" fill="#d9fdd3" />
+    <text x="400" y="133">2. Wait</text>
+
+    <path d="M525 152 L525 170" stroke="#8a8a8e" stroke-width="1.5" />
+
+    <rect x="380" y="174" width="290" height="34" rx="17" fill="#d9fdd3" />
+    <text x="400" y="195">3. Get video + caption</text>
+  </g>
+  <text x="525" y="300" font-family="Arial, sans-serif" font-size="10" fill="#1f9d55" text-anchor="middle">No quality loss — never touches Drive</text>
+</svg>

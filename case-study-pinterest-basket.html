@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pinterest Basket — Case Study — Riya Shrestha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:wght@400&family=42dot+Sans:wght@400;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="case-study.css?v=69" />
+<link rel="stylesheet" href="transition.css?v=5" />
+</head>
+<body>
+<div class="page-transition" id="pageTransition" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <a href="index.html#work" class="nav-link active" data-text="work"><span class="txt">work</span></a>
+    <a href="play.html" class="nav-link" data-text="play"><span class="txt">play</span></a>
+    <a href="about.html" class="nav-link" data-text="about"><span class="txt">about</span></a>
+    <a href="https://drive.google.com/file/d/16zGjUE4d-RITe7CPfnRIvR9W6uvLbXZW/view?usp=sharing" class="nav-link" data-text="resume" target="_blank" rel="noopener"><span class="txt">resume</span></a>
+  </nav>
+
+  <nav class="cs-toc" id="csToc">
+    <a href="#overview" class="cs-toc-link" data-target="overview">Overview</a>
+    <a href="#problem" class="cs-toc-link" data-target="problem">Problem</a>
+    <a href="#ideation" class="cs-toc-link" data-target="ideation">Ideation</a>
+    <a href="#design" class="cs-toc-link" data-target="design">Design</a>
+    <a href="#outcome" class="cs-toc-link" data-target="outcome">Outcome</a>
+  </nav>
+
+  <main class="cs-content">
+
+  <header class="cs-hero">
+    <p class="cs-eyebrow">Case Study — Product Design</p>
+    <h1 class="cs-title">Pinterest Basket: Designing for how people actually think</h1>
+    <p class="cs-dek">Pinterest lets you save to a board. Baskets lets you save before you know which one.</p>
+  </header>
+
+  <figure class="cs-media cs-media--hero">
+    <video src="assets/pin-hero-video.mp4" autoplay muted loop playsinline aria-label="Drag and drop pins into a Basket on Pinterest"></video>
+  </figure>
+
+  <div class="cs-meta">
+    <div class="cs-meta-item">
+      <p class="cs-meta-label">Role</p>
+      <p class="cs-meta-value">Lead Designer</p>
+    </div>
+    <div class="cs-meta-item">
+      <p class="cs-meta-label">Duration</p>
+      <p class="cs-meta-value">6 weeks (2026)</p>
+    </div>
+    <div class="cs-meta-item">
+      <p class="cs-meta-label">Team</p>
+      <p class="cs-meta-value">Riya<br />Adam<br />Clara</p>
+    </div>
+    <div class="cs-meta-item">
+      <p class="cs-meta-label">Impact</p>
+      <p class="cs-meta-value">90% said they'd use it</p>
+    </div>
+  </div>
+
+  <section class="cs-section" id="overview" style="padding-bottom: 0;">
+    <p class="cs-label">Overview</p>
+    <h2 class="cs-section-head">What is Basket?</h2>
+    <p>Pinterest is where people collect inspiration. Boards are how they organize it.</p>
+    <p>Basket is the step in between. A low-pressure space where users can drop pins they are interested in, organize them manually, or let AI sort them when they are ready.</p>
+    <p>When I presented Basket at Parsons, 90% of the people I spoke to said they would use it.</p>
+    <p class="cs-hmw">This is a speculative project &mdash; part of a studio class at Parsons School of Design. I was the lead designer, owning end-to-end process from in-person user research and ideation all the way to an interactive prototype for the Baskets feature in Pinterest.</p>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 760px; margin: 64px 0 96px;">
+    <img src="assets/pin-basket-icon-select.jpg" alt="Saving a pin with the new Basket icon highlighted in red among the regular board icons" />
+  </figure>
+
+  <section class="cs-section" id="problem">
+    <p class="cs-label">Problem</p>
+    <h2 class="cs-section-head">Imagine you have 40 boards, you see a pin you like, and now have to add it to one of the boards.</h2>
+    <p>The difference is between how we think and how Pinterest's pin-to-board flow is architectured. So the goal became to design for how people actually think: non-linear, intuitive, &amp; often unfinished.</p>
+  </section>
+
+  <div class="cs-annotated-frame">
+    <div class="cs-annotated-frame__stage">
+      <video class="cs-annotated-frame__video" src="assets/pin-problem-demo.mp4" autoplay muted loop playsinline aria-label="Trying to save a pin: cannot find the board, forgot its name, can't decide which one to use, or just want to save it without thinking about boards"></video>
+
+      <span class="cs-callout-line cs-callout-line--tl" aria-hidden="true"></span>
+      <span class="cs-callout-line cs-callout-line--tr" aria-hidden="true"></span>
+      <span class="cs-callout-line cs-callout-line--bl" aria-hidden="true"></span>
+      <span class="cs-callout-line cs-callout-line--br" aria-hidden="true"></span>
+
+      <p class="cs-callout cs-callout--tl">Cannot find the board</p>
+      <p class="cs-callout cs-callout--tr">Can't decide which board to put it in</p>
+      <p class="cs-callout cs-callout--bl">Forgot the name of the board</p>
+      <p class="cs-callout cs-callout--br">Just want to save it and not think about boards</p>
+    </div>
+  </div>
+
+  <figure class="cs-media cs-media--wide">
+    <img src="assets/pin-boards-problem.png" alt="A Pinterest profile with many similarly named boards — portfolio, portfolio concept, Portfolioo, Portfolio concept 1" style="object-fit: contain; background: #f4f4f5;" />
+  </figure>
+
+  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 960px; margin-top: 32px;">
+    <figure class="cs-media" style="margin: 0;">
+      <img src="assets/pin-problem-forgot-name.jpg" alt="A pin about to be saved, with a Pinterest board search panel open showing similarly named boards like art, brand 1, Classy, Concept 1" style="object-fit: contain; background: #f4f4f5;" />
+    </figure>
+    <figure class="cs-media" style="margin: 0;">
+      <img src="assets/pin-problem-abandoned.jpg" alt="A pin left unsaved and abandoned among a stack of other pins" style="object-fit: contain; background: #f4f4f5;" />
+    </figure>
+  </div>
+
+  <p class="cs-label" style="max-width: 640px; margin: 56px auto 0;">How we think, vs. Pinterest's pin-to-board flow</p>
+  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 960px; margin-top: 16px;">
+    <figure class="cs-media" style="margin: 0;">
+      <img src="assets/pin-how-we-think.png" alt="Hand-drawn diagram of how people actually think: see, process, organize — non-linear and branching" style="object-fit: contain; background: #f4f4f5;" />
+    </figure>
+    <figure class="cs-media" style="margin: 0;">
+      <img src="assets/pin-pinterest-flow.jpg" alt="Hand-drawn diagram of Pinterest's pin-to-board flow: see, cognitive load, organize — a tangled, forced structure" style="object-fit: contain; background: #f4f4f5;" />
+    </figure>
+  </div>
+
+  <section class="cs-section" id="ideation">
+    <p class="cs-label">Ideation</p>
+    <h2 class="cs-section-head">I came in with five ideas. Users made the call.</h2>
+    <p>The process started with open exploration across three key questions: How can I make the organizing experience more efficient? How do people naturally categorize information, and how can the design reflect that? How do other applications organize data and files in a way that feels manageable?</p>
+    <p>With that I curated five concepts and tested them with users:</p>
+    <ul class="cs-list">
+      <li><strong>Baskets.</strong> Lets you drag and drop pins to a basket instead of having to commit to boards. You can later edit and download them.</li>
+      <li><strong>Spread.</strong> Each board is automatically spread into pins that are similar, and you can find the pin through search.</li>
+      <li><strong>AI Groups.</strong> Uses AI to group together similar boards and gives it a name, which you can always edit and relocate.</li>
+      <li><strong>Lists.</strong> Instead of just a gallery, boards are organized in a list with tags, dates, and shared users.</li>
+      <li><strong>Section.</strong> Think sections in Figma &mdash; you can drag and put pins inside sections and organize them.</li>
+    </ul>
+    <p>After testing the ideas with users, almost all the users liked the idea of Baskets.</p>
+  </section>
+
+  <div class="cs-carousel" style="max-width: 1080px; margin-top: 32px;">
+    <div class="cs-carousel-viewport">
+      <div class="cs-carousel-track">
+        <figure class="cs-carousel-slide">
+          <img src="assets/pin-concept-spread.jpg" alt="Spread concept: a board automatically spread into clusters of similar pins" />
+        </figure>
+        <figure class="cs-carousel-slide">
+          <img src="assets/pin-concept-ai-groups.jpg" alt="AI Groups concept: boards automatically grouped and named, like Makeup and Graphic Design" />
+        </figure>
+        <figure class="cs-carousel-slide">
+          <img src="assets/pin-concept-lists.jpg" alt="Lists concept: boards organized in a list with tags, created and modified dates, and shared people" />
+        </figure>
+        <figure class="cs-carousel-slide">
+          <img src="assets/pin-concept-section.jpg" alt="Section concept: a dashed selection grouping pins into a named section" />
+        </figure>
+        <figure class="cs-carousel-slide">
+          <img src="assets/pin-section-concept.jpg" alt="Grayscale prototype of the Section concept, with a Section 1 group selected around a cluster of pins" />
+        </figure>
+      </div>
+    </div>
+    <button class="cs-carousel-arrow cs-carousel-prev" aria-label="Previous slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+    <button class="cs-carousel-arrow cs-carousel-next" aria-label="Next slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+    <div class="cs-carousel-dots">
+      <button class="cs-carousel-dot is-active" aria-label="Go to slide 1"></button>
+      <button class="cs-carousel-dot" aria-label="Go to slide 2"></button>
+      <button class="cs-carousel-dot" aria-label="Go to slide 3"></button>
+      <button class="cs-carousel-dot" aria-label="Go to slide 4"></button>
+      <button class="cs-carousel-dot" aria-label="Go to slide 5"></button>
+    </div>
+  </div>
+
+  <section class="cs-section" id="design">
+    <p class="cs-label">Design</p>
+    <h2 class="cs-section-head">Here is why Basket works for how users actually think.</h2>
+    <ul class="cs-list">
+      <li>
+        <strong>Non-linear.</strong> Basket acts as an in-between step between discovery and organizing. Before, users had to pin their inspirations to boards on the spot, which created extra cognitive load every time they found an inspiration. Rather than forcing immediate structure, Basket embraces ambiguity &mdash; it lets users gather freely, then step back and make sense of what they've collected.
+      </li>
+      <li>
+        <strong>Intuitive.</strong> Like collecting apples, you drag and drop pins to the basket. Humans collect things before making sense of them. Basket goes back to the natural way people collect things: dump everything in one place, then make sense of it later. With an aim to keep that tactile feel, Basket lets users drag and drop items into it and allows them to sort through them later.
+      </li>
+      <li>
+        <strong>Unfinished.</strong> Basket's AI helps you organize your unfinished boards while still being in control. Basket integrates AI in a way that feels assistive, not directive &mdash; it suggests relevant boards based on patterns in saved pins, or creates new ones when needed. This stops you from creating a new board every time you can't find the one you were looking for, and fixes the problem of multiple boards having the same name. But most importantly, using AI is optional &mdash; users can always organize everything manually, maintaining full control over where their inspirations end up.
+      </li>
+    </ul>
+    <p>Basket turns a rigid action into a fluid workflow, making curation feel less like sorting and more like discovering intent over time.</p>
+  </section>
+
+  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 1080px; margin-top: 8px;">
+    <figure class="cs-media" style="margin: 0;">
+      <img src="assets/pin-apples-basket.jpg" alt="A basket of apples, evoking the tactile, intuitive feeling of collecting things before making sense of them" style="aspect-ratio: 4 / 3; object-fit: cover;" />
+    </figure>
+    <figure class="cs-media" style="margin: 0;">
+      <video src="assets/pin-drag-drop.mp4" autoplay muted loop playsinline aria-label="Dragging and dropping pins into the Basket icon in Pinterest's sidebar" style="aspect-ratio: 4 / 3; object-fit: cover;"></video>
+    </figure>
+    <figure class="cs-media" style="margin: 0;">
+      <video src="assets/pin-basket-flyout.mp4" autoplay muted loop playsinline aria-label="The Basket flyout panel with Pin to board, Download, and Organize options" style="aspect-ratio: 4 / 3; object-fit: cover;"></video>
+    </figure>
+    <figure class="cs-media" style="margin: 0;">
+      <video src="assets/pin-ai-organize.mp4" autoplay muted loop playsinline aria-label="The Basket AI-organized panel suggesting boards and tags for saved pins" style="aspect-ratio: 4 / 3; object-fit: cover;"></video>
+    </figure>
+  </div>
+
+  <figure class="cs-media cs-media--wide">
+    <video src="assets/pin-design-video.mp4" autoplay muted loop playsinline aria-label="The Basket icon, built from overlapping Pinterest logos"></video>
+  </figure>
+
+  <section class="cs-section" id="outcome">
+    <p class="cs-label">Impact</p>
+    <h2 class="cs-section-head">90% of participants said they would use Basket.</h2>
+    <p>This project was presented in front of 20+ people and was recognized as something they would definitely use and be benefited by. The feature was also shown to the interview participants later, and all of them had positive feedback about it.</p>
+    <p class="cs-label" style="margin-top: 40px;">Quotes from users</p>
+    <ul class="cs-list">
+      <li>&ldquo;I really like the ability to just add things to a basket without categorizing them right away. This eliminates the user error of adding pins to the wrong board.&rdquo; <strong>&mdash; Hannah Farnham, Digital Designer @ Zero Studios</strong></li>
+      <li>&ldquo;I like how physical and tactile the drag and drop action feels and matches how I think when saving anything.&rdquo; <strong>&mdash; Workshop Attendee</strong></li>
+      <li>&ldquo;I loved the concept of the feature you added for Pinterest, and I feel like it would help a lot of new users navigate the functionality without being overly concerned on where everything is.&rdquo; <strong>&mdash; Sophia Bae, Parsons MPS Student</strong></li>
+    </ul>
+  </section>
+
+  <section class="cs-stats">
+    <div class="cs-stat">
+      <p class="cs-stat-num">90%</p>
+      <p class="cs-stat-caption">of participants said they would use Basket</p>
+    </div>
+    <div class="cs-stat">
+      <p class="cs-stat-num">5</p>
+      <p class="cs-stat-caption">concepts explored and tested with real users</p>
+    </div>
+    <div class="cs-stat">
+      <p class="cs-stat-num">20+</p>
+      <p class="cs-stat-caption">people saw the presentation and gave feedback</p>
+    </div>
+  </section>
+
+  <footer class="cs-footer">
+    <p class="cs-footer-label">Thanks for reading</p>
+    <a href="case-study-widget-builder.html" class="cs-footer-title">Go to Next Project: Widget Builder &rarr;</a>
+  </footer>
+
+  </main>
+
+  <script>
+    // Highlights the table-of-contents link for whichever section is
+    // currently most in view, matching the scrollspy behavior on the
+    // reference layout this page's TOC is modeled on.
+    (function () {
+      var links = Array.prototype.slice.call(document.querySelectorAll('.cs-toc-link'));
+      var sections = links
+        .map(function (link) { return document.getElementById(link.dataset.target); })
+        .filter(Boolean);
+      if (!links.length || !sections.length || typeof IntersectionObserver === 'undefined') return;
+
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            links.forEach(function (link) {
+              link.classList.toggle('active', link.dataset.target === entry.target.id);
+            });
+          });
+        },
+        { rootMargin: '-20% 0px -70% 0px' }
+      );
+      sections.forEach(function (section) { observer.observe(section); });
+    })();
+
+    Array.prototype.slice.call(document.querySelectorAll('.cs-carousel')).forEach(function (carousel) {
+      var track = carousel.querySelector('.cs-carousel-track');
+      var slides = Array.prototype.slice.call(carousel.querySelectorAll('.cs-carousel-slide'));
+      var dots = Array.prototype.slice.call(carousel.querySelectorAll('.cs-carousel-dot'));
+      var prevBtn = carousel.querySelector('.cs-carousel-prev');
+      var nextBtn = carousel.querySelector('.cs-carousel-next');
+      var index = 0;
+
+      function goTo(i) {
+        index = Math.max(0, Math.min(slides.length - 1, i));
+        track.style.transform = 'translateX(calc(-' + (index * 100) + '% - ' + (index * 20) + 'px))';
+        dots.forEach(function (dot, d) { dot.classList.toggle('is-active', d === index); });
+        slides.forEach(function (slide, s) { slide.classList.toggle('is-active', s === index); });
+        prevBtn.style.display = index === 0 ? 'none' : 'flex';
+        nextBtn.style.display = index === slides.length - 1 ? 'none' : 'flex';
+      }
+
+      prevBtn.addEventListener('click', function () { goTo(index - 1); });
+      nextBtn.addEventListener('click', function () { goTo(index + 1); });
+      dots.forEach(function (dot, d) { dot.addEventListener('click', function () { goTo(d); }); });
+      goTo(0);
+    });
+  </script>
+
+<div class="cs-bottom-blur" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+<script src="transition.js?v=6"></script>
+</body>
+</html>

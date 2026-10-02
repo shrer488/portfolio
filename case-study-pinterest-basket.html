@@ -72,17 +72,20 @@
     <img src="assets/pin-basket-icon-select.jpg" alt="Saving a pin with the new Basket icon highlighted in red among the regular board icons" />
   </figure>
 
-  <section class="cs-section" id="problem">
+  <section class="cs-section" id="problem" style="padding-bottom: 0;">
     <p class="cs-label">Problem</p>
     <h2 class="cs-section-head">Imagine you have 40 boards, you see a pin you like, and now have to add it to one of the boards.</h2>
-    <p>The difference is between how we think and how Pinterest's pin-to-board flow is architectured. So the goal became to design for how people actually think: non-linear, intuitive, &amp; often unfinished.</p>
   </section>
 
-  <figure class="cs-media cs-media--inline" style="max-width: 760px; margin: 40px auto 64px;">
-    <video src="assets/pin-problem-demo.mp4?v=2" autoplay muted loop playsinline aria-label="Trying to save a pin: cannot find the board, forgot its name, can't decide which one to use, or just want to save it without thinking about boards"></video>
+  <figure class="cs-media cs-media--inline" style="max-width: 760px; margin: 56px 0;">
+    <video src="assets/pin-problem-demo.mp4?v=2" autoplay muted loop playsinline aria-label="Trying to save a pin: cannot find the board, forgot its name, can't decide which one to use, or just want to save it without thinking about boards" style="border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;"></video>
   </figure>
 
-  <div class="cs-media-grid" style="grid-template-columns: repeat(3, 1fr); gap: 48px; max-width: 960px; margin-top: 56px;">
+  <section class="cs-section" style="padding: 32px 0;">
+    <p>This led to problems like&hellip;</p>
+  </section>
+
+  <div class="cs-media-grid" style="grid-template-columns: repeat(3, 1fr); gap: 48px; max-width: 960px; margin-top: 56px; margin-bottom: 56px;">
     <figure class="cs-media">
       <img src="assets/pin-boards-problem.png" alt="A Pinterest profile with many similarly named boards — portfolio, portfolio concept, Portfolioo, Portfolio concept 1" style="aspect-ratio: 966 / 924; object-fit: cover; border: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 32px;" />
       <p class="cs-media-caption" style="text-align: left; font-size: 16px; margin: 0;"><strong style="display: block; font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 4px;">Multiple boards, same name</strong> Near-identical boards make it hard to tell which one is actually the right one.</p>
@@ -97,15 +100,24 @@
     </figure>
   </div>
 
-  <p class="cs-label" style="max-width: 640px; margin: 56px auto 0;">How we think, vs. Pinterest's pin-to-board flow</p>
-  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 960px; margin-top: 16px;">
+  <section class="cs-section" style="padding: 32px 0;">
+    <p>The difference is between how we think and how Pinterest's pin-to-board flow is architectured.</p>
+  </section>
+
+  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 680px; margin-top: 56px;">
     <figure class="cs-media" style="margin: 0;">
-      <img src="assets/pin-how-we-think.png" alt="Hand-drawn diagram of how people actually think: see, process, organize — non-linear and branching" style="object-fit: contain; background: #f4f4f5;" />
+      <img src="assets/pin-how-we-think-v2.jpg?v=3" alt="Human Brain Workflow diagram: see, process, organize — one input branches into a labeled process, then organizes cleanly" style="aspect-ratio: auto; width: 100%; height: auto; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;" />
     </figure>
     <figure class="cs-media" style="margin: 0;">
-      <img src="assets/pin-pinterest-flow.jpg" alt="Hand-drawn diagram of Pinterest's pin-to-board flow: see, cognitive load, organize — a tangled, forced structure" style="object-fit: contain; background: #f4f4f5;" />
+      <img src="assets/pin-pinterest-flow-v2.jpg?v=3" alt="Pinterest Pin-to-Board Workflow diagram: see, cognitive load, organize — a tangled, forced structure" style="aspect-ratio: auto; width: 100%; height: auto; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;" />
     </figure>
   </div>
+
+  <section class="cs-section" style="padding: 32px 0;">
+    <div class="cs-quote cs-quote--question">
+      <p>So the goal became to design for how people actually think: non-linear, intuitive, &amp; often unfinished.</p>
+    </div>
+  </section>
 
   <section class="cs-section" id="ideation">
     <p class="cs-label">Ideation</p>

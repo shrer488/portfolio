@@ -720,7 +720,7 @@ body {
    profile block and cursor hint need an explicit override here, switching
    from a fixed top offset to hugging the bottom edge so they never get
    pushed off-screen. */
-@media (min-width: 1440px) and (max-height: 800px) {
+@media (min-width: 1440px) and (max-height: 837px) {
   html, body {
     overflow: hidden;
     height: 100%;

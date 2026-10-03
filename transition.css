@@ -1,27 +1,11 @@
-/* Frosted-glass "window" page transition. The single #pageTransition div
-   stays an inert positioning host — the actual visuals are its ::before/
-   ::after pseudo-elements, one covering the left half of the viewport, one
-   the right. Together they read as a pair of glass shutters meeting at the
-   center seam.
+/* Viscous droplet page transition (drawn by transition.js on a canvas).
 
-   Default (class-less) state is closed — both halves at translateX(0),
-   meeting in the middle and fully covering the page — so a fresh page load
-   never flashes unstyled content before transition.js's reveal() opens them.
-   Leaving a page runs the same close animation before the browser actually
-   navigates, so every page-to-page jump reads as a window shutting and the
-   next one opening, rather than a hard cut.
-
-   Only `transform` is animated — it's cheap and GPU-composited. Animating
-   `backdrop-filter` alongside it (an earlier pass did) is a well-known
-   source of stutter/tearing in Chrome and Safari alike, which is what read
-   as a "glitch": the blur amount is now constant, so each panel is either
-   fully frosted or fully off-screen, with the slide being the only thing
-   that moves.
-
-   Low background opacity + a strong backdrop blur is what reads as "frosted
-   glass" rather than a solid panel — the blur does the work of obscuring
-   content, the tint just keeps it from looking like plain glass. A faint
-   inner border on the meeting edges stands in for a window's center mullion. */
+   Every page carries #pageTransition. Its default state is a plain,
+   full-screen cover in the page colour (::before), so a fresh page load
+   never flashes unstyled content before transition.js takes over. Once the
+   script has added its canvas (.has-canvas) the canvas draws the cover
+   instead, with the opening hole cut out of it, and once fully open
+   (.is-open) the whole layer is hidden so it costs nothing. */
 .page-transition {
   position: fixed;
   inset: 0;
@@ -29,43 +13,24 @@
   pointer-events: none;
 }
 
-.page-transition::before,
-.page-transition::after {
-  content: '';
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  width: 50%;
-  background: rgba(240, 240, 238, 0.5);
-  backdrop-filter: blur(40px) saturate(140%);
-  -webkit-backdrop-filter: blur(40px) saturate(140%);
-  transition: transform 0.85s cubic-bezier(0.39, 0.575, 0.565, 1);
-  will-change: transform;
-}
-
 .page-transition::before {
-  left: 0;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-  transform: translateX(0);
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #fafafa;
 }
 
-.page-transition::after {
-  right: 0;
-  border-left: 1px solid rgba(0, 0, 0, 0.08);
-  transform: translateX(0);
+.page-transition.has-canvas::before {
+  display: none;
 }
 
-.page-transition.is-revealed::before {
-  transform: translateX(-100%);
+.page-transition canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.page-transition.is-revealed::after {
-  transform: translateX(100%);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .page-transition::before,
-  .page-transition::after {
-    transition-duration: 0.01s;
-  }
+.page-transition.is-open {
+  visibility: hidden;
 }

@@ -93,11 +93,11 @@ window.addEventListener('load', function () {
         inner.removeEventListener('mousemove', moveCursor);
       }
     });
-    inner.addEventListener('click', function () {
+    inner.addEventListener('click', function (e) {
       var slide = inner.closest('.slide');
       var href = (slide && slide.dataset.href) || 'case-study.html';
       if (window.pageTransition) {
-        window.pageTransition.navigate(href);
+        window.pageTransition.navigate(href, e.clientX, e.clientY);
       } else {
         window.location.href = href;
       }
@@ -399,6 +399,7 @@ function verticalLoop(items, config) {
   }
 
   var prevIndex = null;
+
 
   function setActive(el, index) {
     slides.forEach(function (slide, i) {

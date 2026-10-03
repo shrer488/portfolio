@@ -697,6 +697,28 @@ img {
   font-weight: 600;
 }
 
+/* Plain items with no bold lead-in (e.g. a set of questions) need a
+   visible dot so they read as a list rather than loose lines. */
+.cs-list--bullets {
+  gap: 10px;
+}
+
+.cs-list--bullets li {
+  position: relative;
+  padding-left: 22px;
+}
+
+.cs-list--bullets li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0.78em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
 /* Big serif stat numerals, echoing the homepage's numeral treatment
    without the brush-stroke filter — this page is calmer/editorial. */
 .cs-stats {

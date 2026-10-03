@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:wght@400&family=42dot+Sans:wght@400;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="case-study.css?v=69" />
-<link rel="stylesheet" href="transition.css?v=5" />
+<link rel="stylesheet" href="case-study.css?v=70" />
+<link rel="stylesheet" href="transition.css?v=12" />
 </head>
 <body>
 <div class="page-transition" id="pageTransition" aria-hidden="true"></div>
@@ -23,6 +23,7 @@
   <nav class="cs-toc" id="csToc">
     <a href="#overview" class="cs-toc-link" data-target="overview">Overview</a>
     <a href="#problem" class="cs-toc-link" data-target="problem">Problem</a>
+    <a href="#research" class="cs-toc-link" data-target="research">Research</a>
     <a href="#ideation" class="cs-toc-link" data-target="ideation">Ideation</a>
     <a href="#design" class="cs-toc-link" data-target="design">Design</a>
     <a href="#outcome" class="cs-toc-link" data-target="outcome">Outcome</a>
@@ -119,18 +120,36 @@
     </div>
   </section>
 
+  <section class="cs-section" id="research" style="padding-bottom: 0;">
+    <p class="cs-label">Research</p>
+    <h2 class="cs-section-head">Every participant said organizing boards was hard.</h2>
+    <p>I interviewed five Pinterest users: two who use it professionally, two advanced users who pin for pleasure, and one seasonal user. I asked how they save, name, and organize their pins, then synthesized their answers into shared themes.</p>
+    <ul class="cs-list">
+      <li><strong>Organizing boards is difficult.</strong> All five struggled with it &mdash; making sub-boards felt slow, duplicate boards piled up, and old boards were forgotten.</li>
+      <li><strong>The features they wanted already existed.</strong> Many of the fixes they wished for were already in Pinterest; they just didn't know about them.</li>
+      <li><strong>Ads get in the way.</strong> Everyone was bothered by ads, and some couldn't tell an ad from a real pin.</li>
+    </ul>
+  </section>
+
+  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 960px; margin-top: 56px; margin-bottom: 56px;">
+    <figure class="cs-media" style="margin: 0;">
+      <img src="assets/pin-research-interviews.jpg" alt="Interview notes from five participants — Melody, Katie, Allison, Sohail, and Kinza — covering how they use, organize, and name their Pinterest boards" style="aspect-ratio: auto; width: 100%; height: auto; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;" />
+    </figure>
+    <figure class="cs-media" style="margin: 0;">
+      <img src="assets/pin-research-synthesis.jpg" alt="Synthesis board grouping interview notes into themes: organizing boards is difficult, forgetting about boards, syncing inspiration across platforms, search, and being affected by ads" style="aspect-ratio: auto; width: 100%; height: auto; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;" />
+    </figure>
+  </div>
+
   <section class="cs-section" id="ideation">
     <p class="cs-label">Ideation</p>
     <h2 class="cs-section-head">I came in with five ideas. Users made the call.</h2>
-    <p>The process started with open exploration across three key questions: How can I make the organizing experience more efficient? How do people naturally categorize information, and how can the design reflect that? How do other applications organize data and files in a way that feels manageable?</p>
-    <p>With that I curated five concepts and tested them with users:</p>
-    <ul class="cs-list">
-      <li><strong>Baskets.</strong> Lets you drag and drop pins to a basket instead of having to commit to boards. You can later edit and download them.</li>
-      <li><strong>Spread.</strong> Each board is automatically spread into pins that are similar, and you can find the pin through search.</li>
-      <li><strong>AI Groups.</strong> Uses AI to group together similar boards and gives it a name, which you can always edit and relocate.</li>
-      <li><strong>Lists.</strong> Instead of just a gallery, boards are organized in a list with tags, dates, and shared users.</li>
-      <li><strong>Section.</strong> Think sections in Figma &mdash; you can drag and put pins inside sections and organize them.</li>
+    <p>The process started with open exploration across three key questions:</p>
+    <ul class="cs-list cs-list--bullets">
+      <li>How can I make the organizing experience more efficient?</li>
+      <li>How do people naturally categorize information, and how can the design reflect that?</li>
+      <li>How do other applications organize data and files in a way that feels manageable?</li>
     </ul>
+    <p>With that I curated five concepts and tested them with users.</p>
     <p>After testing the ideas with users, almost all the users liked the idea of Baskets.</p>
   </section>
 
@@ -138,19 +157,19 @@
     <div class="cs-carousel-viewport">
       <div class="cs-carousel-track">
         <figure class="cs-carousel-slide">
-          <img src="assets/pin-concept-spread.jpg" alt="Spread concept: a board automatically spread into clusters of similar pins" />
+          <img src="assets/pin-idea-section.jpg" alt="Section concept: pins dragged into a named section on a board, like sections in Figma" />
         </figure>
         <figure class="cs-carousel-slide">
-          <img src="assets/pin-concept-ai-groups.jpg" alt="AI Groups concept: boards automatically grouped and named, like Makeup and Graphic Design" />
+          <img src="assets/pin-idea-lists.jpg" alt="Lists concept: boards shown as a list with tags, created and modified dates, and shared people" />
         </figure>
         <figure class="cs-carousel-slide">
-          <img src="assets/pin-concept-lists.jpg" alt="Lists concept: boards organized in a list with tags, created and modified dates, and shared people" />
+          <img src="assets/pin-idea-ai-groups.jpg" alt="AI Groups concept: similar boards automatically grouped and named, like Makeup and Graphic Design" />
         </figure>
         <figure class="cs-carousel-slide">
-          <img src="assets/pin-concept-section.jpg" alt="Section concept: a dashed selection grouping pins into a named section" />
+          <img src="assets/pin-idea-spread.jpg" alt="Spread concept: a Branding board spread into clusters of similar pins, with a search bar to find a pin" />
         </figure>
         <figure class="cs-carousel-slide">
-          <img src="assets/pin-section-concept.jpg" alt="Grayscale prototype of the Section concept, with a Section 1 group selected around a cluster of pins" />
+          <img src="assets/pin-idea-baskets.jpg" alt="Baskets concept: a pin dragged into a basket instead of committing it to a board" />
         </figure>
       </div>
     </div>
@@ -165,37 +184,46 @@
     </div>
   </div>
 
-  <section class="cs-section" id="design">
+  <section class="cs-section" id="design" style="padding-bottom: 0;">
     <p class="cs-label">Design</p>
     <h2 class="cs-section-head">Here is why Basket works for how users actually think.</h2>
     <ul class="cs-list">
-      <li>
-        <strong>Non-linear.</strong> Basket acts as an in-between step between discovery and organizing. Before, users had to pin their inspirations to boards on the spot, which created extra cognitive load every time they found an inspiration. Rather than forcing immediate structure, Basket embraces ambiguity &mdash; it lets users gather freely, then step back and make sense of what they've collected.
-      </li>
-      <li>
-        <strong>Intuitive.</strong> Like collecting apples, you drag and drop pins to the basket. Humans collect things before making sense of them. Basket goes back to the natural way people collect things: dump everything in one place, then make sense of it later. With an aim to keep that tactile feel, Basket lets users drag and drop items into it and allows them to sort through them later.
-      </li>
-      <li>
-        <strong>Unfinished.</strong> Basket's AI helps you organize your unfinished boards while still being in control. Basket integrates AI in a way that feels assistive, not directive &mdash; it suggests relevant boards based on patterns in saved pins, or creates new ones when needed. This stops you from creating a new board every time you can't find the one you were looking for, and fixes the problem of multiple boards having the same name. But most importantly, using AI is optional &mdash; users can always organize everything manually, maintaining full control over where their inspirations end up.
-      </li>
+      <li><strong>Non-linear.</strong> Basket acts as an in-between step between discovery and organizing. Before, users had to pin their inspirations to boards on the spot, which created extra cognitive load every time they found an inspiration. Rather than forcing immediate structure, Basket embraces ambiguity &mdash; it lets users gather freely, then step back and make sense of what they've collected.</li>
     </ul>
-    <p>Basket turns a rigid action into a fluid workflow, making curation feel less like sorting and more like discovering intent over time.</p>
   </section>
 
-  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 1080px; margin-top: 8px;">
+  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: 56px 0;">
+    <video src="assets/pin-basket-flyout.mp4" autoplay muted loop playsinline aria-label="The Basket flow: pins collected in the Basket, then pinned to a board, downloaded, or organized later" style="border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;"></video>
+  </figure>
+
+  <section class="cs-section" style="padding: 32px 0 0;">
+    <ul class="cs-list">
+      <li><strong>Intuitive.</strong> Like collecting apples, you drag and drop pins to the basket. Humans collect things before making sense of them. Basket goes back to the natural way people collect things: dump everything in one place, then make sense of it later. With an aim to keep that tactile feel, Basket lets users drag and drop items into it and allows them to sort through them later.</li>
+    </ul>
+  </section>
+
+  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 960px; margin-top: 56px; margin-bottom: 56px;">
     <figure class="cs-media" style="margin: 0;">
       <img src="assets/pin-apples-basket.jpg" alt="A basket of apples, evoking the tactile, intuitive feeling of collecting things before making sense of them" style="aspect-ratio: 4 / 3; object-fit: cover;" />
     </figure>
     <figure class="cs-media" style="margin: 0;">
       <video src="assets/pin-drag-drop.mp4" autoplay muted loop playsinline aria-label="Dragging and dropping pins into the Basket icon in Pinterest's sidebar" style="aspect-ratio: 4 / 3; object-fit: cover;"></video>
     </figure>
-    <figure class="cs-media" style="margin: 0;">
-      <video src="assets/pin-basket-flyout.mp4" autoplay muted loop playsinline aria-label="The Basket flyout panel with Pin to board, Download, and Organize options" style="aspect-ratio: 4 / 3; object-fit: cover;"></video>
-    </figure>
-    <figure class="cs-media" style="margin: 0;">
-      <video src="assets/pin-ai-organize.mp4" autoplay muted loop playsinline aria-label="The Basket AI-organized panel suggesting boards and tags for saved pins" style="aspect-ratio: 4 / 3; object-fit: cover;"></video>
-    </figure>
   </div>
+
+  <section class="cs-section" style="padding: 32px 0 0;">
+    <ul class="cs-list">
+      <li><strong>Unfinished.</strong> Basket's AI helps you organize your unfinished boards while still being in control. Basket integrates AI in a way that feels assistive, not directive &mdash; it suggests relevant boards based on patterns in saved pins, or creates new ones when needed. This stops you from creating a new board every time you can't find the one you were looking for, and fixes the problem of multiple boards having the same name. But most importantly, using AI is optional &mdash; users can always organize everything manually, maintaining full control over where their inspirations end up.</li>
+    </ul>
+  </section>
+
+  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: 56px 0;">
+    <video src="assets/pin-ai-organize.mp4" autoplay muted loop playsinline aria-label="The Basket AI-organized panel suggesting boards and tags for saved pins" style="border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;"></video>
+  </figure>
+
+  <section class="cs-section" style="padding: 32px 0 0;">
+    <p>Basket turns a rigid action into a fluid workflow, making curation feel less like sorting and more like discovering intent over time.</p>
+  </section>
 
   <figure class="cs-media cs-media--wide">
     <video src="assets/pin-design-video.mp4" autoplay muted loop playsinline aria-label="The Basket icon, built from overlapping Pinterest logos"></video>
@@ -286,6 +314,6 @@
 
 <div class="cs-bottom-blur" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
 
-<script src="transition.js?v=7"></script>
+<script src="transition.js?v=24"></script>
 </body>
 </html>

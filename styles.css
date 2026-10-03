@@ -1152,7 +1152,7 @@ html.intro-pending body::after {
   transition: opacity 0.4s ease;
 }
 
-/* "Work '26" in the middle of the intro ring. Each letter melts in from a
+/* "RIYA" in the middle of the intro ring. Each letter melts in from a
    blur, staggered (delays set inline by intro.js), and melts back out. */
 .intro-heading {
   position: absolute;
@@ -1162,8 +1162,8 @@ html.intro-pending body::after {
   transform: translate(-50%, -50%);
   font-family: var(--font-sans);
   font-size: 40px;
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   color: var(--ink);
   white-space: pre;
   pointer-events: none;

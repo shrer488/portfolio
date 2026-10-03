@@ -7,7 +7,7 @@
       off it one at a time, alternating either way around a circle centred
       on the screen, each dragging a gooey thread behind it, until the ring
       closes.
-   3. The ring turns once while "Work '26" melts in at its centre.
+   3. The ring turns once while "RIYA" melts in at its centre.
    4. The heading melts away and the cards straighten out of the ring into
       the carousel column, landing exactly on the real slides. The overlay
       then fades and hands over to the page.
@@ -49,7 +49,7 @@
   counter.textContent = '001';
   var heading = document.createElement('p');
   heading.className = 'intro-heading';
-  Array.from('Work ’26').forEach(function (ch, i) {
+  Array.from('RIYA').forEach(function (ch, i) {
     var s = document.createElement('span');
     s.textContent = ch;
     s.style.transitionDelay = (i * 0.05) + 's';

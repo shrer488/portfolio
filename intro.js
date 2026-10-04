@@ -148,7 +148,7 @@
     '    float cd = min(r.y - uFrame.x, uFrame.y - r.y);',
     '    float ce = uSoft * (1.0 - smoothstep(uFrame.z * 0.46, uFrame.z * 2.3, cd));',
     '    float u = clamp(q.x / r.z, -1.0, 1.0);',
-    '    q.y -= (r.y < (uFrame.x + uFrame.y) * 0.5 ? -1.0 : 1.0) * 0.07 * r.w * (1.0 - u * u) * ce;',
+    '    q.y -= (r.y < (uFrame.x + uFrame.y) * 0.5 ? -1.0 : 1.0) * 0.035 * r.w * (1.0 - u * u) * ce;',
     '    float d = sdBox(q, r.zw, mix(min(uRadius, min(r.z, r.w)), 0.08 * min(r.z, r.w), ce)) / (1.0 + 2.0 * uFold.y * uSoft * ef);',
     '    field = smin(field, d, uK);',
     '    if (!hit && (d <= 0.0 || d < best - 2.0)) { best = d; rect = r; fit = uFit[i]; local = q; hit = d <= 0.0; }',

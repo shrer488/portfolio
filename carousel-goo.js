@@ -91,7 +91,7 @@
     '    float cd = min(r.y, uRes.y - r.y);',
     '    float ce = 1.0 - smoothstep(uZone * 0.46, uZone * 2.3, cd);',
     '    float u = clamp(q.x / r.z, -1.0, 1.0);',
-    '    q.y -= (r.y < uRes.y * 0.5 ? -1.0 : 1.0) * 0.07 * r.w * (1.0 - u * u) * ce;',
+    '    q.y -= (r.y < uRes.y * 0.5 ? -1.0 : 1.0) * 0.035 * r.w * (1.0 - u * u) * ce;',
     '    float d = sdBox(q, r.zw, mix(1.5, 0.08 * min(r.z, r.w), ce)) / (1.0 + 2.0 * uSquash * e);',
     '    field = min(field, d);',
     '    if (!hit && (d <= 0.0 || d < best)) { best = d; rect = r; fit = uFit[i]; local = q; hit = d <= 0.0; }',

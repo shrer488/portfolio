@@ -12,9 +12,9 @@
    viscous rather than a clean circle:
      - the outline is a sum of a few slow, low sine waves round the rim that
        drift over time, so it gently oozes and changes shape as it moves;
-     - a handful of honey strands: narrow bumps in the cover that reach in
-       across the opening, lag behind the rim, stretch, then let go; they
-       peak mid-motion and retract by the end;
+     - a few soft bulges: broad, gentle bumps in the cover that lean into
+       the opening, lag behind the rim, then ease back; they peak
+       mid-motion and retract by the end;
      - a thin lens highlight follows the edge.
    Movement uses long, heavy easing so it starts slowly and settles slowly.
 
@@ -26,6 +26,7 @@
   var OPEN = 2400;  // ms, arriving
   var HOLD = 80;    // extra pause once fully covered, so the swap never lands mid-motion
   var BG = '#fafafa';
+  var bg = null;    // the cover's background (see paintBg), redrawn per size
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var isNavigating = false; // guards against a second click re-triggering navigate()
   // mid-animation — without this, an impatient double-click queued two
@@ -38,11 +39,11 @@
 
   // Per page load: random phases and strand angles, so no two look alike.
   var waves = [3, 4, 5, 7].map(function (k, i) {
-    return { k: k, amp: [0.07, 0.05, 0.035, 0.02][i], ph: Math.random() * 6.28, sp: (Math.random() < 0.5 ? -1 : 1) * (0.25 + Math.random() * 0.35) };
+    return { k: k, amp: [0.035, 0.022, 0.012, 0.006][i], ph: Math.random() * 6.28, sp: (Math.random() < 0.5 ? -1 : 1) * (0.25 + Math.random() * 0.35) };
   });
   var strands = [];
-  for (var i = 0; i < 5; i++) {
-    strands.push({ at: Math.random() * 6.28, width: 0.1 + Math.random() * 0.08, len: 0.18 + Math.random() * 0.17, lag: Math.random() * 0.25 });
+  for (var i = 0; i < 4; i++) {
+    strands.push({ at: Math.random() * 6.28, width: 0.22 + Math.random() * 0.12, len: 0.05 + Math.random() * 0.05, lag: Math.random() * 0.25 });
   }
 
   function setup() {
@@ -65,6 +66,48 @@
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    paintBg();
+  }
+
+  // The cover wears the site background (transition.css): the off-white,
+  // the turquoise wash and grey-mint bloom rising from the bottom, and a
+  // fine grain, painted once per size onto an offscreen canvas.
+  function paintBg() {
+    bg = bg || document.createElement('canvas');
+    bg.width = canvas.width; bg.height = canvas.height;
+    var g = bg.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.fillStyle = BG;
+    g.fillRect(0, 0, w, h);
+    var lin = g.createLinearGradient(0, h, 0, h / 2);
+    lin.addColorStop(0, 'rgba(64, 224, 208, 0.14)');
+    lin.addColorStop(1, 'rgba(64, 224, 208, 0)');
+    g.fillStyle = lin;
+    g.fillRect(0, 0, w, h);
+    // The bloom: an ellipse 75% of the width by 50% of the height across,
+    // centred on the bottom edge.
+    g.save();
+    g.translate(w / 2, h);
+    g.scale(w * 0.75, h * 0.5);
+    var rad = g.createRadialGradient(0, 0, 0, 0, 0, 1);
+    rad.addColorStop(0, 'rgba(210, 228, 226, 0.2)');
+    rad.addColorStop(0.75, 'rgba(64, 224, 208, 0)');
+    g.fillStyle = rad;
+    g.fillRect(-2, -2, 4, 4);
+    g.restore();
+    // Grain, one speck per device pixel: a soft grey-teal at random strength.
+    var tile = document.createElement('canvas');
+    tile.width = tile.height = 256;
+    var tc = tile.getContext('2d'), img = tc.createImageData(256, 256), d = img.data;
+    for (var q = 0; q < d.length; q += 4) {
+      var n = (Math.random() + Math.random()) / 2;
+      d[q] = 64; d[q + 1] = 77; d[q + 2] = 77;
+      d[q + 3] = Math.max(0, Math.min(1, 1.4 * n - 0.6)) * 0.12 * 255;
+    }
+    tc.putImageData(img, 0, 0);
+    g.setTransform(1, 0, 0, 1, 0, 0);
+    g.fillStyle = g.createPattern(tile, 'repeat');
+    g.fillRect(0, 0, bg.width, bg.height);
   }
 
   // Radius that just covers the whole screen from (x, y), with room for the
@@ -77,8 +120,7 @@
   // progress through the move, used to swell and settle the goo.
   function draw(R, p, time) {
     ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = BG;
-    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(bg, 0, 0, w, h);
     if (R <= 0.5) return;
 
     // Goo is strongest mid-move and calm at either end.
@@ -88,7 +130,7 @@
       var a = (j / N) * Math.PI * 2;
       var wob = 0;
       waves.forEach(function (wv) { wob += wv.amp * Math.sin(wv.k * a + wv.ph + wv.sp * time); });
-      var r = R * (1 + wob * (0.35 + swell));
+      var r = R * (1 + wob * (0.4 + 0.6 * swell));
       // Strands reach in from the cover towards the centre.
       strands.forEach(function (st) {
         var d = Math.atan2(Math.sin(a - st.at), Math.cos(a - st.at)) / st.width;
@@ -220,8 +262,9 @@
   });
 })();
 
-/* Site-wide custom cursor: a black dot that follows the mouse and turns
-   negative over anything clickable. Mouse/trackpad only — touch devices keep
+/* Site-wide custom cursor: a black dot that follows the mouse. Over
+   anything clickable or over plain text it becomes a lens that shows what's
+   inside it in turquoise. Mouse/trackpad only — touch devices keep
    their native behavior. Steps aside for the homepage's "View" pill (which
    draws its own) and the About photo's tooltip. */
 (function () {
@@ -234,24 +277,55 @@
     ' border-radius: 50%; background: #000; pointer-events: none; z-index: 10000;' +
     ' opacity: 0; transition: opacity 0.2s ease, background-color 0.2s ease; }' +
     '.dot-cursor.is-visible { opacity: 1; }' +
-    /* Over clickable things the dot turns "negative": a white disc with a
-       difference blend inverts whatever sits beneath it, size unchanged. */
-    '.dot-cursor.is-hover { background: #fff; mix-blend-mode: difference; }' +
-    '.dot-cursor.is-hidden { opacity: 0 !important; }';
+    '.dot-cursor.is-hidden { opacity: 0 !important; }' +
+    /* Over clickable things and plain text the dot becomes a lens: two discs stacked on the
+       pointer. The first, in the page colour with a difference blend, turns
+       the page background black and dark text light; the second, turquoise
+       with a multiply blend, keeps black black and tints the light text
+       turquoise. So it still reads as a black dot, with the text inside it
+       showing through in turquoise. */
+    '.dot-lens { position: fixed; top: 0; left: 0; width: 16px; height: 16px; margin: -8px 0 0 -8px;' +
+    ' border-radius: 50%; pointer-events: none; z-index: 10000; opacity: 0; transition: opacity 0.15s ease; }' +
+    '.dot-lens.is-on { opacity: 1; }' +
+    '.dot-lens-invert { background: #fafafa; mix-blend-mode: difference; }' +
+    '.dot-lens-tint { background: rgb(64, 224, 208); mix-blend-mode: multiply; }' +
+    '.dot-cursor.is-lens { opacity: 0 !important; }';
   document.head.appendChild(style);
 
   var dot = document.createElement('div');
   dot.className = 'dot-cursor';
   dot.setAttribute('aria-hidden', 'true');
 
+  var lens = ['dot-lens dot-lens-invert', 'dot-lens dot-lens-tint'].map(function (cls) {
+    var el = document.createElement('div');
+    el.className = cls;
+    el.setAttribute('aria-hidden', 'true');
+    return el;
+  });
+
   function mount() {
     document.body.appendChild(dot);
+    lens.forEach(function (el) { document.body.appendChild(el); });
     document.documentElement.classList.add('has-dot-cursor');
   }
   if (document.body) mount();
   else document.addEventListener('DOMContentLoaded', mount);
 
   var CLICKABLE = 'a, button, [role="button"], input, textarea, select, label, .slide-inner, .play-item, .cursor-hint, .cs-carousel-dot';
+  // Plain text: anything that reads as copy. Text that already has the
+  // hover blob effect (split into .smear-ch letters) is left to that while
+  // the trail is on.
+  var TEXT = 'p, h1, h2, h3, h4, h5, h6, li, blockquote, figcaption, dt, dd, td, th, span, strong, em';
+
+  function isPlainText(t) {
+    if (!t || !t.closest) return false;
+    var el = t.closest(TEXT);
+    if (!el || !el.textContent.trim()) return false;
+    // Text with the hover blob (split into letters) is left to that,
+    // unless the trail has been turned off, in which case it's plain text.
+    if (!trailOff && (t.closest('.smear-ch') || el.querySelector('.smear-ch'))) return false;
+    return true;
+  }
 
   document.addEventListener('mousemove', function (e) {
     dot.style.left = e.clientX + 'px';
@@ -266,9 +340,61 @@
 
     var target = e.target && e.target.closest ? e.target.closest(CLICKABLE) : null;
     dot.classList.toggle('is-hover', !!target);
+
+    // Clickable things and plain text both get the turquoise lens.
+    var useLens = !dot.classList.contains('is-hidden') && (!!target || isPlainText(e.target));
+    dot.classList.toggle('is-lens', useLens);
+    lens.forEach(function (el) {
+      el.style.left = e.clientX + 'px';
+      el.style.top = e.clientY + 'px';
+      el.classList.toggle('is-on', useLens);
+    });
   });
 
   document.addEventListener('mouseleave', function () {
     dot.classList.remove('is-visible');
+    lens.forEach(function (el) { el.classList.remove('is-on'); });
   });
+
+  /* "Trail" switch, top right (knob on the left and turquoise when on): switches the hover text
+     blob (smear.js) off and on. The choice is remembered in this browser and
+     announced to smear.js with a 'trailchange' event. */
+  var trailOff = false;
+  try { trailOff = localStorage.getItem('trailOff') === '1'; } catch (e) {}
+  style.textContent +=
+    '.trail-toggle { position: fixed; top: 20px; right: 24px; z-index: 900;' +
+    ' display: flex; align-items: center; gap: 8px; padding: 0; border: 0; background: none;' +
+    " font-family: '42dot Sans', 'Helvetica Neue', Arial, sans-serif; font-size: 12px; line-height: 1;" +
+    ' color: rgba(0, 0, 0, 0.7); }' +
+    // An outlined track. On: knob on the left, knob and outline turquoise.
+    // Off: knob slides right, knob and outline black.
+    '.trail-toggle-track { position: relative; box-sizing: border-box; width: 30px; height: 18px;' +
+    ' border-radius: 999px; border: 1px solid #000; background: transparent;' +
+    ' transition: background-color 0.25s ease, border-color 0.25s ease; }' +
+    '.trail-toggle-knob { position: absolute; top: 2.5px; left: 2.5px; width: 11px; height: 11px;' +
+    ' border-radius: 50%; background: #000;' +
+    ' transition: transform 0.25s cubic-bezier(0.3, 0.7, 0.3, 1), background-color 0.25s ease; }' +
+    '.trail-toggle[aria-checked="false"] .trail-toggle-knob { transform: translateX(12px); }' +
+    '.trail-toggle[aria-checked="true"] .trail-toggle-knob { background: rgb(64, 224, 208); }' +
+    '.trail-toggle[aria-checked="true"] .trail-toggle-track { border-color: rgb(64, 224, 208); }';
+  var toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'trail-toggle';
+  toggle.setAttribute('role', 'switch');
+  toggle.innerHTML = '<span class="trail-toggle-track"><span class="trail-toggle-knob"></span></span>' +
+    '<span class="trail-toggle-label">Trail</span>';
+  function label() {
+    toggle.setAttribute('aria-checked', trailOff ? 'false' : 'true');
+  }
+  label();
+  toggle.addEventListener('click', function (e) {
+    e.stopPropagation();
+    trailOff = !trailOff;
+    try { localStorage.setItem('trailOff', trailOff ? '1' : '0'); } catch (err) {}
+    label();
+    window.dispatchEvent(new CustomEvent('trailchange', { detail: { off: trailOff } }));
+  });
+  function mountToggle() { document.body.appendChild(toggle); }
+  if (document.body) mountToggle();
+  else document.addEventListener('DOMContentLoaded', mountToggle);
 })();

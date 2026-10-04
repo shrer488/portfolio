@@ -66,6 +66,24 @@ window.addEventListener('load', function () {
 (function () {
   var viewCursor = document.getElementById('viewCursor');
 
+  // On first load the videos wait until the homepage text has finished
+  // melting in (textmelt.js), plus half a second, so the landing image
+  // doesn't start playing while the page is still assembling. If the
+  // pointer is already resting on an image by then, its video starts.
+  var VIDEO_DELAY = 500;
+  var videosReady = false;
+  function readyVideos() {
+    if (videosReady) return;
+    videosReady = true;
+    document.documentElement.classList.add('videos-ready');
+    Array.prototype.forEach.call(document.querySelectorAll('.slide-inner'), function (inner) {
+      var v = inner.querySelector('.slide-video');
+      if (v && inner.matches(':hover')) { v.currentTime = 0; v.play().catch(function () {}); }
+    });
+  }
+  window.addEventListener('textmelt:done', function () { setTimeout(readyVideos, VIDEO_DELAY); });
+  setTimeout(readyVideos, 20000);   // never leave them off
+
   function moveCursor(e) {
     viewCursor.style.left = e.clientX + 'px';
     viewCursor.style.top = e.clientY + 'px';
@@ -74,7 +92,7 @@ window.addEventListener('load', function () {
   Array.prototype.forEach.call(document.querySelectorAll('.slide-inner'), function (inner) {
     var video = inner.querySelector('.slide-video');
     inner.addEventListener('mouseenter', function (e) {
-      if (video) {
+      if (video && videosReady) {
         video.currentTime = 0;
         video.play().catch(function () {});
       }
@@ -400,6 +418,95 @@ function verticalLoop(items, config) {
 
   var prevIndex = null;
 
+  // Project details change the same way "RIYA" leaves the intro: words
+  // slide in the direction of the scroll while blurring out one after
+  // another, and the next project's words follow them in, sharpening into
+  // place. Scrolling down sends text up (new text rises from below);
+  // scrolling up sends it down.
+  var swapReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var swapAnims = [];
+
+  // Wrap each word in an inline-block span so it can move (spaces stay as
+  // plain text between them, so lines wrap as before). Handles both plain
+  // text and the per-letter spans smear.js adds on mouse devices.
+  function swapWords(panel) {
+    if (panel.dataset.swapReady) return panel.querySelectorAll('.swap-word');
+    var walker = document.createTreeWalker(panel, NodeFilter.SHOW_TEXT);
+    var texts = [];
+    while (walker.nextNode()) texts.push(walker.currentNode);
+    texts.forEach(function (tn) {
+      var parent = tn.parentNode;
+      if (!tn.nodeValue.trim() || parent.classList.contains('smear-ch')) return;
+      var frag = document.createDocumentFragment();
+      tn.nodeValue.split(/(\s+)/).forEach(function (part) {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+        var w = document.createElement('span');
+        w.className = 'swap-word';
+        w.textContent = part;
+        frag.appendChild(w);
+      });
+      parent.replaceChild(frag, tn);
+    });
+    Array.prototype.forEach.call(panel.querySelectorAll('.smear-ch'), function (ch) {
+      if (ch.parentNode.classList.contains('swap-word')) return;
+      var w = document.createElement('span');
+      w.className = 'swap-word';
+      ch.parentNode.insertBefore(w, ch);
+      var n = ch;
+      while (n && n.nodeType === 1 && n.classList.contains('smear-ch')) {
+        var next = n.nextSibling;
+        w.appendChild(n);
+        n = next;
+      }
+    });
+    panel.dataset.swapReady = '1';
+    return panel.querySelectorAll('.swap-word');
+  }
+
+  // Wrap up front (after smear.js has made its letters), so the first swap
+  // doesn't reflow the visible text.
+  window.addEventListener('load', function () {
+    if (!swapReduce && window.innerWidth >= 780) panels.forEach(swapWords);
+  });
+
+  function swapPanels(from, to, dir) {
+    if (swapReduce || !from || !to || from === to || window.innerWidth < 780 || !from.animate) return;
+    swapAnims.forEach(function (a) { a.cancel(); });
+    swapAnims = [];
+    var outW = swapWords(from), inW = swapWords(to);
+    var shift = 0.5 * dir; // em, in the direction of the scroll
+    var STEP = 14, MAXD = 280;
+    from.style.opacity = '1';
+    // Words fade out before they get blurry, and only a light blur, so
+    // they never smear into grey smudges. Soft in-out easing on the way out
+    // and a long, gentle settle on the way in, so nothing snaps.
+    Array.prototype.forEach.call(outW, function (w, i) {
+      swapAnims.push(w.animate([
+        { transform: 'translateY(0)', filter: 'blur(0)', opacity: 1 },
+        { transform: 'translateY(' + (-shift * 0.5) + 'em)', filter: 'blur(1px)', opacity: 0.2, offset: 0.5 },
+        { transform: 'translateY(' + (-shift) + 'em)', filter: 'blur(3px)', opacity: 0 }
+      ], { duration: 520, delay: Math.min(i * STEP, MAXD), easing: 'cubic-bezier(0.37, 0, 0.63, 1)', fill: 'both' }));
+    });
+    // The new project starts once the old one has mostly cleared, so the
+    // two never overlap.
+    var last = null;
+    Array.prototype.forEach.call(inW, function (w, i) {
+      last = w.animate([
+        { transform: 'translateY(' + shift + 'em)', filter: 'blur(3px)', opacity: 0 },
+        { transform: 'translateY(' + (shift * 0.3) + 'em)', filter: 'blur(0.5px)', opacity: 0.9, offset: 0.5 },
+        { transform: 'translateY(0)', filter: 'blur(0)', opacity: 1 }
+      ], { duration: 760, delay: 440 + Math.min(i * STEP, MAXD), easing: 'cubic-bezier(0.33, 0.1, 0.25, 1)', fill: 'both' });
+      swapAnims.push(last);
+    });
+    function done() {
+      from.style.opacity = '';
+      swapAnims.forEach(function (a) { a.cancel(); });
+      swapAnims = [];
+    }
+    if (last) last.finished.then(done).catch(function () { from.style.opacity = ''; });
+  }
+
 
   function setActive(el, index) {
     slides.forEach(function (slide, i) {
@@ -412,12 +519,17 @@ function verticalLoop(items, config) {
         slide.classList.add('below');
       }
     });
+    var fromPanel = null, toPanel = null;
     panels.forEach(function (panel) {
-      panel.classList.toggle('is-active', parseInt(panel.getAttribute('data-index'), 10) === index);
+      var on = parseInt(panel.getAttribute('data-index'), 10) === index;
+      if (panel.classList.contains('is-active') && !on) fromPanel = panel;
+      if (on) toPanel = panel;
+      panel.classList.toggle('is-active', on);
     });
     if (prevIndex !== null && index !== prevIndex) {
       var direction = index === (prevIndex + 1) % length ? 1 : index === (prevIndex - 1 + length) % length ? -1 : index > prevIndex ? 1 : -1;
       rollOnesDigit(index + 1, direction);
+      swapPanels(fromPanel, toPanel, direction);
     }
     prevIndex = index;
   }

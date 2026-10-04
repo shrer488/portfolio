@@ -19,13 +19,6 @@ html, body {
   overflow: hidden;
 }
 
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: var(--font-sans);
-}
-
 /* Fixed 1440x838 canvas (the Figma reference), uniformly scaled to fit the
    viewport by script.js. A single scale factor for both axes means nothing
    stretches; scaling to fit (not fill) means nothing is cut off. Any leftover
@@ -41,7 +34,7 @@ body {
   position: relative;
   width: 1440px;
   height: 838px;
-  background: var(--bg);
+  background: transparent;  /* the body's colour and glow show through */
   overflow: hidden;
   transform-origin: top left;
 }
@@ -422,7 +415,11 @@ body {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  /* --tilt / --tilt-scale: the 3D tilt away from the centre
+     (carousel-tilt.js); --liquid-sx/sy: the stretch while scrolling
+     (liquid-scroll.js, currently off). */
+  transform: translate(-50%, -50%) perspective(520px) rotateX(var(--tilt, 0deg))
+    scale(var(--tilt-scale, 1)) scale(var(--liquid-sx, 1), var(--liquid-sy, 1));
   overflow: hidden;
   border-radius: 1.5px;
   /* Matches TRANSITION_DURATION / TRANSITION_EASE in script.js — the same
@@ -452,7 +449,7 @@ body {
   pointer-events: none;
 }
 
-.slide-inner:hover .slide-video {
+html.videos-ready .slide-inner:hover .slide-video {
   opacity: 1;
 }
 
@@ -1126,6 +1123,33 @@ html.intro-pending body::after {
   transition: opacity 0.55s ease;
 }
 
+.intro::before {
+  /* The site background (transition.css) forming during the intro: the
+     glow and grain rise in slowly from the bottom (intro.js adds
+     .is-glowing), then fade out with the overlay's own background as it
+     clears, handing over to the real one underneath. */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.25  0 0 0 0 0.3  0 0 0 0 0.3  0 0 0 0.49 -0.21'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse 75% 50% at 50% 100%, rgb(210 228 226 / 20%), rgba(64, 224, 208, 0) 75%),
+    linear-gradient(to top, rgba(64, 224, 208, 0.14), rgba(64, 224, 208, 0) 50%);
+  opacity: 0;
+  transform: translateY(30%);
+  transition: opacity 3.5s ease-out, transform 4.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.intro.is-glowing::before {
+  opacity: 1;
+  transform: none;
+}
+
+.intro.is-clearing::before {
+  opacity: 0;
+  transition: opacity 1.1s ease;
+}
+
 .intro canvas {
   position: absolute;
   inset: 0;
@@ -1136,6 +1160,21 @@ html.intro-pending body::after {
 .intro.is-done {
   opacity: 0;
   pointer-events: none;
+}
+
+/* Partway through the intro's last turn its background clears so the page
+   shows behind the wheel; the real carousel stays hidden until the wheel
+   lands on it. */
+.intro {
+  transition: opacity 0.55s ease, background-color 1.1s ease;
+}
+
+.intro.is-clearing {
+  background-color: transparent;
+}
+
+html.intro-cover .carousel-wrap {
+  opacity: 0;
 }
 
 .intro-counter {
@@ -1188,6 +1227,17 @@ html.intro-pending body::after {
 
 /* Hidden until textmelt.js takes over (it removes html.text-melt as soon as
    each letter has its own starting state). */
+/* The profile photo fades up into place just after the text has melted in
+   (textmelt.js removes html.photo-wait). */
+.profile-photo {
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.photo-wait .profile-photo {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
 html.text-melt .nav-link,
 html.text-melt .profile-name,
 html.text-melt .profile-role,
@@ -1247,3 +1297,82 @@ body.is-mushed .bg-tint {
   transform: translate(-50%, 0);
 }
 
+
+/* Project details swap (script.js): words need to be inline-block to
+   move; spaces between them stay as text, so wrapping is unchanged. */
+.project-panel .swap-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* While the carousel is moving, the images' edges ripple like liquid
+   (liquid-scroll.js turns this on only while there's motion). */
+.carousel.is-liquid .slide-inner {
+  filter: url(#liquid-slide);
+}
+
+/* Bending carousel (carousel-bend.js): the WebGL canvas paints the slides
+   through the fold, so the real slides are drawn invisibly (they still take
+   hovers and clicks), and the frosted edge blur it replaces is switched
+   off. */
+.carousel-bend {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+html.has-bend .carousel .slide-inner {
+  opacity: 0;
+}
+
+html.has-bend .home-top-blur,
+html.has-bend .home-bottom-blur {
+  display: none;
+}
+
+/* Tilting carousel (carousel-tilt.js): each image's own tilt, blur and fade
+   replace the frosted edges and the peeking images' edge fades. */
+html.has-tilt .home-top-blur,
+html.has-tilt .home-bottom-blur,
+html.has-tilt .slide-blur {
+  display: none;
+}
+
+html.has-tilt .slide.above .slide-inner,
+html.has-tilt .slide.below .slide-inner {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+/* Gooey carousel (carousel-goo.js): the WebGL canvas paints the slides,
+   melting into goo at the top and bottom of the frame, so the real slides
+   are drawn invisibly (they still take hovers and clicks). */
+.carousel-goo {
+  position: absolute;
+  top: 0;
+  left: -120px;
+  width: calc(100% + 240px);
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+html.has-goo .carousel .slide-inner {
+  opacity: 0;
+}
+
+/* Let the goo spread past the sides of the carousel (the flare can be wider
+   than the images); clip-path still clips top and bottom, hit-testing too. */
+html.has-goo .carousel-wrap {
+  overflow: visible;
+  clip-path: inset(0 -120px);
+}
+
+/* The goo at the top and bottom of the frame replaces the frosted glass. */
+html.has-goo .home-top-blur,
+html.has-goo .home-bottom-blur {
+  display: none;
+}

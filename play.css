@@ -135,6 +135,13 @@ img {
   opacity: 1;
 }
 
+/* Caption swaps (play.js): words need to be inline-block to move; spaces
+   between them stay as text, so wrapping is unchanged. */
+.swap-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .profile {
   position: absolute;
   top: 765px;

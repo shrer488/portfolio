@@ -374,7 +374,8 @@ img {
   .about-social {
     left: auto;
     right: 24px;
-    top: 24px;
+    /* Below the "Trail" switch in the corner. */
+    top: 64px;
     flex-direction: row;
     gap: 16px;
   }

@@ -2,8 +2,9 @@
    goo. Letters near the pointer blur, and their text block runs through an
    alpha threshold that forces everything above a cut fully solid and drops
    the rest, so neighbouring soft letters fuse into one blob (the same melt
-   as textmelt.js and Viscose's text morph). Then they slowly firm back up
-   into letters, leaving a fading trail behind the pointer.
+   as textmelt.js and Viscose's text morph), tinted turquoise while wet.
+   Then they slowly firm back up into letters in their own colour, leaving
+   a fading trail behind the pointer.
 
    A single 0→1 "wetness" per letter drives its blur. Letters are hit along
    the whole path the pointer travelled since the last event (so fast moves
@@ -17,7 +18,11 @@
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var SEL = '.nav-link, .profile-name, .profile-role, .profile-bio, .project-title, ' +
+  // Which text blocks take part: the homepage's by default, or a page's own
+  // list via the script tag's data-smear attribute.
+  var me = document.currentScript;
+  var SEL = (me && me.dataset.smear) ||
+    '.nav-link, .profile-name, .profile-role, .profile-bio, .project-title, ' +
     '.project-desc, .meta-label, .meta-list p, .meta-stat, .meta-caption, .cursor-label';
   var RISE = 0.3;        // how fast a letter soaks up wetness (per frame)
   var HALF_LIFE = 380;   // ms for a letter's wetness to halve once left alone
@@ -35,7 +40,7 @@
     var texts = [];
     while (walker.nextNode()) texts.push(walker.currentNode);
     texts.forEach(function (tn) {
-      if (!tn.nodeValue.trim()) return;
+      if (!tn.nodeValue.trim() || tn.parentNode.classList.contains('smear-ch')) return;
       var frag = document.createDocumentFragment();
       Array.from(tn.nodeValue).forEach(function (ch) {
         if (/\s/.test(ch)) { frag.appendChild(document.createTextNode(ch)); return; }
@@ -47,12 +52,27 @@
       tn.parentNode.replaceChild(frag, tn);
     });
   }
-  Array.prototype.forEach.call(document.querySelectorAll(SEL), wrapLetters);
+  var blockEls = Array.prototype.slice.call(document.querySelectorAll(SEL));
+  blockEls.forEach(wrapLetters);
+
+  // Some pages swap text in on hover (the About photo caption, the Play
+  // bio); split the new text into letters too so it keeps the effect.
+  if (window.MutationObserver) {
+    var mo = new MutationObserver(function (records) {
+      records.forEach(function (r) {
+        var b = r.target.nodeType === 1 ? r.target.closest(SEL) : null;
+        if (b) wrapLetters(b);
+      });
+    });
+    blockEls.forEach(function (b) { mo.observe(b, { childList: true }); });
+  }
 
   // ---- per-block threshold filters ----------------------------------------
-  // Built on first use, in the block's own text colour so grey text stays
-  // grey. The cut is fairly gentle so letters that aren't wet keep most of
-  // their antialiasing while their block is filtered.
+  // Built on first use. The threshold keeps each letter's own colour (so
+  // wet letters can carry their turquoise tint) and then scales back down
+  // to the block's own text opacity, so grey text stays grey rather than
+  // being pushed to solid. The cut is fairly gentle so letters that aren't
+  // wet keep most of their antialiasing while their block is filtered.
   var svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('aria-hidden', 'true');
   svg.setAttribute('width', '0');
@@ -60,23 +80,38 @@
   svg.style.position = 'absolute';
   document.body.appendChild(svg);
 
-  var blocks = new Map(); // block -> { id, wet }
+  function parseColor(c) {
+    var m = c.match(/rgba?\(([^)]+)\)/);
+    var p = m ? m[1].split(',').map(parseFloat) : [0, 0, 0, 1];
+    return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 };
+  }
+
+  var blocks = new Map(); // block -> { id, wet, color }
   var made = 0;
   function blockOf(el) {
     var b = el.closest(SEL);
     var s = blocks.get(b);
     if (!s) {
       var id = 'goo-' + (++made);
+      var col = parseColor(getComputedStyle(b).color);
       svg.insertAdjacentHTML('beforeend',
         '<filter id="' + id + '" x="-10%" y="-60%" width="120%" height="220%" color-interpolation-filters="sRGB">' +
-        '<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 10 -3.8" result="mask"/>' +
-        '<feFlood flood-color="' + getComputedStyle(b).color + '"/>' +
-        '<feComposite in2="mask" operator="in"/>' +
+        '<feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 10 -3.8"/>' +
+        '<feComponentTransfer><feFuncA type="linear" slope="' + col.a + '" intercept="0"/></feComponentTransfer>' +
         '</filter>');
-      s = { el: b, id: id, wet: 0 };
+      s = { el: b, id: id, wet: 0, color: col };
       blocks.set(b, s);
     }
     return s;
+  }
+
+  // Wet letters take on a turquoise tint, strongest at their wettest.
+  var TINT = { r: 64, g: 224, b: 208 };
+  function tint(col, t) {
+    var k = Math.min(1, t * 1.8) * 0.9;
+    return 'rgb(' + Math.round(col.r + (TINT.r - col.r) * k) + ', ' +
+      Math.round(col.g + (TINT.g - col.g) * k) + ', ' +
+      Math.round(col.b + (TINT.b - col.b) * k) + ')';
   }
 
   // ---- wetness simulation ------------------------------------------------
@@ -123,11 +158,13 @@
       s.t += (s.heat - s.t) * (s.heat > s.t ? RISE : 1);
       if (s.t < 0.01 && s.heat < 0.01) {
         el.style.filter = '';
+        el.style.color = '';
         active.delete(el);
         if (--s.block.wet === 0) s.block.el.style.filter = '';
         return;
       }
       el.style.filter = 'blur(' + (s.fs * BLUR * s.t).toFixed(2) + 'px)';
+      el.style.color = tint(s.block.color, s.t);
     });
     if (active.size) requestAnimationFrame(frame);
     else { running = false; last = 0; }
@@ -148,7 +185,24 @@
     return el && el.classList && el.classList.contains('smear-ch') ? el : null;
   }
 
+  // The "Turn off trail" toggle (transition.js) switches this on and off.
+  var trailOff = false;
+  try { trailOff = localStorage.getItem('trailOff') === '1'; } catch (e) {}
+  window.addEventListener('trailchange', function (e) {
+    trailOff = !!(e.detail && e.detail.off);
+    if (!trailOff) return;
+    // Settle everything at once rather than letting it fade out.
+    active.forEach(function (st, el) {
+      el.style.filter = '';
+      el.style.color = '';
+      st.block.wet = 0;
+      st.block.el.style.filter = '';
+    });
+    active.clear();
+  });
+
   document.addEventListener('mousemove', function (e) {
+    if (trailOff) return;
     var x = e.clientX, y = e.clientY;
     var any = false;
     // Sample the whole segment travelled since the last event.
@@ -163,4 +217,208 @@
   });
 
   document.addEventListener('mouseleave', function () { px = py = null; });
+
+  // ---- images ------------------------------------------------------------
+  // Pictures ripple like water (after Componentry's Image Ripple Effect,
+  // https://componentry.dev/docs/components/image-ripple-effect). Any
+  // element with data-smear-img is redrawn on a WebGL canvas a little larger
+  // than itself, with clear space around the picture. Moving the pointer
+  // drops soft ring-shaped waves that slowly turn, grow and fade; they're
+  // painted into a displacement map, and the picture is drawn through that
+  // map, so it refracts as the waves pass, and because its edges are drawn
+  // through the same map, the rectangle itself bends out of shape. Once the
+  // waves have died away the canvas hides and the real image shows again.
+  Array.prototype.forEach.call(document.querySelectorAll('[data-smear-img]'), function (host) {
+    var img = host.querySelector('img');
+    var parent = host.offsetParent;
+    if (!img || !parent) return;
+    var cv = document.createElement('canvas');
+    var gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true });
+    if (!gl) return;
+    cv.setAttribute('aria-hidden', 'true');
+    cv.style.cssText = 'position:absolute;pointer-events:none;display:none;';
+    parent.appendChild(cv);
+
+    var PAD = 0.6;          // clear margin round the picture, as a fraction of its size
+    var STRENGTH = 0.06;    // how far the waves bend the picture
+    var WAVE = 0.55;        // a new wave's size, relative to the picture
+    var MAX_WAVES = 60;
+    var k = Math.min(window.devicePixelRatio || 1, 2) * 3;   // extra resolution: it's a small picture
+    var W = 0, H = 0, pw = 0, ph = 0, ox = 0, oy = 0;
+
+    function compile(vs, fs) {
+      var pr = gl.createProgram();
+      [[gl.VERTEX_SHADER, vs], [gl.FRAGMENT_SHADER, fs]].forEach(function (d) {
+        var sh = gl.createShader(d[0]); gl.shaderSource(sh, d[1]); gl.compileShader(sh); gl.attachShader(pr, sh);
+      });
+      gl.bindAttribLocation(pr, 0, 'p');
+      gl.linkProgram(pr);
+      return pr;
+    }
+    // One wave: a quad turned and scaled about its centre, textured with a
+    // soft ring, added (not blended) into the displacement map.
+    var waveProg = compile(
+      'attribute vec2 p; uniform vec2 uC, uRes; uniform float uS, uR; varying vec2 vUv;' +
+      'void main(){ vUv = p * 0.5 + 0.5; float c = cos(uR), s = sin(uR);' +
+      ' vec2 q = vec2(c * p.x - s * p.y, s * p.x + c * p.y) * uS * 0.5 + uC;' +
+      ' gl_Position = vec4(q / uRes * 2.0 - 1.0, 0.0, 1.0); }',
+      'precision mediump float; uniform sampler2D uBrush; uniform float uA; varying vec2 vUv;' +
+      'void main(){ gl_FragColor = texture2D(uBrush, vUv) * uA; }');
+    // The picture, sampled through the displacement map: the brightness of
+    // the map picks both a direction and an amount to push each pixel.
+    var showProg = compile(
+      'attribute vec2 p; varying vec2 vUv; void main(){ vUv = p * 0.5 + 0.5; gl_Position = vec4(p, 0.0, 1.0); }',
+      'precision mediump float; uniform sampler2D uImg, uDisp; uniform float uStrength; varying vec2 vUv;' +
+      'void main(){ float d = texture2D(uDisp, vUv).r; float a = d * 6.2832;' +
+      ' vec2 uv = vUv + vec2(sin(a), cos(a)) * d * uStrength;' +
+      ' gl_FragColor = texture2D(uImg, uv); }');
+
+    var quad = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+    function tex(src) {
+      var t = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, t);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+      if (src) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      return t;
+    }
+
+    // Soft ring brush.
+    var bc = document.createElement('canvas');
+    bc.width = bc.height = 128;
+    var bx = bc.getContext('2d');
+    var g = bx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, 'rgba(255,255,255,0)');
+    g.addColorStop(0.45, 'rgba(255,255,255,0.15)');
+    g.addColorStop(0.72, 'rgba(255,255,255,0.9)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    bx.fillStyle = g;
+    bx.fillRect(0, 0, 128, 128);
+    var brush = tex(bc);
+    var picture = null, dispTex = null, dispFb = null;
+
+    function layout() {
+      pw = host.offsetWidth; ph = host.offsetHeight;
+      var padX = pw * PAD, padY = ph * PAD;
+      W = pw + padX * 2; H = ph + padY * 2;
+      ox = padX; oy = padY;
+      cv.width = Math.round(W * k); cv.height = Math.round(H * k);
+      cv.style.width = W + 'px'; cv.style.height = H + 'px';
+      cv.style.left = (host.offsetLeft - padX) + 'px';
+      cv.style.top = (host.offsetTop - padY) + 'px';
+
+      // The picture as it's laid out in its frame (cropped, rounded corners),
+      // centred on clear space.
+      var off = document.createElement('canvas');
+      off.width = cv.width; off.height = cv.height;
+      var c = off.getContext('2d');
+      c.scale(k, k);
+      var ir = img.getBoundingClientRect(), hr = host.getBoundingClientRect(), sx = pw / (hr.width || 1);
+      var bw = ir.width * sx, bh = ir.height * sx;
+      var nr = (img.naturalWidth || 1) / (img.naturalHeight || 1), br = bw / bh;
+      var dw = br > nr ? bw : bh * nr, dh = br > nr ? bw / nr : bh;   // object-fit: cover
+      var radius = parseFloat(getComputedStyle(host).borderTopLeftRadius) || 0;
+      c.beginPath();
+      if (c.roundRect) c.roundRect(ox, oy, pw, ph, radius); else c.rect(ox, oy, pw, ph);
+      c.clip();
+      try {
+        c.drawImage(img, ox + (ir.left - hr.left) * sx + (bw - dw) / 2, oy + (ir.top - hr.top) * sx + (bh - dh) / 2, dw, dh);
+      } catch (e) { return false; }
+      picture = tex(off);
+
+      dispTex = tex(null);
+      gl.bindTexture(gl.TEXTURE_2D, dispTex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, cv.width, cv.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      dispFb = gl.createFramebuffer();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, dispFb);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, dispTex, 0);
+      return true;
+    }
+
+    var waves = [], raf = 0, ready = false;
+
+    function frame() {
+      // Paint the waves into the displacement map.
+      gl.bindFramebuffer(gl.FRAMEBUFFER, dispFb);
+      gl.viewport(0, 0, cv.width, cv.height);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(waveProg);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE);
+      gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, brush);
+      gl.uniform1i(gl.getUniformLocation(waveProg, 'uBrush'), 0);
+      gl.uniform2f(gl.getUniformLocation(waveProg, 'uRes'), W, H);
+      var uC = gl.getUniformLocation(waveProg, 'uC'), uS = gl.getUniformLocation(waveProg, 'uS');
+      var uR = gl.getUniformLocation(waveProg, 'uR'), uA = gl.getUniformLocation(waveProg, 'uA');
+      waves = waves.filter(function (w) {
+        w.rot += 0.025;
+        w.alpha *= 0.95;
+        w.size = w.size * 0.982 + pw * 0.06;
+        if (w.alpha < 0.01) return false;
+        gl.uniform2f(uC, w.x, w.y);
+        gl.uniform1f(uS, w.size);
+        gl.uniform1f(uR, w.rot);
+        gl.uniform1f(uA, w.alpha);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        return true;
+      });
+      gl.disable(gl.BLEND);
+
+      // Draw the picture through it.
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.viewport(0, 0, cv.width, cv.height);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(showProg);
+      gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, picture);
+      gl.uniform1i(gl.getUniformLocation(showProg, 'uImg'), 0);
+      gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, dispTex);
+      gl.uniform1i(gl.getUniformLocation(showProg, 'uDisp'), 1);
+      gl.uniform1f(gl.getUniformLocation(showProg, 'uStrength'), STRENGTH);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+      if (waves.length) raf = requestAnimationFrame(frame);
+      else {
+        // Calm again: hand back to the real image.
+        raf = 0;
+        cv.style.display = 'none';
+        host.style.opacity = '';
+      }
+    }
+
+    var lx = null, ly = null;
+    host.addEventListener('mouseenter', function () {
+      if (!ready) ready = layout();
+      lx = ly = null;
+    });
+    host.addEventListener('mousemove', function (e) {
+      if (trailOff || !ready) return;
+      var r = host.getBoundingClientRect(), s = pw / (r.width || 1);
+      var x = ox + (e.clientX - r.left) * s, y = H - (oy + (e.clientY - r.top) * s);   // GL is y-up
+      if (lx !== null && Math.hypot(x - lx, y - ly) < pw * 0.04) return;
+      lx = x; ly = y;
+      waves.push({ x: x, y: y, size: pw * WAVE, rot: Math.random() * 6.28, alpha: 1 });
+      if (waves.length > MAX_WAVES) waves.shift();
+      if (!raf) {
+        cv.style.display = 'block';
+        host.style.opacity = '0';
+        raf = requestAnimationFrame(frame);
+      }
+    });
+    host.addEventListener('mouseleave', function () { lx = ly = null; });
+    window.addEventListener('resize', function () { ready = false; });
+    window.addEventListener('trailchange', function (e) {
+      if (e.detail && e.detail.off) waves = [];
+    });
+  });
 })();

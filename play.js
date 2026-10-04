@@ -3,28 +3,115 @@
   var bioEl = document.getElementById('playBio');
   if (!indexEl || !bioEl) return;
 
-  var defaultIndex = indexEl.textContent;
-  var defaultBio = bioEl.dataset.default || bioEl.textContent;
 
   var items = Array.prototype.slice.call(document.querySelectorAll('.play-item'));
 
+  // Text changes the way the homepage's project details do (script.js
+  // swapPanels): the old words drift up, blur and fade out one after
+  // another, then the new ones rise in from below and settle. Same
+  // timings and easing as there.
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var STEP = 14, MAXD = 280, SHIFT = 0.5;   // ms between words, cap, em of travel
+
+  // Wrap each word in an inline-block span so it can move. Handles both
+  // plain text and the per-letter spans smear.js adds.
+  function words(el) {
+    if (el.querySelector('.swap-word')) return el.querySelectorAll('.swap-word');
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), texts = [];
+    while (walker.nextNode()) texts.push(walker.currentNode);
+    texts.forEach(function (tn) {
+      var parent = tn.parentNode;
+      if (!tn.nodeValue.trim() || parent.classList.contains('smear-ch')) return;
+      var frag = document.createDocumentFragment();
+      tn.nodeValue.split(/(\s+)/).forEach(function (part) {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+        var w = document.createElement('span');
+        w.className = 'swap-word';
+        w.textContent = part;
+        frag.appendChild(w);
+      });
+      parent.replaceChild(frag, tn);
+    });
+    Array.prototype.forEach.call(el.querySelectorAll('.smear-ch'), function (ch) {
+      if (ch.parentNode.classList.contains('swap-word')) return;
+      var w = document.createElement('span');
+      w.className = 'swap-word';
+      ch.parentNode.insertBefore(w, ch);
+      var n = ch;
+      while (n && n.nodeType === 1 && n.classList.contains('smear-ch')) {
+        var next = n.nextSibling;
+        w.appendChild(n);
+        n = next;
+      }
+    });
+    return el.querySelectorAll('.swap-word');
+  }
+
+  // Swap el's text to `text`. `animateOut` false skips straight to the
+  // words rising in (used when nothing is showing yet).
+  function swapText(el, text, animateOut) {
+    var st = el._swap || (el._swap = { anims: [], timer: 0, token: 0 });
+    var token = ++st.token;
+    clearTimeout(st.timer);
+    st.anims.forEach(function (a) { a.cancel(); });
+    st.anims = [];
+    if (reduceMotion || !el.animate) { el.textContent = text; return; }
+    if (el._swapText === text && !animateOut) return;
+    el._swapText = text;
+    function bringIn() {
+      if (token !== st.token) return;
+      el.textContent = text;
+      // smear.js re-wraps the new text into letters on a microtask; group
+      // into words after that.
+      Promise.resolve().then(function () {
+        if (token !== st.token) return;
+        Array.prototype.forEach.call(words(el), function (w, i) {
+          st.anims.push(w.animate([
+            { transform: 'translateY(' + SHIFT + 'em)', filter: 'blur(3px)', opacity: 0 },
+            { transform: 'translateY(' + (SHIFT * 0.3) + 'em)', filter: 'blur(0.5px)', opacity: 0.9, offset: 0.5 },
+            { transform: 'translateY(0)', filter: 'blur(0)', opacity: 1 }
+          ], { duration: 760, delay: Math.min(i * STEP, MAXD), easing: 'cubic-bezier(0.33, 0.1, 0.25, 1)', fill: 'backwards' }));
+        });
+      });
+    }
+    if (!animateOut) { bringIn(); return; }
+    Array.prototype.forEach.call(words(el), function (w, i) {
+      st.anims.push(w.animate([
+        { transform: 'translateY(0)', filter: 'blur(0)', opacity: 1 },
+        { transform: 'translateY(' + (-SHIFT * 0.5) + 'em)', filter: 'blur(1px)', opacity: 0.2, offset: 0.5 },
+        { transform: 'translateY(' + (-SHIFT) + 'em)', filter: 'blur(3px)', opacity: 0 }
+      ], { duration: 520, delay: Math.min(i * STEP, MAXD), easing: 'cubic-bezier(0.37, 0, 0.63, 1)', fill: 'forwards' }));
+    });
+    // The new words start once the old ones have mostly cleared.
+    st.timer = setTimeout(bringIn, 440);
+  }
+
+  // Moving from one tile straight onto another swaps the text in place;
+  // leaving the grid altogether hides the rail (after a beat, so the gap
+  // between two tiles doesn't count as leaving).
+  var hideTimer = 0, showing = false;
   items.forEach(function (item) {
     var num = item.dataset.num;
     var caption = item.dataset.caption;
     if (!num || !caption) return;
 
     item.addEventListener('mouseenter', function () {
-      indexEl.textContent = num;
-      bioEl.textContent = caption;
+      clearTimeout(hideTimer);
+      swapText(indexEl, num, showing);
+      swapText(bioEl, caption, showing);
+      showing = true;
       indexEl.classList.add('is-visible');
       bioEl.classList.add('is-visible');
     });
 
     item.addEventListener('mouseleave', function () {
-      indexEl.textContent = defaultIndex;
-      bioEl.textContent = defaultBio;
-      indexEl.classList.remove('is-visible');
-      bioEl.classList.remove('is-visible');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(function () {
+        showing = false;
+        indexEl.classList.remove('is-visible');
+        bioEl.classList.remove('is-visible');
+      }, 150);
     });
   });
 
@@ -112,8 +199,11 @@
       lightboxImg.alt = mainImg.alt || '';
     }
 
-    lightboxIndex.textContent = num;
-    lightboxCaption.textContent = caption;
+    // Stepping between images in the lightbox swaps the caption the same
+    // way; opening it just shows the text.
+    var stepping = lightbox.classList.contains('is-open');
+    swapText(lightboxIndex, num, stepping && lightboxIndex.textContent !== num);
+    swapText(lightboxCaption, caption, stepping && lightboxCaption.textContent !== caption);
 
     thumbs.forEach(function (thumb, ti) {
       thumb.classList.toggle('is-active', ti === i);

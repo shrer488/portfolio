@@ -182,7 +182,10 @@
 
   function letterAt(x, y) {
     var el = document.elementFromPoint(x, y);
-    return el && el.classList && el.classList.contains('smear-ch') ? el : null;
+    if (!el || !el.classList || !el.classList.contains('smear-ch')) return null;
+    // Never a letter in a hidden homepage project panel.
+    var panel = el.closest('.project-panel');
+    return panel && !panel.classList.contains('is-active') ? null : el;
   }
 
   // The "Turn off trail" toggle (transition.js) switches this on and off.

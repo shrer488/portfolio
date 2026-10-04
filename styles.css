@@ -553,6 +553,15 @@ html.videos-ready .slide-inner:hover .slide-video {
   pointer-events: auto;
 }
 
+/* Said outright for everything inside a hidden panel rather than left to
+   inheritance: the words the details swap animates (script.js) can keep
+   a stale inherited "auto" in Chrome after their panel is hidden, so a
+   hidden project's text sat under the pointer and caught the hover trail
+   meant for the visible one. */
+.project-panel:not(.is-active) * {
+  pointer-events: none;
+}
+
 .project-summary {
   display: flex;
   flex-direction: column;

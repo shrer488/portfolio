@@ -6,7 +6,7 @@
    2. When the counter lands, that card slides right, then the others peel
       off it one at a time, alternating either way around a circle centred
       on the screen, each dragging a gooey thread behind it, until the ring
-      closes.
+      closes, and rests there a beat.
    3. The ring turns once while "RIYA" melts in at its centre.
    4. The heading melts away and the ring, still spinning, turns on its
       vertical axis towards the viewer, like a wheel rolling round to face
@@ -319,9 +319,12 @@
   var MIN_COUNT = 1.5;    // counter never finishes faster than this
   var PEEL = 0.85;        // each card's trip round the ring
   var STAGGER = 0.11;
-  var SPIN_AT = 1.1, SPIN = 1.9;     // one full turn
-  var TEXT_IN = 1.5, TEXT_OUT = 3.1;
-  var STAGE_AT = 3.0, STAGE = 4.1;   // ring turns to face the screen and becomes the column
+  // Once every card has peeled off (about 1.7s in), the finished ring rests
+  // for a beat, giving the eye time to settle, before it starts to turn.
+  var REST = 0.5;
+  var SPIN_AT = 1.73 + REST, SPIN = 1.9;     // one full turn
+  var TEXT_IN = SPIN_AT + 0.4, TEXT_OUT = SPIN_AT + 2.0;
+  var STAGE_AT = SPIN_AT + 1.9, STAGE = 4.1;   // ring turns to face the screen and becomes the column
   var PAGE_IN = 0.45;                // how far through that the page starts showing behind it
   var TEXT_AT = 0.7;                 // ...and its text starts melting in, a beat later
   var FOCAL = 1400;                  // perspective distance for the turn, px

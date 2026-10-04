@@ -86,7 +86,9 @@
   window.addEventListener('resize', size);
 
   // ---- physics -------------------------------------------------------------
-  var balls = [], queue = 0, spawnRate = 0, lastSpawnEnd = 0, raf = 0, last = 0;
+  // Each click is its own batch with its own fade time, so a new click never
+  // brings back balls that are already fading out.
+  var balls = [], queue = 0, spawnRate = 0, batch = null, batches = [], raf = 0, last = 0;
   var mouse = { x: -1e4, y: -1e4, vx: 0, vy: 0 };
 
   document.addEventListener('mousemove', function (e) {
@@ -142,7 +144,7 @@
       vx: (Math.random() - 0.5) * 120,
       vy: Math.random() * 120,
       sq: 0, sv: 0, ang: Math.PI / 2,   // squash amount, its speed, and the axis it squashes along
-      born: performance.now() / 1000
+      batch: batch
     });
   }
 
@@ -252,15 +254,17 @@
       if (jb.sq < -0.12) { jb.sq = -0.12; jb.sv = 0; }
     }
 
-    // fade out once they've rested a while
-    var fadeStart = lastSpawnEnd + STAY;
-    var alpha = now < fadeStart ? 1 : Math.max(0, 1 - (now - fadeStart) / FADE);
+    // Each batch fades out once it has rested a while; faded balls go.
+    balls = balls.filter(function (b) {
+      b.alpha = now < b.batch.fadeAt ? 1 : 1 - (now - b.batch.fadeAt) / FADE;
+      return b.alpha > 0;
+    });
 
     ctx.clearRect(0, 0, w, h);
-    ctx.globalAlpha = alpha;
     var sw = sprite.width / dpr;
     for (var i = 0; i < balls.length; i++) {
       var b = balls[i];
+      ctx.globalAlpha = b.alpha;
       // Squash along its knock axis (keeping its volume), and stretch a
       // little along its path while it falls fast.
       var sp = Math.hypot(b.vx, b.vy), st = Math.min(0.06, sp / 20000);
@@ -279,19 +283,24 @@
     }
     ctx.globalAlpha = 1;
 
-    if (alpha <= 0 && queue <= 0) { balls = []; raf = 0; last = 0; ctx.clearRect(0, 0, w, h); return; }
+    if (!balls.length && queue <= 0) { raf = 0; last = 0; batches = []; ctx.clearRect(0, 0, w, h); return; }
     raf = requestAnimationFrame(frame);
   }
 
   function drop() {
     queue += COUNT;
     spawnRate = COUNT / SPAWN;
-    lastSpawnEnd = performance.now() / 1000 + SPAWN;
+    batch = { fadeAt: performance.now() / 1000 + SPAWN + STAY };
+    batches.push(batch);
     if (!raf) { last = 0; raf = requestAnimationFrame(frame); }
   }
 
   hint.addEventListener('click', function (e) { e.stopPropagation(); drop(); });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && raf) { queue = 0; lastSpawnEnd = performance.now() / 1000 - STAY; }
+    if (e.key === 'Escape' && raf) {
+      queue = 0;
+      var now = performance.now() / 1000;
+      batches.forEach(function (bt) { bt.fadeAt = Math.min(bt.fadeAt, now); });
+    }
   });
 })();

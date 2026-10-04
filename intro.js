@@ -323,8 +323,10 @@
   // for a beat, giving the eye time to settle, before it starts to turn.
   var REST = 0.5;
   var SPIN_AT = 1.73 + REST, SPIN = 1.9;     // one full turn
-  var TEXT_IN = SPIN_AT + 0.4, TEXT_OUT = SPIN_AT + 2.0;
-  var STAGE_AT = SPIN_AT + 1.9, STAGE = 4.1;   // ring turns to face the screen and becomes the column
+  var TEXT_IN = SPIN_AT + 0.4, TEXT_OUT = SPIN_AT + 1.4;
+  // The turn towards the screen starts while the ring is still finishing
+  // its spin, so the two run into each other instead of stopping between.
+  var STAGE_AT = SPIN_AT + 1.3, STAGE = 4.1;   // ring turns to face the screen and becomes the column
   var PAGE_IN = 0.45;                // how far through that the page starts showing behind it
   var TEXT_AT = 0.7;                 // ...and its text starts melting in, a beat later
   var FOCAL = 1400;                  // perspective distance for the turn, px
@@ -425,7 +427,7 @@
         x = cx + shift + R * Math.cos(ang); y = cy - R * Math.sin(ang);
         c.z = 0;
       } else {
-        ang = -(c.k / N) * TAU - spin2;
+        ang = -(c.k / N) * TAU - spin - spin2;   // the first spin may still be finishing
         var ca = Math.cos(ang), sa = Math.sin(ang);
         // Turned about the vertical axis: the right of the ring comes
         // towards the viewer. Perspective is normalised so the card at the

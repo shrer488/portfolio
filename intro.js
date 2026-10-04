@@ -143,7 +143,13 @@
     '    if (r.z <= 0.0) continue;',
     '    vec2 pw = vec2(r.x + (p.x - r.x) / (1.0 + uFold.x * fe), p.y + side * uFold.y * uFrame.z * fe);',
     '    vec2 q = rot(pw - r.xy, uRot[i]);',
-    '    float d = sdBox(q, r.zw, min(uRadius, min(r.z, r.w))) / (1.0 + 2.0 * uFold.y * uSoft * ef);',
+    // ...and, as there, cards near the top and bottom of the frame bend
+    // outward, their inner edge arcing back towards the frame edge.
+    '    float cd = min(r.y - uFrame.x, uFrame.y - r.y);',
+    '    float ce = uSoft * (1.0 - smoothstep(uFrame.z * 0.46, uFrame.z * 2.3, cd));',
+    '    float u = clamp(q.x / r.z, -1.0, 1.0);',
+    '    q.y -= (r.y < (uFrame.x + uFrame.y) * 0.5 ? -1.0 : 1.0) * 0.07 * r.w * (1.0 - u * u) * ce;',
+    '    float d = sdBox(q, r.zw, mix(min(uRadius, min(r.z, r.w)), 0.08 * min(r.z, r.w), ce)) / (1.0 + 2.0 * uFold.y * uSoft * ef);',
     '    field = smin(field, d, uK);',
     '    if (!hit && (d <= 0.0 || d < best - 2.0)) { best = d; rect = r; fit = uFit[i]; local = q; hit = d <= 0.0; }',
     '  }',
@@ -153,7 +159,11 @@
     '  }',
     // ...the carousel's soft blur in the fold...
     '  float bl = uSoft * uFrame.w * pow(ef, 1.6);',
-    '  float a = clamp(0.5 - field / (1.0 + bl * 1.6), 0.0, 1.0);',
+    // Soft edge that eases in and out at both ends (a straight ramp left a
+    // hard rim where the fully solid middle began, which showed the old
+    // rectangle inside the blur).
+    '  float sw = 1.0 + bl * 2.0;',
+    '  float a = 1.0 - smoothstep(-0.5 * sw, 0.5 * sw, field);',
     // ...and, like the carousel, nothing past the frame's top and bottom.
     '  float outside = step(p.y, uFrame.x) + step(uFrame.y, p.y);',
     '  a *= 1.0 - uSoft * min(outside, 1.0);',
@@ -196,7 +206,7 @@
   var uRes = U('uRes'), uDpr = U('uDpr'), uRect = U('uRect'), uRot = U('uRot'), uFit = U('uFit');
   var uThA = U('uThA'), uThW = U('uThW'), uK = U('uK'), uRadius = U('uRadius');
   var uFrame = U('uFrame'), uSoft = U('uSoft'), uFold = U('uFold');
-  gl.uniform2f(uFold, 0.22, 0.7);   // carousel-goo.js's FLARE and SQUASH
+  gl.uniform2f(uFold, 0.16, 0.7);   // carousel-goo.js's FLARE and SQUASH
   for (var t = 0; t < TEX; t++) gl.uniform1i(U('uT' + t), t);
   gl.uniform1f(uRadius, 2);
 

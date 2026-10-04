@@ -28,7 +28,7 @@
   document.documentElement.classList.add('has-goo');
 
   var ZONE = 130;        // px at the top and bottom of the frame where images fold
-  var FLARE = 0.22;      // how much wider an image gets right at the frame edge
+  var FLARE = 0.16;      // how much wider an image gets right at the frame edge
   var SQUASH = 0.7;      // how much of the image is pulled into the fold
   var BLUR = 16;         // px of haze right at the frame edge
   var TEX = 1024;        // pictures are kept as square power-of-two textures so they can be mipmapped
@@ -82,7 +82,17 @@
     '    float e = clamp(1.0 - edge / uZone, 0.0, 1.0);',
     '    float side = p.y < uRes.y * 0.5 ? -1.0 : 1.0;',
     '    vec2 q = vec2((p.x - r.x) / (1.0 + uFlare * e * e), p.y + side * uSquash * uZone * e * e - r.y);',
-    '    float d = sdBox(q, r.zw, min(1.5, min(r.z, r.w))) / (1.0 + 2.0 * uSquash * e);',
+    // Images sitting at the top and bottom of the frame bend outward: the
+    // nearer a card's centre is to the edge, the more the middle of its
+    // inner edge pulls back towards the frame edge while its corners reach
+    // in, so that edge arcs outward (picture and all) and the corners round
+    // off; with the flare it reads as one curved shape, no straight line
+    // left. The image in the middle stays a rectangle.
+    '    float cd = min(r.y, uRes.y - r.y);',
+    '    float ce = 1.0 - smoothstep(uZone * 0.46, uZone * 2.3, cd);',
+    '    float u = clamp(q.x / r.z, -1.0, 1.0);',
+    '    q.y -= (r.y < uRes.y * 0.5 ? -1.0 : 1.0) * 0.07 * r.w * (1.0 - u * u) * ce;',
+    '    float d = sdBox(q, r.zw, mix(1.5, 0.08 * min(r.z, r.w), ce)) / (1.0 + 2.0 * uSquash * e);',
     '    field = min(field, d);',
     '    if (!hit && (d <= 0.0 || d < best)) { best = d; rect = r; fit = uFit[i]; local = q; hit = d <= 0.0; }',
     '  }',
@@ -92,7 +102,11 @@
     // background. The colour stays full strength right up to the edge.
     '  float ef = clamp(1.0 - min(p.y, uRes.y - p.y) / uZone, 0.0, 1.0);',
     '  float bl = uBlur * pow(ef, 1.6);',
-    '  float a = clamp(0.5 - field / (1.0 + bl * 1.6), 0.0, 1.0);',
+    // Soft edge that eases in and out at both ends (a straight ramp left a
+    // hard rim where the fully solid middle began, which showed the old
+    // rectangle inside the blur).
+    '  float sw = 1.0 + bl * 2.0;',
+    '  float a = 1.0 - smoothstep(-0.5 * sw, 0.5 * sw, field);',
     '  if (a <= 0.0) { gl_FragColor = vec4(0.0); return; }',
     '  float lod = log2(max(1.0, bl * 0.55 * ' + (TEX / 2) + '.0 / sqrt(rect.z * rect.w)));',
     '  vec3 col = picture(fit, rect, local, lod);',

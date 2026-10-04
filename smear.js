@@ -228,6 +228,9 @@
   // map, so it refracts as the waves pass, and because its edges are drawn
   // through the same map, the rectangle itself bends out of shape. Once the
   // waves have died away the canvas hides and the real image shows again.
+  // data-smear-strength, -wave, -fade and -pad override the strength, wave
+  // size, how quickly waves die away and the clear margin per picture (the
+  // big About photo uses small, faint, short-lived waves).
   Array.prototype.forEach.call(document.querySelectorAll('[data-smear-img]'), function (host) {
     var img = host.querySelector('img');
     var parent = host.offsetParent;
@@ -235,15 +238,23 @@
     var cv = document.createElement('canvas');
     var gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true });
     if (!gl) return;
+    // Work in Display P3 where the browser can, so wide-colour photos (the
+    // iPhone profile picture) keep their colour while rippling instead of
+    // being squashed into sRGB and looking dull.
+    if ('drawingBufferColorSpace' in gl) gl.drawingBufferColorSpace = 'display-p3';
+    if ('unpackColorSpace' in gl) gl.unpackColorSpace = 'display-p3';
     cv.setAttribute('aria-hidden', 'true');
     cv.style.cssText = 'position:absolute;pointer-events:none;display:none;';
-    parent.appendChild(cv);
+    // Just before the picture, so anything stacked over it (the About
+    // photo's tooltip) stays on top of the ripple.
+    host.parentNode.insertBefore(cv, host);
 
-    var PAD = 0.6;          // clear margin round the picture, as a fraction of its size
-    var STRENGTH = 0.06;    // how far the waves bend the picture
-    var WAVE = 0.55;        // a new wave's size, relative to the picture
+    var PAD = parseFloat(host.dataset.smearPad) || 0.6;               // clear margin round the picture, as a fraction of its size
+    var STRENGTH = parseFloat(host.dataset.smearStrength) || 0.06;    // how far the waves bend the picture
+    var WAVE = parseFloat(host.dataset.smearWave) || 0.55;   // a new wave's size, relative to the picture
+    var FADE = parseFloat(host.dataset.smearFade) || 0.95;   // how much of a wave is left each frame
     var MAX_WAVES = 60;
-    var k = Math.min(window.devicePixelRatio || 1, 2) * 3;   // extra resolution: it's a small picture
+    var k = 1;   // canvas resolution, set per size in layout()
     var W = 0, H = 0, pw = 0, ph = 0, ox = 0, oy = 0;
 
     function compile(vs, fs) {
@@ -308,19 +319,27 @@
 
     function layout() {
       pw = host.offsetWidth; ph = host.offsetHeight;
-      var padX = pw * PAD, padY = ph * PAD;
-      W = pw + padX * 2; H = ph + padY * 2;
-      ox = padX; oy = padY;
+      var padY = ph * PAD;
+      // Sideways, the margin stops at the edges of the window, so the canvas
+      // never pokes out and adds a horizontal scroll.
+      var hr0 = host.getBoundingClientRect(), sc0 = pw / (hr0.width || 1);
+      var docW = document.documentElement.clientWidth;
+      var padL = Math.max(0, Math.min(pw * PAD, hr0.left * sc0));
+      var padR = Math.max(0, Math.min(pw * PAD, (docW - hr0.right) * sc0));
+      W = pw + padL + padR; H = ph + padY * 2;
+      ox = padL; oy = padY;
+      // Extra resolution for small pictures, capped so big ones stay light.
+      k = Math.min(Math.min(window.devicePixelRatio || 1, 2) * 3, 2400 / Math.max(W, H));
       cv.width = Math.round(W * k); cv.height = Math.round(H * k);
       cv.style.width = W + 'px'; cv.style.height = H + 'px';
-      cv.style.left = (host.offsetLeft - padX) + 'px';
+      cv.style.left = (host.offsetLeft - padL) + 'px';
       cv.style.top = (host.offsetTop - padY) + 'px';
 
       // The picture as it's laid out in its frame (cropped, rounded corners),
       // centred on clear space.
       var off = document.createElement('canvas');
       off.width = cv.width; off.height = cv.height;
-      var c = off.getContext('2d');
+      var c = off.getContext('2d', { colorSpace: 'display-p3' }) || off.getContext('2d');
       c.scale(k, k);
       var ir = img.getBoundingClientRect(), hr = host.getBoundingClientRect(), sx = pw / (hr.width || 1);
       var bw = ir.width * sx, bh = ir.height * sx;
@@ -362,8 +381,9 @@
       var uR = gl.getUniformLocation(waveProg, 'uR'), uA = gl.getUniformLocation(waveProg, 'uA');
       waves = waves.filter(function (w) {
         w.rot += 0.025;
-        w.alpha *= 0.95;
-        w.size = w.size * 0.982 + pw * 0.06;
+        w.alpha *= FADE;
+        // Grows towards a size set by its starting size (about 6x it).
+        w.size = w.size * 0.982 + pw * WAVE * 0.109;
         if (w.alpha < 0.01) return false;
         gl.uniform2f(uC, w.x, w.y);
         gl.uniform1f(uS, w.size);
@@ -391,9 +411,33 @@
       else {
         // Calm again: hand back to the real image.
         raf = 0;
-        cv.style.display = 'none';
-        host.style.opacity = '';
+        fadeOut();
       }
+    }
+
+    // The ripple layer fades in over the picture (which is only hidden once
+    // the layer fully covers it) and fades back off it at the end, so any
+    // difference in how the two render blends across instead of flicking.
+    var FADE_IN = 350, FADE_OUT = 700, imgT = 0, hideT = 0;
+    function fadeIn() {
+      clearTimeout(hideT);
+      if (cv.style.display !== 'block') {
+        cv.style.opacity = '0';
+        cv.style.display = 'block';
+        void cv.offsetWidth;   // start the fade from 0
+      }
+      cv.style.transition = 'opacity ' + FADE_IN + 'ms ease';
+      cv.style.opacity = '1';
+      clearTimeout(imgT);
+      imgT = setTimeout(function () { img.style.visibility = 'hidden'; }, FADE_IN);
+    }
+    function fadeOut() {
+      clearTimeout(imgT);
+      img.style.visibility = '';
+      cv.style.transition = 'opacity ' + FADE_OUT + 'ms ease';
+      cv.style.opacity = '0';
+      clearTimeout(hideT);
+      hideT = setTimeout(function () { if (!raf) cv.style.display = 'none'; }, FADE_OUT);
     }
 
     var lx = null, ly = null;
@@ -410,13 +454,15 @@
       waves.push({ x: x, y: y, size: pw * WAVE, rot: Math.random() * 6.28, alpha: 1 });
       if (waves.length > MAX_WAVES) waves.shift();
       if (!raf) {
-        cv.style.display = 'block';
-        host.style.opacity = '0';
+        fadeIn();
         raf = requestAnimationFrame(frame);
       }
     });
     host.addEventListener('mouseleave', function () { lx = ly = null; });
     window.addEventListener('resize', function () { ready = false; });
+    // A new picture swapped in (the About page's snap photos) is re-captured
+    // on the next hover.
+    img.addEventListener('load', function () { ready = false; });
     window.addEventListener('trailchange', function (e) {
       if (e.detail && e.detail.off) waves = [];
     });

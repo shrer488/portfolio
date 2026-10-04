@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- The glowy aqua jelly ball from the homepage's "Click" (marbles.js). -->
+  <defs>
+    <radialGradient id="glow" cx="32" cy="32" r="31" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#40e0d0" stop-opacity="0.45"/>
+      <stop offset="0.78" stop-color="#40e0d0" stop-opacity="0.3"/>
+      <stop offset="0.9" stop-color="#40e0d0" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="#40e0d0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="body" cx="31" cy="38" fx="31" fy="40" r="25" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c8fff0"/>
+      <stop offset="0.5" stop-color="#6ee6dc"/>
+      <stop offset="0.88" stop-color="#24aab4"/>
+      <stop offset="1" stop-color="#a0ebf0"/>
+    </radialGradient>
+    <linearGradient id="shine" x1="0" y1="14" x2="0" y2="29" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="url(#glow)"/>
+  <!-- the ball a touch larger within its glow, so it reads at tab size -->
+  <g transform="translate(32 32) scale(1.1) translate(-32 -32)">
+  <circle cx="32" cy="32" r="24" fill="url(#body)"/>
+  <ellipse cx="30.8" cy="21.2" rx="14.9" ry="7.7" transform="rotate(-14 30.8 21.2)" fill="url(#shine)"/>
+  <circle cx="37.8" cy="21.9" r="2.9" fill="#fff" fill-opacity="0.95"/>
+  <circle cx="42.1" cy="25.8" r="1.6" fill="#fff" fill-opacity="0.95"/>
+  </g>
+</svg>

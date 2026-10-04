@@ -375,7 +375,15 @@
     ' border-radius: 50%; background: #000;' +
     ' transition: transform 0.25s cubic-bezier(0.3, 0.7, 0.3, 1), background-color 0.25s ease; }' +
     '.trail-toggle[aria-checked="false"] .trail-toggle-knob { transform: translateX(12px); }' +
-    '.trail-toggle[aria-checked="true"] .trail-toggle-knob { background: rgb(64, 224, 208); }' +
+    // On, the knob is the glowy aqua jelly ball from the homepage (marbles.js):
+    // a bright core, deeper turquoise edge, a glossy shine and highlight,
+    // and a soft glow.
+    '.trail-toggle[aria-checked="true"] .trail-toggle-knob {' +
+    ' background:' +
+    ' radial-gradient(circle at 66% 30%, #fff 0, #fff 0.8px, rgba(255, 255, 255, 0) 1.4px),' +
+    ' radial-gradient(ellipse 55% 32% at 45% 26%, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 100%),' +
+    ' radial-gradient(circle at 48% 66%, #c8fff0 0%, #6ee6dc 45%, #24aab4 86%, #a0ebf0 100%);' +
+    ' box-shadow: 0 0 4px rgba(64, 224, 208, 0.55); }' +
     '.trail-toggle[aria-checked="true"] .trail-toggle-track { border-color: rgb(64, 224, 208); }';
   var toggle = document.createElement('button');
   toggle.type = 'button';

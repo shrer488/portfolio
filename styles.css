@@ -1261,49 +1261,18 @@ html.text-melt .cursor-label {
   visibility: hidden;
 }
 
-/* "Click" melt (mush.js). While the stage is filtered, the page's own
-   background goes transparent so the filter's alpha threshold has edges to
-   turn into goo; the body behind it is the same colour. */
-body.is-mushed .page {
-  background: transparent;
-}
-
-/* The faint full-page white tint would otherwise turn into a grey wash of
-   ink when the melt starts. */
-body.is-mushed .bg-tint {
-  display: none;
-}
-
 .cursor-hint {
   cursor: pointer;
 }
 
-.mush-reset {
+/* "Click" marbles (marbles.js): drawn over the page, never in the way. */
+.marbles {
   position: fixed;
-  left: 50%;
-  /* Top of the screen: the melted page pools along the bottom. */
-  top: 32px;
-  z-index: 600;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 999px;
-  background: var(--ink);
-  color: var(--bg);
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  opacity: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-  transform: translate(-50%, -12px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.mush-reset.is-visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translate(-50%, 0);
+  z-index: 9000;
 }
 
 

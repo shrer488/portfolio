@@ -85,6 +85,7 @@
     'uniform vec4 uRect[10];',  // centre x, centre y, half w, half h (css px, y down)
     'uniform float uRot[10];',  // rotation, radians
     'uniform vec3 uFit[10];',   // image aspect, fit (0 cover, 1 contain on white), texture
+    'uniform vec2 uTsz[10];',   // each card's texture size in texels
     'uniform vec4 uThA[9];',    // thread end points
     'uniform float uThW[9];',   // thread half width (<= 0: none)
     'uniform float uK;',        // how gooey the whole field is, in px
@@ -131,7 +132,7 @@
     // (so the others stay hidden inside the seed until they peel out);
     // outside every card, the goo takes the colour of the nearest one.
     '  float field = 1e5; float best = 1e5; bool hit = false;',
-    '  vec4 rect = uRect[0]; vec3 fit = uFit[0]; vec2 local = vec2(0.0);',
+    '  vec4 rect = uRect[0]; vec3 fit = uFit[0]; vec2 local = vec2(0.0); vec2 tsz = uTsz[0];',
     // Towards the end, the carousel's fold (carousel-goo.js): near the top
     // and bottom of its frame each card spreads wider and squashes into the
     // edge, so the cards land looking exactly like the page.
@@ -151,7 +152,7 @@
     '    q.y -= (r.y < (uFrame.x + uFrame.y) * 0.5 ? -1.0 : 1.0) * 0.035 * r.w * (1.0 - u * u) * ce;',
     '    float d = sdBox(q, r.zw, mix(min(uRadius, min(r.z, r.w)), 0.08 * min(r.z, r.w), ce)) / (1.0 + 2.0 * uFold.y * uSoft * ef);',
     '    field = smin(field, d, uK);',
-    '    if (!hit && (d <= 0.0 || d < best - 2.0)) { best = d; rect = r; fit = uFit[i]; local = q; hit = d <= 0.0; }',
+    '    if (!hit && (d <= 0.0 || d < best - 2.0)) { best = d; rect = r; fit = uFit[i]; local = q; tsz = uTsz[i]; hit = d <= 0.0; }',
     '  }',
     '  for (int j = 0; j < 9; j++){',
     '    if (uThW[j] <= 0.0) continue;',
@@ -168,7 +169,13 @@
     '  float outside = step(p.y, uFrame.x) + step(uFrame.y, p.y);',
     '  a *= 1.0 - uSoft * min(outside, 1.0);',
     '  if (a <= 0.0) { gl_FragColor = vec4(0.0); return; }',
-    '  float lod = log2(max(1.0, bl * 0.55 * 512.0 / sqrt(rect.z * rect.w)));',
+    // Mip level as in carousel-goo.js: the texture's density on screen, or
+    // wider where it's blurred.
+    '  float box = rect.z / rect.w;',
+    '  vec2 sc = vec2(1.0);',
+    '  if ((fit.y < 0.5) == (fit.x > box)) sc.x = box / fit.x; else sc.y = fit.x / box;',
+    '  float tpp = max(tsz.x * sc.x / (2.0 * rect.z), tsz.y * sc.y / (2.0 * rect.w));',
+    '  float lod = max(log2(max(1.0, tpp / uDpr)) - 0.25, log2(max(1.0, bl * 0.55 * tpp)));',
     '  vec3 col = picture(fit, rect, local, lod);',
     '  if (bl > 0.3) {',
     '    for (int k = 0; k < 12; k++){',
@@ -203,6 +210,7 @@
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
   function U(name) { return gl.getUniformLocation(prog, name); }
+  var uTsz = U('uTsz');
   var uRes = U('uRes'), uDpr = U('uDpr'), uRect = U('uRect'), uRot = U('uRot'), uFit = U('uFit');
   var uThA = U('uThA'), uThW = U('uThW'), uK = U('uK'), uRadius = U('uRadius');
   var uFrame = U('uFrame'), uSoft = U('uSoft'), uFold = U('uFold');
@@ -251,10 +259,13 @@
     im.contain = getComputedStyle(img).objectFit === 'contain' ? 1 : 0;
     function go() {
       try {
-        // Stretched onto a square canvas so it can carry mipmaps.
+        // Stretched onto a power-of-two canvas (nearest to the source's
+        // size, 1024 to 2048 a side) so it can carry mipmaps.
+        function side(n) { return Math.max(1024, Math.min(2048, Math.pow(2, Math.round(Math.log(n || 1024) / Math.LN2)))); }
         var sq = document.createElement('canvas');
-        sq.width = sq.height = 1024;
-        sq.getContext('2d').drawImage(img, 0, 0, 1024, 1024);
+        sq.width = side(img.naturalWidth); sq.height = side(img.naturalHeight);
+        sq.getContext('2d').drawImage(img, 0, 0, sq.width, sq.height);
+        im.tw = sq.width; im.th = sq.height;
         gl.activeTexture(gl.TEXTURE0 + i);
         gl.bindTexture(gl.TEXTURE_2D, tex);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sq);
@@ -359,7 +370,7 @@
   var launchAt = null;
   var pageShown = false, textShown = false;
 
-  var rectArr = new Float32Array(N * 4), rotArr = new Float32Array(N), fitArr = new Float32Array(N * 3);
+  var rectArr = new Float32Array(N * 4), rotArr = new Float32Array(N), fitArr = new Float32Array(N * 3), tszArr = new Float32Array(N * 2);
   var thA = new Float32Array(9 * 4), thW = new Float32Array(9);
 
   function frame(now) {
@@ -478,7 +489,9 @@
       rotArr[i] = c.rot;
       var im = images[c.tex];
       fitArr[i * 3] = im.aspect; fitArr[i * 3 + 1] = im.contain; fitArr[i * 3 + 2] = c.tex;
+      tszArr[i * 2] = im.tw || 1024; tszArr[i * 2 + 1] = im.th || 1024;
     });
+    gl.uniform2fv(uTsz, tszArr);
     gl.uniform4fv(uRect, rectArr);
     gl.uniform1fv(uRot, rotArr);
     gl.uniform3fv(uFit, fitArr);

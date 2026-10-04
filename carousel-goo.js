@@ -31,7 +31,13 @@
   var FLARE = 0.16;      // how much wider an image gets right at the frame edge
   var SQUASH = 0.7;      // how much of the image is pulled into the fold
   var BLUR = 16;         // px of haze right at the frame edge
-  var TEX = 1024;        // pictures are kept as square power-of-two textures so they can be mipmapped
+  // Pictures are kept as power-of-two textures (so they can be mipmapped
+  // for the haze), each side the nearest power of two to the source's,
+  // between 1024 and 2048, so the active image is never upscaled.
+  function potSide(n) { return Math.max(1024, Math.min(2048, Math.pow(2, Math.round(Math.log(n || 1024) / Math.LN2)))); }
+  // Device pixels per layout px: the screen's own density times the scale
+  // the whole page is fitted to the window with (script.js), so the canvas
+  // is drawn at the size it actually appears, never stretched up.
   var dpr = Math.min(window.devicePixelRatio || 1, 2);
 
   // Mipmaps give a wide, cheap blur; with this extension the shader can pick
@@ -45,6 +51,7 @@
     'uniform vec2 uRes; uniform float uDpr;',
     'uniform vec4 uRect[5];',   // centre x, centre y, half w, half h (css px, y down)
     'uniform vec3 uFit[5];',    // image aspect, fit (0 cover, 1 contain on white), texture
+    'uniform vec2 uTsz[5];',    // each texture's size in texels
     'uniform float uZone;',     // px at the top and bottom of the frame where images fold
     'uniform float uFlare;',    // extra width right at the frame edge
     'uniform float uSquash;',   // how much of the image is pulled into the fold
@@ -70,7 +77,7 @@
     'void main(){',
     '  vec2 p = gl_FragCoord.xy / uDpr; p.y = uRes.y - p.y;',
     '  float field = 1e5, best = 1e5; bool hit = false;',
-    '  vec4 rect = uRect[0]; vec3 fit = uFit[0]; vec2 local = vec2(0.0);',
+    '  vec4 rect = uRect[0]; vec3 fit = uFit[0]; vec2 local = vec2(0.0); vec2 tsz = uTsz[0];',
     '  for (int i = 0; i < 5; i++){',
     '    vec4 r = uRect[i]; if (r.z <= 0.0) continue;',
     // Towards the top and bottom of the frame each image folds over the
@@ -94,7 +101,7 @@
     '    q.y -= (r.y < uRes.y * 0.5 ? -1.0 : 1.0) * 0.035 * r.w * (1.0 - u * u) * ce;',
     '    float d = sdBox(q, r.zw, mix(1.5, 0.08 * min(r.z, r.w), ce)) / (1.0 + 2.0 * uSquash * e);',
     '    field = min(field, d);',
-    '    if (!hit && (d <= 0.0 || d < best)) { best = d; rect = r; fit = uFit[i]; local = q; hit = d <= 0.0; }',
+    '    if (!hit && (d <= 0.0 || d < best)) { best = d; rect = r; fit = uFit[i]; local = q; tsz = uTsz[i]; hit = d <= 0.0; }',
     '  }',
     // In the fold the picture dissolves into a soft haze: blur grows from
     // nothing where the fold starts to uBlur px at the frame edge, the
@@ -108,7 +115,14 @@
     '  float sw = 1.0 + bl * 2.0;',
     '  float a = 1.0 - smoothstep(-0.5 * sw, 0.5 * sw, field);',
     '  if (a <= 0.0) { gl_FragColor = vec4(0.0); return; }',
-    '  float lod = log2(max(1.0, bl * 0.55 * ' + (TEX / 2) + '.0 / sqrt(rect.z * rect.w)));',
+    // Mip level: the texture's own density on screen (so a picture drawn
+    // smaller than its texture is filtered, not sampled into jagged
+    // pixels), or wider where it's blurred.
+    '  float box = rect.z / rect.w;',
+    '  vec2 sc = vec2(1.0);',
+    '  if ((fit.y < 0.5) == (fit.x > box)) sc.x = box / fit.x; else sc.y = fit.x / box;',
+    '  float tpp = max(tsz.x * sc.x / (2.0 * rect.z), tsz.y * sc.y / (2.0 * rect.w));',   // texels per css px
+    '  float lod = max(log2(max(1.0, tpp / uDpr)) - 0.25, log2(max(1.0, bl * 0.55 * tpp)));',
     '  vec3 col = picture(fit, rect, local, lod);',
     '  if (bl > 0.3) {',
     '    for (int k = 0; k < 12; k++){',
@@ -136,6 +150,7 @@
   gl.enableVertexAttribArray(0);
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
   function U(n) { return gl.getUniformLocation(prog, n); }
+  var uTsz = U('uTsz');
   var uRes = U('uRes'), uDpr = U('uDpr'), uRect = U('uRect'), uFit = U('uFit'), uZone = U('uZone'), uFlare = U('uFlare'), uSquash = U('uSquash'), uBlur = U('uBlur');
   for (var t = 0; t < 5; t++) gl.uniform1i(U('uT' + t), t);
 
@@ -152,13 +167,16 @@
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     if (img) it.contain = getComputedStyle(img).objectFit === 'contain' ? 1 : 0;
-    // Stretched onto a square canvas (the shader's uvs cover the whole
+    // Stretched onto a power-of-two canvas (the shader's uvs cover the whole
     // picture either way) so the texture can carry mipmaps for the haze.
     var sq = document.createElement('canvas'), sx = sq.getContext('2d');
-    it.put = function (src, n) {
-      if (sq.width !== n) { sq.width = n; sq.height = n; }
-      sx.clearRect(0, 0, n, n);
-      sx.drawImage(src, 0, 0, n, n);
+    it.tw = it.th = 1024;
+    it.put = function (src, sw, sh) {
+      var w = potSide(sw), h = potSide(sh);
+      if (sq.width !== w || sq.height !== h) { sq.width = w; sq.height = h; }
+      sx.clearRect(0, 0, w, h);
+      sx.drawImage(src, 0, 0, w, h);
+      it.tw = w; it.th = h;
       gl.activeTexture(gl.TEXTURE0 + i);
       gl.bindTexture(gl.TEXTURE_2D, it.tex);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sq);
@@ -167,7 +185,7 @@
     it.upload = function () {
       if (!img) return;
       try {
-        it.put(img, TEX);
+        it.put(img, img.naturalWidth, img.naturalHeight);
         it.aspect = (img.naturalWidth || 1) / (img.naturalHeight || 1);
       } catch (e) {}
     };
@@ -194,11 +212,13 @@
     if (on) size();
   });
 
-  var rectArr = new Float32Array(20), fitArr = new Float32Array(15);
+  var rectArr = new Float32Array(20), fitArr = new Float32Array(15), tszArr = new Float32Array(10);
 
   function frame(now) {
     var wr = cv.getBoundingClientRect();
     var s = W / (wr.width || 1);
+    var want = Math.min(3, (window.devicePixelRatio || 1) / s);
+    if (Math.abs(want - dpr) > 0.05) { dpr = want; size(); }
 
     items.forEach(function (it, i) {
       var r = it.inner.getBoundingClientRect();
@@ -212,7 +232,7 @@
       var v = it.video;
       if (v && !v.paused && v.readyState >= 2 && parseFloat(getComputedStyle(v).opacity) > 0.5) {
         try {
-          it.put(v, TEX / 2);
+          it.put(v, v.videoWidth, v.videoHeight);
           it.vidOn = true;
           fitArr[i * 3] = v.videoWidth / (v.videoHeight || 1); fitArr[i * 3 + 1] = 0;
         } catch (e) {}
@@ -224,6 +244,8 @@
 
     gl.uniform4fv(uRect, rectArr);
     gl.uniform3fv(uFit, fitArr);
+    items.forEach(function (it, i) { tszArr[i * 2] = it.tw; tszArr[i * 2 + 1] = it.th; });
+    gl.uniform2fv(uTsz, tszArr);
     gl.uniform1f(uZone, ZONE);
     gl.uniform1f(uFlare, FLARE);
     gl.uniform1f(uSquash, SQUASH);

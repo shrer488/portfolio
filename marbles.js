@@ -1,5 +1,5 @@
 // Clicking the "Click" hint (.cursor-hint, bottom-right of the hero) drops
-// a shower of little aqua jelly balls (twice the size of the cursor dot)
+// a shower of little aqua jelly balls (the size of the cursor dot)
 // from the top of the screen. They stretch as they fall, squash flat and
 // jiggle back when they land, press softly into one another and pile up: on top of the centre image, the profile photo and
 // text, the project details and the nav, as if on shelves, rolling off the
@@ -15,18 +15,18 @@
   if (!hint) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var R = 16;              // marble radius, px (twice the 16px cursor dot across)
-  var COUNT = 70;          // marbles per click
+  var R = 8;               // ball radius, px (16px across, the size of the cursor dot)
+  var COUNT = 140;         // balls per click
   var SPAWN = 4.5;         // seconds over which they fall in
   var STAY = 9;            // seconds they rest before fading
   var FADE = 1.5;
-  var MAX = 180;
+  var MAX = 360;
   var G = 2000;            // gravity, px/s^2
   var BOUNCE = 0.15;       // how much of their speed they keep off a surface (jelly: not much)
   var FRICTION = 0.97;     // per contact, sideways
   var SOFT = 0.7;         // how hard two balls push apart (under 1 lets them press into each other)
   var JIGGLE_K = 420, JIGGLE_D = 26;   // the wobble spring: stiffness, damping
-  var SUBSTEPS = 4;
+  var SUBSTEPS = 6;        // small balls move far for their size, so step finely enough not to skip through thin text
 
   // The surfaces they land on (re-measured every frame, so a moving
   // carousel carries them along).
@@ -48,10 +48,24 @@
   // highlights up and to the right.
   var sprite = document.createElement('canvas');
   function drawSprite() {
-    var s = Math.ceil(R * 2 * dpr) + 4, c = s / 2, r = R * dpr;
+    var GLOW = 9;   // px of soft halo beyond the ball
+    var s = Math.ceil((R + GLOW) * 2 * dpr) + 4, c = s / 2, r = R * dpr;
     sprite.width = sprite.height = s;
     var g = sprite.getContext('2d');
     g.clearRect(0, 0, s, s);
+    // A faint, tight turquoise halo, so each small drop glows a little; a
+    // pile glows softly as a whole without turning into one bright smudge.
+    // From the centre (hidden under the ball) out, so there's no hard ring
+    // at the ball's edge: just a faint light that eases away.
+    var outer = r + GLOW * dpr, e = r / outer;
+    var halo = g.createRadialGradient(c, c, 0, c, c, outer);
+    halo.addColorStop(0, 'rgba(64, 224, 208, 0.2)');
+    halo.addColorStop(e, 'rgba(64, 224, 208, 0.16)');
+    halo.addColorStop(e + (1 - e) * 0.3, 'rgba(64, 224, 208, 0.07)');
+    halo.addColorStop(e + (1 - e) * 0.65, 'rgba(64, 224, 208, 0.02)');
+    halo.addColorStop(1, 'rgba(64, 224, 208, 0)');
+    g.fillStyle = halo;
+    g.beginPath(); g.arc(c, c, r + GLOW * dpr, 0, Math.PI * 2); g.fill();
     // Translucent gummy jelly: a bright, almost clear core, deeper turquoise
     // towards the edge, and a paler rim.
     var body = g.createRadialGradient(c - r * 0.05, c + r * 0.3, r * 0.05, c, c, r);

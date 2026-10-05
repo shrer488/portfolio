@@ -337,7 +337,7 @@
   var TEXT_IN = SPIN_AT + 0.4, TEXT_OUT = SPIN_AT + 1.4;
   // The turn towards the screen starts while the ring is still finishing
   // its spin, so the two run into each other instead of stopping between.
-  var STAGE_AT = SPIN_AT + 1.3, STAGE = 4.1;   // ring turns to face the screen and becomes the column
+  var STAGE_AT = SPIN_AT + 1.3, STAGE = 4.3;   // ring turns to face the screen and becomes the column
   var PAGE_IN = 0.45;                // how far through that the page starts showing behind it
   var TEXT_AT = 0.7;                 // ...and its text starts melting in, a beat later
   var FOCAL = 1400;                  // perspective distance for the turn, px
@@ -356,9 +356,10 @@
       return at(y1, y2, t);
     };
   }
-  // The last turn eases in softly and then takes its time settling: most of
-  // the travel is done early and the final approach is long and gentle.
-  var landEase = bezier(0.4, 0, 0.12, 1);
+  // The last turn drifts in like a breath of wind: it gathers slowly, never
+  // surges (at its fastest it moves under twice its average pace), and
+  // slows into place just as gently.
+  var landEase = bezier(0.4, 0.05, 0.5, 1);
   function clamp01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
   function lerp(a, b, t) { return a + (b - a) * t; }
   var TAU = Math.PI * 2;
@@ -414,9 +415,9 @@
     // slide. A last blend snaps each card onto its exact slide.
     var phi = stage * Math.PI / 2;                       // 0 flat .. 90deg side-on
     var sinP = Math.sin(phi), cosP = Math.cos(phi);
-    // Size and radius grow early in the turn, so the wheel stays full and
-    // bold while it rolls round instead of shrinking into a sparse ring.
-    var grow = 1 - Math.pow(1 - stage, 2.5);
+    // Size and radius grow a little ahead of the turn, so the wheel stays
+    // full as it rolls round, but gently rather than ballooning early.
+    var grow = 1 - Math.pow(1 - stage, 1.5);
     var Rd = lerp(R, col.pitch / Math.sin(TAU / N), grow);
     var ax = lerp(cx, col.rects[0][0], stage), ay = lerp(cy, col.rects[0][1], stage);
     // The extra turn shares the same soft landing.

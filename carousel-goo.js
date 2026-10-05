@@ -57,6 +57,8 @@
     'uniform float uSquash;',   // how much of the image is pulled into the fold
     'uniform float uBlur;',     // px of blur right at the frame edge
     'uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2; uniform sampler2D uT3; uniform sampler2D uT4;',
+    // The hover video has its own texture and fades in over its card's still.
+    'uniform sampler2D uVid; uniform vec3 uVidInfo;',   // card index, mix 0..1, video aspect
     'float sdBox(vec2 p, vec2 b, float r){ vec2 q = abs(p) - b + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }',
     'vec4 pick(float i, vec2 uv, float l){',
     '  if (i < 0.5) return TEX(uT0, uv, l); if (i < 1.5) return TEX(uT1, uv, l);',
@@ -74,6 +76,16 @@
     '  vec4 t = pick(fit.z, clamp(uv, 0.0, 1.0), l);',
     '  bool inside = uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0;',
     '  return inside ? mix(vec3(1.0), t.rgb, t.a) : vec3(1.0); }',
+    // The still, with the hover video crossfaded over it when it's playing.
+    'vec3 card(vec3 fit, vec4 rect, vec2 local, float l){',
+    '  vec3 c = picture(fit, rect, local, l);',
+    '  if (uVidInfo.y > 0.001 && abs(fit.z - uVidInfo.x) < 0.5) {',
+    '    vec2 uv = clamp((local + rect.zw) / (2.0 * rect.zw), 0.0, 1.0);',
+    '    float box = rect.z / rect.w, va = uVidInfo.z;',
+    '    if (va > box) uv.x = 0.5 + (uv.x - 0.5) * box / va; else uv.y = 0.5 + (uv.y - 0.5) * va / box;',
+    '    c = mix(c, TEX(uVid, uv, l).rgb, uVidInfo.y);',
+    '  }',
+    '  return c; }',
     'void main(){',
     '  vec2 p = gl_FragCoord.xy / uDpr; p.y = uRes.y - p.y;',
     '  float field = 1e5, best = 1e5; bool hit = false;',
@@ -123,12 +135,12 @@
     '  if ((fit.y < 0.5) == (fit.x > box)) sc.x = box / fit.x; else sc.y = fit.x / box;',
     '  float tpp = max(tsz.x * sc.x / (2.0 * rect.z), tsz.y * sc.y / (2.0 * rect.w));',   // texels per css px
     '  float lod = max(log2(max(1.0, tpp / uDpr)) - 0.25, log2(max(1.0, bl * 0.55 * tpp)));',
-    '  vec3 col = picture(fit, rect, local, lod);',
+    '  vec3 col = card(fit, rect, local, lod);',
     '  if (bl > 0.3) {',
     '    for (int k = 0; k < 12; k++){',
     '      float fk = float(k);',
     '      float ang = fk * 2.39996, rr = bl * 0.7 * sqrt((fk + 0.5) / 12.0);',
-    '      col += picture(fit, rect, local + rr * vec2(cos(ang), sin(ang)), lod);',
+    '      col += card(fit, rect, local + rr * vec2(cos(ang), sin(ang)), lod);',
     '    }',
     '    col /= 13.0;',
     '  }',
@@ -153,11 +165,37 @@
   var uTsz = U('uTsz');
   var uRes = U('uRes'), uDpr = U('uDpr'), uRect = U('uRect'), uFit = U('uFit'), uZone = U('uZone'), uFlare = U('uFlare'), uSquash = U('uSquash'), uBlur = U('uBlur');
   for (var t = 0; t < 5; t++) gl.uniform1i(U('uT' + t), t);
+  gl.uniform1i(U('uVid'), 5);
+  var uVidInfo = U('uVidInfo');
+  // One texture for whichever hover video is playing, mipmapped like the
+  // stills, filled through its own power-of-two canvas.
+  var vidTex = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE5);
+  gl.bindTexture(gl.TEXTURE_2D, vidTex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.generateMipmap(gl.TEXTURE_2D);
+  var vidCv = document.createElement('canvas'), vidCx = vidCv.getContext('2d');
+  // Which card's video is showing, how far it has faded in, and its last frame time.
+  var vid = { idx: -1, mix: 0, aspect: 1.5, t: -1, last: 0 };
+  var VID_IN = 0.7, VID_OUT = 0.5;   // seconds
+  function putVideo(v) {
+    var w2 = potSide(v.videoWidth), h2 = potSide(v.videoHeight);
+    if (vidCv.width !== w2 || vidCv.height !== h2) { vidCv.width = w2; vidCv.height = h2; }
+    vidCx.drawImage(v, 0, 0, w2, h2);
+    gl.activeTexture(gl.TEXTURE5);
+    gl.bindTexture(gl.TEXTURE_2D, vidTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, vidCv);
+    gl.generateMipmap(gl.TEXTURE_2D);
+  }
 
   var items = slides.slice(0, N).map(function (slide, i) {
     var img = slide.querySelector('.slide-img');
     var it = { inner: slide.querySelector('.slide-inner'), img: img, video: slide.querySelector('.slide-video'),
-      tex: gl.createTexture(), unit: i, aspect: 1.5, contain: 0, vidOn: false };
+      tex: gl.createTexture(), unit: i, aspect: 1.5, contain: 0 };
     gl.activeTexture(gl.TEXTURE0 + i);
     gl.bindTexture(gl.TEXTURE_2D, it.tex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
@@ -220,6 +258,7 @@
     var want = Math.min(3, (window.devicePixelRatio || 1) / s);
     if (Math.abs(want - dpr) > 0.05) { dpr = want; size(); }
 
+    var playing = null;
     items.forEach(function (it, i) {
       var r = it.inner.getBoundingClientRect();
       var cx = (r.left + r.width / 2 - wr.left) * s, cy = (r.top + r.height / 2 - wr.top) * s;
@@ -228,24 +267,30 @@
       rectArr[i * 4] = cx; rectArr[i * 4 + 1] = cy;
       rectArr[i * 4 + 2] = visible ? hw : 0; rectArr[i * 4 + 3] = hh;
       fitArr[i * 3 + 2] = i;
-      // A playing hover video replaces the still.
+      fitArr[i * 3] = it.aspect; fitArr[i * 3 + 1] = it.contain;
+      // A hover video that is playing (and has real frames) fades in over
+      // the still; see below.
       var v = it.video;
-      if (v && !v.paused && v.readyState >= 2 && parseFloat(getComputedStyle(v).opacity) > 0.5) {
-        try {
-          // Only when the video has moved on to a new frame (it runs at
-          // ~24-30fps; the page draws at 60).
-          if (!it.vidOn || v.currentTime !== it.vidT) {
-            it.put(v, v.videoWidth, v.videoHeight);
-            it.vidT = v.currentTime;
-          }
-          it.vidOn = true;
-          fitArr[i * 3] = v.videoWidth / (v.videoHeight || 1); fitArr[i * 3 + 1] = 0;
-        } catch (e) {}
-      } else {
-        if (it.vidOn) { it.vidOn = false; it.upload(); }
-        fitArr[i * 3] = it.aspect; fitArr[i * 3 + 1] = it.contain;
-      }
+      if (v && !v.paused && v.readyState >= 2 && v.videoWidth) playing = { it: it, i: i, v: v };
     });
+
+    // Crossfade the hover video: in when one is playing, out (holding its
+    // last frame) when it stops or another card takes over.
+    var vdt = vid.last ? Math.min(0.1, (now - vid.last) / 1000) : 0;
+    vid.last = now;
+    if (playing && (vid.idx === playing.i || vid.mix <= 0.001)) {
+      if (vid.idx !== playing.i) { vid.idx = playing.i; vid.t = -1; vid.mix = 0; }
+      var pv = playing.v;
+      if (pv.currentTime !== vid.t) {
+        try { putVideo(pv); vid.t = pv.currentTime; vid.aspect = pv.videoWidth / pv.videoHeight; } catch (e) {}
+      }
+      if (vid.t >= 0) vid.mix = Math.min(1, vid.mix + vdt / VID_IN);
+    } else {
+      vid.mix = Math.max(0, vid.mix - vdt / VID_OUT);
+      if (vid.mix <= 0.001) vid.idx = -1;
+    }
+    var vm = vid.mix * vid.mix * (3 - 2 * vid.mix);
+    gl.uniform3f(uVidInfo, vid.idx, vm, vid.aspect);
 
     gl.uniform4fv(uRect, rectArr);
     gl.uniform3fv(uFit, fitArr);

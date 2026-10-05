@@ -32,9 +32,9 @@
   var SQUASH = 0.7;      // how much of the image is pulled into the fold
   var BLUR = 16;         // px of haze right at the frame edge
   // Pictures are kept as power-of-two textures (so they can be mipmapped
-  // for the haze), each side the nearest power of two to the source's,
-  // between 1024 and 2048, so the active image is never upscaled.
-  function potSide(n) { return Math.max(1024, Math.min(2048, Math.pow(2, Math.round(Math.log(n || 1024) / Math.LN2)))); }
+  // for the haze), each side rounded up to the next power of two from the
+  // source's (1024 to 2048), so no picture is stored smaller than it is.
+  function potSide(n) { return Math.max(1024, Math.min(2048, Math.pow(2, Math.ceil(Math.log(n || 1024) / Math.LN2 - 0.01)))); }
   // Device pixels per layout px: the screen's own density times the scale
   // the whole page is fitted to the window with (script.js), so the canvas
   // is drawn at the size it actually appears, never stretched up.
@@ -232,7 +232,12 @@
       var v = it.video;
       if (v && !v.paused && v.readyState >= 2 && parseFloat(getComputedStyle(v).opacity) > 0.5) {
         try {
-          it.put(v, v.videoWidth, v.videoHeight);
+          // Only when the video has moved on to a new frame (it runs at
+          // ~24-30fps; the page draws at 60).
+          if (!it.vidOn || v.currentTime !== it.vidT) {
+            it.put(v, v.videoWidth, v.videoHeight);
+            it.vidT = v.currentTime;
+          }
           it.vidOn = true;
           fitArr[i * 3] = v.videoWidth / (v.videoHeight || 1); fitArr[i * 3 + 1] = 0;
         } catch (e) {}

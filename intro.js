@@ -259,9 +259,9 @@
     im.contain = getComputedStyle(img).objectFit === 'contain' ? 1 : 0;
     function go() {
       try {
-        // Stretched onto a power-of-two canvas (nearest to the source's
-        // size, 1024 to 2048 a side) so it can carry mipmaps.
-        function side(n) { return Math.max(1024, Math.min(2048, Math.pow(2, Math.round(Math.log(n || 1024) / Math.LN2)))); }
+        // Stretched onto a power-of-two canvas (the source's size rounded
+        // up, 1024 to 2048 a side) so it can carry mipmaps.
+        function side(n) { return Math.max(1024, Math.min(2048, Math.pow(2, Math.ceil(Math.log(n || 1024) / Math.LN2 - 0.01)))); }
         var sq = document.createElement('canvas');
         sq.width = side(img.naturalWidth); sq.height = side(img.naturalHeight);
         sq.getContext('2d').drawImage(img, 0, 0, sq.width, sq.height);

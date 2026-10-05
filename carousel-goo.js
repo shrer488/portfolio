@@ -88,7 +88,7 @@
     '  return c; }',
     'void main(){',
     '  vec2 p = gl_FragCoord.xy / uDpr; p.y = uRes.y - p.y;',
-    '  float field = 1e5, best = 1e5; bool hit = false;',
+    '  float field = 1e5, best = 1e5; bool hit = false; float shA = 0.0;',
     '  vec4 rect = uRect[0]; vec3 fit = uFit[0]; vec2 local = vec2(0.0); vec2 tsz = uTsz[0];',
     '  for (int i = 0; i < 5; i++){',
     '    vec4 r = uRect[i]; if (r.z <= 0.0) continue;',
@@ -113,6 +113,10 @@
     '    q.y -= (r.y < uRes.y * 0.5 ? -1.0 : 1.0) * 0.035 * r.w * (1.0 - u * u) * ce;',
     '    float d = sdBox(q, r.zw, mix(1.5, 0.08 * min(r.z, r.w), ce)) / (1.0 + 2.0 * uSquash * e);',
     '    field = min(field, d);',
+    // A hint of drop shadow under the image in the middle (none for the
+    // ones folding away at the top and bottom): soft, a little below it.
+    '    float sd = sdBox(p - r.xy - vec2(0.0, 12.0), r.zw * vec2(0.96, 0.94), 8.0);',
+    '    shA = max(shA, (1.0 - smoothstep(-14.0, 30.0, sd)) * 0.13 * (1.0 - ce) * (1.0 - ce));',
     '    if (!hit && (d <= 0.0 || d < best)) { best = d; rect = r; fit = uFit[i]; local = q; tsz = uTsz[i]; hit = d <= 0.0; }',
     '  }',
     // In the fold the picture dissolves into a soft haze: blur grows from
@@ -126,7 +130,8 @@
     // rectangle inside the blur).
     '  float sw = 1.0 + bl * 2.0;',
     '  float a = 1.0 - smoothstep(-0.5 * sw, 0.5 * sw, field);',
-    '  if (a <= 0.0) { gl_FragColor = vec4(0.0); return; }',
+    '  vec4 shadow = vec4(vec3(0.05, 0.12, 0.13) * shA, shA);',   // a slightly cool shadow
+    '  if (a <= 0.0) { gl_FragColor = shadow; return; }',
     // Mip level: the texture's own density on screen (so a picture drawn
     // smaller than its texture is filtered, not sampled into jagged
     // pixels), or wider where it's blurred.
@@ -144,7 +149,7 @@
     '    }',
     '    col /= 13.0;',
     '  }',
-    '  gl_FragColor = vec4(col * a, a);',
+    '  gl_FragColor = vec4(col * a, a) + shadow * (1.0 - a);',
     '}'
   ].join('\n');
 

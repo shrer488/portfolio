@@ -142,25 +142,28 @@
   // The nav glides between its two places: measured before and after the
   // switch, then played back from the old spot (FLIP). The page may be
   // scaled to fit the window, so screen distances are divided back out.
-  function moveNav(apply, delay) {
-    var before = nav.getBoundingClientRect();
+  function moveNav(apply, delay, also) {
+    var els = [nav].concat(also || []);
+    var before = els.map(function (el) { return el.getBoundingClientRect(); });
     apply();
-    var after = nav.getBoundingClientRect();
     var scale = page.getBoundingClientRect().width / (page.offsetWidth || 1) || 1;
-    var dx = (before.left - after.left) / scale, dy = (before.top - after.top) / scale;
     if (reduce || !nav.animate) return;
     // No glide: like the project details, it fades out softly blurring,
     // holds its old place unseen until `delay`, then fades back in at the new one.
     var OUT = 600, IN = 800;
     var hold = Math.max(delay || 0, OUT), total = hold + IN;
-    var from = 'translate(' + dx + 'px, ' + dy + 'px)';
-    nav.animate([
-      { offset: 0, transform: from, opacity: 1, filter: 'blur(0px)', easing: 'ease' },
-      { offset: OUT / total, transform: from, opacity: 0, filter: 'blur(8px)' },
-      { offset: hold / total, transform: from, opacity: 0, filter: 'blur(8px)' },
-      { offset: hold / total, transform: 'translate(0, 0)', opacity: 0, filter: 'blur(8px)', easing: 'ease' },
-      { offset: 1, transform: 'translate(0, 0)', opacity: 1, filter: 'blur(0px)' }
-    ], { duration: total });
+    els.forEach(function (el, i) {
+      var after = el.getBoundingClientRect();
+      var dx = (before[i].left - after.left) / scale, dy = (before[i].top - after.top) / scale;
+      var from = 'translate(' + dx + 'px, ' + dy + 'px)';
+      el.animate([
+        { offset: 0, transform: from, opacity: 1, filter: 'blur(0px)', easing: 'ease' },
+        { offset: OUT / total, transform: from, opacity: 0, filter: 'blur(8px)' },
+        { offset: hold / total, transform: from, opacity: 0, filter: 'blur(8px)' },
+        { offset: hold / total, transform: 'translate(0, 0)', opacity: 0, filter: 'blur(8px)', easing: 'ease' },
+        { offset: 1, transform: 'translate(0, 0)', opacity: 1, filter: 'blur(0px)' }
+      ], { duration: total });
+    });
   }
 
   // ---- the viscous morph ----------------------------------------------------
@@ -482,13 +485,14 @@
 
   function toCarousel() {
     isGrid = false; label();
-    if (!canMorph()) { moveNav(function () { root.classList.remove('is-grid'); }, 0); return; }
+    if (!canMorph()) { moveNav(function () { setScroll(0); root.classList.remove('is-grid'); }, 0); return; }
     var froms = medias.map(rectOf);
     var fades = fadeText(-1, 0);
-    setScroll(0);                                          // the profile glides back down
     root.classList.add('grid-fly', 'is-grid-leaving');
     setTimeout(function () {
-      moveNav(function () { root.classList.remove('is-grid'); }, (MERGE + TURN) * 1000);
+      // Scrolled down the grid, the profile fades back in at the top like the nav.
+      var profile = grid.scrollTop > 0 && document.querySelector('.profile');
+      moveNav(function () { setScroll(0); root.classList.remove('is-grid'); }, (MERGE + TURN) * 1000, profile ? [profile] : []);
       var ai = activeIdx();
       var tos = slideInners.map(rectOf), ctr = tos[ai];
       morph(froms, tos, ctr, ai, true, function (hide) {

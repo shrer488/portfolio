@@ -1373,10 +1373,6 @@ html.is-grid .nav {
   translate: 0 calc(var(--grid-scroll, 0) * -1px);
 }
 
-html.grid-anim .profile {
-  transition: translate 0.8s cubic-bezier(0.45, 0.05, 0.25, 1);
-}
-
 /* Two rows: the profile and the nav side by side along the top, and the
    projects below them across the full width; it all scrolls together. */
 .work-grid {

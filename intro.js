@@ -131,7 +131,8 @@
     // Cards are listed front to back: inside a card, the frontmost one wins
     // (so the others stay hidden inside the seed until they peel out);
     // outside every card, the goo takes the colour of the nearest one.
-    '  float field = 1e5; float best = 1e5; bool hit = false;',
+    '  float field = 1e5; float best = 1e5; bool hit = false; float shA = 0.0;',
+    '  float spx = uFrame.z / 130.0;',   // screen px per carousel px
     '  vec4 rect = uRect[0]; vec3 fit = uFit[0]; vec2 local = vec2(0.0); vec2 tsz = uTsz[0];',
     // Towards the end, the carousel's fold (carousel-goo.js): near the top
     // and bottom of its frame each card spreads wider and squashes into the
@@ -152,6 +153,11 @@
     '    q.y -= (r.y < (uFrame.x + uFrame.y) * 0.5 ? -1.0 : 1.0) * 0.035 * r.w * (1.0 - u * u) * ce;',
     '    float d = sdBox(q, r.zw, mix(min(uRadius, min(r.z, r.w)), 0.08 * min(r.z, r.w), ce)) / (1.0 + 2.0 * uFold.y * uSoft * ef);',
     '    field = smin(field, d, uK);',
+    // ...and the same hint of drop shadow carousel-goo.js gives the image in
+    // the middle, fading in with the rest of the carousel look.
+    '    float mid = 1.0 - smoothstep(uFrame.z * 0.46, uFrame.z * 2.3, cd);',
+    '    float sd = sdBox(rot(p - r.xy - vec2(0.0, 12.0 * spx), uRot[i]), r.zw * vec2(0.96, 0.94), 8.0 * spx);',
+    '    shA = max(shA, (1.0 - smoothstep(-14.0 * spx, 30.0 * spx, sd)) * 0.13 * (1.0 - mid) * (1.0 - mid) * uSoft);',
     '    if (!hit && (d <= 0.0 || d < best - 2.0)) { best = d; rect = r; fit = uFit[i]; local = q; tsz = uTsz[i]; hit = d <= 0.0; }',
     '  }',
     '  for (int j = 0; j < 9; j++){',
@@ -168,7 +174,9 @@
     // ...and, like the carousel, nothing past the frame's top and bottom.
     '  float outside = step(p.y, uFrame.x) + step(uFrame.y, p.y);',
     '  a *= 1.0 - uSoft * min(outside, 1.0);',
-    '  if (a <= 0.0) { gl_FragColor = vec4(0.0); return; }',
+    '  shA *= 1.0 - uSoft * min(outside, 1.0);',
+    '  vec4 shadow = vec4(vec3(0.05, 0.12, 0.13) * shA, shA);',
+    '  if (a <= 0.0) { gl_FragColor = shadow; return; }',
     // Mip level as in carousel-goo.js: the texture's density on screen, or
     // wider where it's blurred.
     '  float box = rect.z / rect.w;',
@@ -185,7 +193,7 @@
     '    }',
     '    col /= 13.0;',
     '  }',
-    '  gl_FragColor = vec4(col * a, a);',
+    '  gl_FragColor = vec4(col * a, a) + shadow * (1.0 - a);',
     '}'
   ].join('\n');
 

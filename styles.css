@@ -1276,6 +1276,222 @@ html.text-melt .cursor-label {
 }
 
 
+/* Grid view (grid.js): the four-squares button turns the carousel into a
+   two-column grid of the projects. The nav moves up beside the profile,
+   making a header row, with the projects in a row below; the carousel, its
+   details and the "Click" hint soften away. */
+.view-toggle {
+  position: fixed;
+  top: 17px;
+  right: 104px;
+  z-index: 900;
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+
+.view-toggle svg {
+  display: block;
+  fill: currentColor;
+  transition: transform 0.4s cubic-bezier(0.45, 0.05, 0.25, 1);
+}
+
+.view-toggle:hover svg {
+  transform: scale(1.08);
+}
+
+html.grid-anim .carousel-wrap,
+html.grid-anim .project-details,
+html.grid-anim .cursor-hint {
+  transition: opacity 0.6s ease, filter 0.6s ease;
+}
+
+html.is-grid .carousel-wrap,
+html.is-grid .project-details,
+html.is-grid .cursor-hint {
+  opacity: 0;
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+/* Coming back, the carousel waits for the cards to clear first. */
+html.grid-anim:not(.is-grid) .carousel-wrap,
+html.grid-anim:not(.is-grid) .project-details,
+html.grid-anim:not(.is-grid) .cursor-hint {
+  transition: opacity 0.8s ease 0.1s, filter 0.8s ease 0.1s;
+}
+
+/* While switching views (grid.js), the project images morph on this
+   canvas over the page: the carousel steps aside at once and the grid's
+   own images wait until the cards settle. */
+.morph-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 800;
+  pointer-events: none;
+  display: none;
+}
+
+html.grid-fly .carousel-wrap {
+  opacity: 0 !important;
+  transition: none !important;
+}
+
+/* The carousel takes over from the morph at once once the cards land. */
+html.grid-snap .carousel-wrap {
+  transition: none !important;
+}
+
+html.grid-fly .work-card-media {
+  visibility: hidden;
+}
+
+/* Going back, the project details wait for the cards to settle. */
+html.is-grid-leaving .project-details,
+html.is-grid-leaving .cursor-hint {
+  opacity: 0;
+  pointer-events: none;
+}
+
+html.is-grid .nav {
+  left: 378px;
+  top: 24px;
+  bottom: auto;
+}
+
+/* The header scrolls away with the projects (grid.js sets --grid-scroll),
+   sitting above the grid's scroll area so it stays clickable. */
+html.is-grid .profile,
+html.is-grid .nav {
+  z-index: 7;
+  translate: 0 calc(var(--grid-scroll, 0) * -1px);
+}
+
+html.grid-anim .profile {
+  transition: translate 0.8s cubic-bezier(0.45, 0.05, 0.25, 1);
+}
+
+/* Two rows: the profile and the nav side by side along the top, and the
+   projects below them across the full width; it all scrolls together. */
+.work-grid {
+  position: absolute;
+  left: 32px;
+  right: 32px;
+  top: 0;
+  bottom: 0;
+  z-index: 6;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px 32px;
+  align-content: start;
+  padding: 257px 0 72px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.work-grid::-webkit-scrollbar {
+  display: none;
+}
+
+html.is-grid .work-grid {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+html.is-grid-leaving .work-grid {
+  pointer-events: none;
+}
+
+.work-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.work-card-media {
+  position: relative;
+  display: block;
+  aspect-ratio: 676 / 446;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 12px 28px -16px rgba(13, 31, 33, 0.35);
+}
+
+.work-card-media img,
+.work-card-media video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.work-card-media img {
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.work-card-media img.is-contain {
+  object-fit: contain;
+}
+
+.work-card:hover .work-card-media img {
+  transform: scale(1.02);
+}
+
+/* The video fades in over the still once it's playing. */
+.work-card-media video {
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.work-card.is-playing .work-card-media video {
+  opacity: 1;
+}
+
+.work-card-title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.work-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.work-card-tags span {
+  padding: 5px 9px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  line-height: 1;
+  color: var(--ink-70);
+}
+
+@media (max-width: 780px) {
+  .view-toggle,
+  .work-grid {
+    display: none;
+  }
+}
+
+
 /* Project details swap (script.js): words need to be inline-block to
    move; spaces between them stay as text, so wrapping is unchanged. */
 .project-panel .swap-word {

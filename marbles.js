@@ -115,6 +115,9 @@
   // height of the letters, so balls sit on the text itself and roll off
   // where it ends, rather than on the empty end of its box.
   var BOXES = '.slide.is-active .slide-inner, .profile-photo, .cursor-icon';
+  // In the grid view (grid.js) they land on the project cards instead.
+  var GRID_SHELVES = '.work-card-media, .work-card-title, .profile-photo, .profile-name, .profile-role, .profile-bio, .nav-link';
+  var GRID_BOXES = '.work-card-media, .profile-photo';
   var range = document.createRange();
   function textLines(el) {
     var fs = parseFloat(getComputedStyle(el).fontSize) || 16;
@@ -139,12 +142,14 @@
   function shelves() {
     var out = [];
     function keep(r) { if (r.right - r.left >= 2 && r.bottom - r.top >= 2 && r.bottom > 0 && r.top < h) out.push(r); }
-    Array.prototype.forEach.call(document.querySelectorAll(BOXES), function (el) {
+    var gridView = document.documentElement.classList.contains('is-grid');
+    var boxes = gridView ? GRID_BOXES : BOXES, all = gridView ? GRID_SHELVES : SHELVES;
+    Array.prototype.forEach.call(document.querySelectorAll(boxes), function (el) {
       if (getComputedStyle(el).visibility === 'hidden') return;
       keep(el.getBoundingClientRect());
     });
-    Array.prototype.forEach.call(document.querySelectorAll(SHELVES), function (el) {
-      if (el.matches(BOXES) || getComputedStyle(el).visibility === 'hidden') return;
+    Array.prototype.forEach.call(document.querySelectorAll(all), function (el) {
+      if (el.matches(boxes) || getComputedStyle(el).visibility === 'hidden') return;
       textLines(el).forEach(keep);
     });
     return out;

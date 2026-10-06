@@ -65,6 +65,7 @@ window.addEventListener('load', function () {
 // up, not five distinct pages yet).
 (function () {
   var viewCursor = document.getElementById('viewCursor');
+  var page = document.querySelector('.page');
 
   // On first load the videos wait until the homepage text has finished
   // melting in (textmelt.js), plus half a second, so the landing image
@@ -84,9 +85,12 @@ window.addEventListener('load', function () {
   window.addEventListener('textmelt:done', function () { setTimeout(readyVideos, VIDEO_DELAY); });
   setTimeout(readyVideos, 20000);   // never leave them off
 
+  // The pill lives inside the scaled page (its transform makes it the
+  // containing block for position:fixed), so map the pointer into it.
   function moveCursor(e) {
-    viewCursor.style.left = e.clientX + 'px';
-    viewCursor.style.top = e.clientY + 'px';
+    var r = page.style.transform ? page.getBoundingClientRect() : { left: 0, top: 0, width: page.offsetWidth }, k = r.width / (page.offsetWidth || 1) || 1;
+    viewCursor.style.left = (e.clientX - r.left) / k + 'px';
+    viewCursor.style.top = (e.clientY - r.top) / k + 'px';
   }
 
   Array.prototype.forEach.call(document.querySelectorAll('.slide-inner'), function (inner) {
@@ -645,6 +649,8 @@ function verticalLoop(items, config) {
         // also reacting to the same touch events, and lets them scroll
         // the page normally.
         if (window.innerWidth < MOBILE_SWIPE_BREAKPOINT) return;
+        // In the grid view (grid.js) the wheel scrolls the grid instead.
+        if (document.documentElement.classList.contains('is-grid')) return;
         self.event.preventDefault();
         clearTimeout(settleTimer);
         if (settleTween) {

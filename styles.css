@@ -763,16 +763,14 @@ html.videos-ready .slide-inner:hover .slide-video {
   }
 }
 
-/* Large screens with limited vertical space (short laptop window, browser
-   chrome eating into the viewport, etc). Instead of scrolling to reveal the
-   bottom of the 838px-tall design, the page fills the actual viewport
-   height. The "01" numeral and the center image+details group re-center
+/* Large screens fill the actual viewport height, whatever it is: shorter
+   than the 838px design (a short laptop window) or taller (a big monitor,
+   where a fixed 838px page left the carousel cut off with empty space
+   below). The "01" numeral and the center image+details group re-center
    themselves automatically (their positions above are all relative to
    .hero's own 50%, which now equals 50vh instead of 419px) — only the
-   profile block and cursor hint need an explicit override here, switching
-   from a fixed top offset to hugging the bottom edge so they never get
-   pushed off-screen. */
-@media (min-width: 1440px) and (max-height: 837px) {
+   cursor hint needs an explicit override, hugging the bottom edge. */
+@media (min-width: 1440px) {
   html, body {
     overflow: hidden;
     height: 100%;

@@ -366,6 +366,8 @@
     ' display: flex; align-items: center; gap: 8px; padding: 0; border: 0; background: none;' +
     " font-family: '42dot Sans', 'Helvetica Neue', Arial, sans-serif; font-size: 12px; line-height: 1;" +
     ' color: rgba(0, 0, 0, 0.7); }' +
+    // Phones have no cursor trail, and the nav needs that corner there.
+    '@media (max-width: 780px) { .trail-toggle { display: none; } }' +
     // An outlined track. On: knob on the left, knob and outline turquoise.
     // Off: knob slides right, knob and outline black.
     '.trail-toggle-track { position: relative; box-sizing: border-box; width: 30px; height: 18px;' +

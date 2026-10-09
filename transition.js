@@ -245,6 +245,16 @@
 
   scheduleReveal();
 
+  // A case study's back arrow returns to the page you came from, when that
+  // was a page on this site; otherwise it keeps its link to the work.
+  var back = document.querySelector('.cs-back');
+  if (back && document.referrer) {
+    try {
+      var from = new URL(document.referrer);
+      if (from.origin === location.origin && from.pathname !== location.pathname) back.href = from.href;
+    } catch (err) {}
+  }
+
   document.addEventListener('click', function (e) {
     if (e.defaultPrevented || e.button !== 0) return;
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -273,7 +283,7 @@
   var style = document.createElement('style');
   style.textContent =
     'html.has-dot-cursor, html.has-dot-cursor * { cursor: none !important; }' +
-    '.dot-cursor { position: fixed; top: 0; left: 0; width: 16px; height: 16px; margin: -8px 0 0 -8px;' +
+    '.dot-cursor { position: fixed; top: 0; left: 0; width: 16px; height: 16px; margin: -8px 0 0 -8px; will-change: transform;' +
     ' border-radius: 50%; background: #000; pointer-events: none; z-index: 10000;' +
     ' opacity: 0; transition: opacity 0.2s ease, background-color 0.2s ease; }' +
     '.dot-cursor.is-visible { opacity: 1; }' +
@@ -284,7 +294,7 @@
        with a multiply blend, keeps black black and tints the light text
        turquoise. So it still reads as a black dot, with the text inside it
        showing through in turquoise. */
-    '.dot-lens { position: fixed; top: 0; left: 0; width: 16px; height: 16px; margin: -8px 0 0 -8px;' +
+    '.dot-lens { position: fixed; top: 0; left: 0; width: 16px; height: 16px; margin: -8px 0 0 -8px; will-change: transform;' +
     ' border-radius: 50%; pointer-events: none; z-index: 10000; opacity: 0; transition: opacity 0.15s ease; }' +
     '.dot-lens.is-on { opacity: 1; }' +
     '.dot-lens-invert { background: #fafafa; mix-blend-mode: difference; }' +
@@ -328,8 +338,10 @@
   }
 
   document.addEventListener('mousemove', function (e) {
-    dot.style.left = e.clientX + 'px';
-    dot.style.top = e.clientY + 'px';
+    // Moved with a transform rather than left/top, so following the
+    // pointer never makes the browser lay the page out again.
+    var at = 'translate3d(' + e.clientX + 'px, ' + e.clientY + 'px, 0)';
+    dot.style.transform = at;
     dot.classList.add('is-visible');
 
     var viewCursor = document.querySelector('.view-cursor.visible');
@@ -345,8 +357,7 @@
     var useLens = !dot.classList.contains('is-hidden') && (!!target || isPlainText(e.target));
     dot.classList.toggle('is-lens', useLens);
     lens.forEach(function (el) {
-      el.style.left = e.clientX + 'px';
-      el.style.top = e.clientY + 'px';
+      el.style.transform = at;
       el.classList.toggle('is-on', useLens);
     });
   });

@@ -25,10 +25,11 @@ img {
 
 /* Identical to the homepage nav (and case-study.html's copy of it) — same
    markup, same rules, just fixed here since this page real-scrolls. */
+/* Bottom-left, 24px in from both edges, where the homepage has it. */
 .nav {
   position: fixed;
-  left: 32px;
-  top: 24px;
+  left: 24px;
+  bottom: 24px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -91,11 +92,11 @@ img {
 
 /* Left rail: fixed for the whole page (per the Figma frame, this column
    never leaves the viewport — the grid on the right is what scrolls),
-   matching the homepage's own left-column positions (32px from the edge)
+   matching the homepage's own left-column positions (24px from the edge)
    at each element's Figma y-coordinate. */
 .play-side {
   position: fixed;
-  left: 32px;
+  left: 24px;
   top: 0;
   width: 207px;
   height: 100vh;
@@ -391,7 +392,7 @@ img {
 
 .lightbox-close {
   position: absolute;
-  left: 32px;
+  left: 24px;
   top: 24px;
   margin: 0;
   padding: 0;

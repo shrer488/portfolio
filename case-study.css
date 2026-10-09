@@ -33,17 +33,18 @@ img {
    piece of UI, just fixed here instead of positioned within the home
    page's canvas — "sticky" per the ask means it stays put as this page's
    own content scrolls under it, which position:fixed gives directly. */
+/* Bottom-left, 24px in from both edges, where the homepage has it. */
 .nav {
   position: fixed;
-  left: 32px;
-  top: 24px;
+  left: 24px;
+  bottom: 24px;
   display: flex;
   flex-direction: column;
   gap: 2px;
   font-family: var(--font-sans);
   font-weight: 800;
   text-transform: lowercase;
-  z-index: 50;
+  z-index: 70;
 }
 
 .nav-link {
@@ -97,64 +98,70 @@ img {
   display: inline-block;
 }
 
-/* Table of contents: fixed in the same left column as .nav, just further
-   down the page — a second, page-local nav for jumping between this case
-   study's own sections, with the current one highlighted as you scroll
-   (see the IntersectionObserver in case-study.html). */
+/* Table of contents: fixed at the top of the left column (the nav is at
+   the bottom) — a page-local nav for jumping between this case study's
+   own sections, with the current one highlighted as you scroll (see the
+   IntersectionObserver in case-study.html). A back arrow sits above it. */
 .cs-toc {
   position: fixed;
-  left: 32px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 24px;
+  top: 24px;
   z-index: 40;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   width: 160px;
 }
 
-/* Glass-style progressive blur across the bottom edge of the viewport.
-   Twelve flat, unmasked backdrop-filter layers of decreasing height and
-   increasing strength, stacked on top of each other, same overall
-   intensity as before (~5px effective at the very bottom) but split into
-   finer steps so the remaining transitions between bands stop reading as
-   lines. */
+/* Soft blur across the bottom edge of the viewport, the same kind as on
+   the homepage's peeking images: one 8px blur that fades in smoothly
+   toward the edge (a gradient mask), rather than stacked bands of
+   increasing strength, which left faint lines between the steps. It sits
+   under the nav (z-index 70 above), so the links stay sharp. */
 .cs-bottom-blur {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 80px;
+  height: 96px;
   pointer-events: none;
   z-index: 60;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 20%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, #000 20%, transparent 100%);
 }
 
 .cs-bottom-blur span {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  display: none;
+}
+
+/* Back arrow: to the page you came from (transition.js points it at the
+   referrer when that's this site), otherwise the homepage's work. */
+.cs-back {
+  display: inline-flex;
+  align-self: flex-start;
+  margin: -4px 0 20px -4px;
+  padding: 4px;
+  color: var(--ink);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.cs-back svg {
   display: block;
 }
 
-.cs-bottom-blur span:nth-child(1) { height: 80px; backdrop-filter: blur(0.06px); -webkit-backdrop-filter: blur(0.06px); }
-.cs-bottom-blur span:nth-child(2) { height: 73px; backdrop-filter: blur(0.2px); -webkit-backdrop-filter: blur(0.2px); }
-.cs-bottom-blur span:nth-child(3) { height: 67px; backdrop-filter: blur(0.41px); -webkit-backdrop-filter: blur(0.41px); }
-.cs-bottom-blur span:nth-child(4) { height: 60px; backdrop-filter: blur(0.69px); -webkit-backdrop-filter: blur(0.69px); }
-.cs-bottom-blur span:nth-child(5) { height: 53px; backdrop-filter: blur(1.03px); -webkit-backdrop-filter: blur(1.03px); }
-.cs-bottom-blur span:nth-child(6) { height: 47px; backdrop-filter: blur(1.44px); -webkit-backdrop-filter: blur(1.44px); }
-.cs-bottom-blur span:nth-child(7) { height: 40px; backdrop-filter: blur(1.9px); -webkit-backdrop-filter: blur(1.9px); }
-.cs-bottom-blur span:nth-child(8) { height: 33px; backdrop-filter: blur(2.41px); -webkit-backdrop-filter: blur(2.41px); }
-.cs-bottom-blur span:nth-child(9) { height: 27px; backdrop-filter: blur(2.98px); -webkit-backdrop-filter: blur(2.98px); }
-.cs-bottom-blur span:nth-child(10) { height: 20px; backdrop-filter: blur(3.6px); -webkit-backdrop-filter: blur(3.6px); }
-.cs-bottom-blur span:nth-child(11) { height: 13px; backdrop-filter: blur(4.28px); -webkit-backdrop-filter: blur(4.28px); }
-.cs-bottom-blur span:nth-child(12) { height: 7px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+@media (hover: hover) and (pointer: fine) {
+  .cs-back:hover {
+    transform: translateX(-3px);
+  }
+}
 
 .cs-toc-link {
   font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 1.4;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.3;
   color: var(--ink-40);
   text-decoration: none;
   transition: color 0.2s ease;

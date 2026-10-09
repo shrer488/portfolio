@@ -33,6 +33,7 @@
     var a = document.createElement('a');
     a.className = 'work-card';
     a.href = slide.getAttribute('data-href') || '#';
+    if (/^https?:/.test(a.getAttribute('href'))) { a.target = '_blank'; a.rel = 'noopener'; }
     var media = document.createElement('span');
     media.className = 'work-card-media';
     var im = document.createElement('img');

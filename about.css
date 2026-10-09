@@ -25,10 +25,11 @@ img {
 
 /* Identical to the homepage nav — same markup, same rules, fixed here
    since this page real-scrolls on short viewports. */
+/* Bottom-left, 24px in from both edges, where the homepage has it. */
 .nav {
   position: fixed;
-  left: 32px;
-  top: 24px;
+  left: 24px;
+  bottom: 24px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -91,7 +92,7 @@ img {
 
 /* Three columns, matching the Figma frame: the fixed nav sits in its own
    ~110px-wide strip on the left; the text column starts well clear of it
-   (padding-left, not the nav's own 32px) so the two never overlap at any
+   (padding-left, not the nav's own 24px) so the two never overlap at any
    scroll position; the photo fills whatever's left (1fr) instead of a
    percentage flex-basis — some browsers don't clamp a percentage
    flex-basis against max-width correctly, which let the text column
@@ -303,12 +304,12 @@ img {
   }
 }
 
-/* Lives in the nav column, fixed 24px above the bottom of the frame so
-   it stays put while the text column scrolls underneath it. */
+/* Top of the nav column (the nav itself sits at the bottom, as on the
+   homepage), fixed so it stays put while the text column scrolls. */
 .about-social {
   position: fixed;
-  left: 32px;
-  bottom: 24px;
+  left: 24px;
+  top: 24px;
   z-index: 50;
   display: flex;
   flex-direction: column;

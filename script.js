@@ -96,6 +96,12 @@ window.addEventListener('load', function () {
   // Hover (the video and the "View" pill) is for mouse and trackpad only:
   // a tap on a phone would leave it stuck on.
   var canHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  // Projects that live off the site (a Figma deck, say) open in a new tab,
+  // and their "View" pill gets the outgoing arrow.
+  function isExternal(inner) {
+    var slide = inner.closest('.slide');
+    return /^https?:/.test((slide && slide.dataset.href) || '');
+  }
   Array.prototype.forEach.call(document.querySelectorAll('.slide-inner'), function (inner) {
     var video = inner.querySelector('.slide-video');
     if (canHover) inner.addEventListener('mouseenter', function (e) {
@@ -105,6 +111,7 @@ window.addEventListener('load', function () {
       }
       if (viewCursor) {
         moveCursor(e);
+        viewCursor.classList.toggle('is-external', isExternal(inner));
         viewCursor.classList.add('visible');
         inner.style.cursor = 'none';
         inner.addEventListener('mousemove', moveCursor);
@@ -121,7 +128,9 @@ window.addEventListener('load', function () {
     inner.addEventListener('click', function (e) {
       var slide = inner.closest('.slide');
       var href = (slide && slide.dataset.href) || 'case-study.html';
-      if (window.pageTransition) {
+      if (isExternal(inner)) {
+        window.open(href, '_blank', 'noopener');
+      } else if (window.pageTransition) {
         window.pageTransition.navigate(href, e.clientX, e.clientY);
       } else {
         window.location.href = href;
@@ -726,4 +735,20 @@ function verticalLoop(items, config) {
       }
     }, { passive: true, capture: true });
   }
+})();
+
+// The live New York time under the role in the profile.
+(function () {
+  var el = document.getElementById('nyTime');
+  if (!el) return;
+  var fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    hour: 'numeric',
+    minute: '2-digit'
+  });
+  function tick() {
+    el.textContent = fmt.format(new Date());
+    setTimeout(tick, 60000 - (Date.now() % 60000) + 50);
+  }
+  tick();
 })();

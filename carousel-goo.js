@@ -12,6 +12,7 @@
    Desktop only (the stacked mobile layout keeps the original look), and
    skipped where WebGL isn't available or for reduced-motion users. */
 (function () {
+  var root = document.documentElement;
   var wrap = document.querySelector('.carousel-wrap');
   if (!wrap || window.innerWidth < 780) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -256,8 +257,19 @@
   });
 
   var rectArr = new Float32Array(20), fitArr = new Float32Array(15), tszArr = new Float32Array(10);
+  // The last picture drawn: when nothing on it has changed (no slide moved,
+  // no video frame or fade, no new texture, same size) the frame is skipped,
+  // so a resting carousel costs next to nothing.
+  var drawn = '', texGen = 0;
+  items.forEach(function (it) {
+    var put = it.put;
+    it.put = function () { texGen++; return put.apply(this, arguments); };
+  });
 
   function frame(now) {
+    requestAnimationFrame(frame);
+    // Hidden (grid view, or the window narrowed to the phone layout): nothing to draw.
+    if (cv.style.display === 'none' || (root.classList.contains('is-grid') && !root.classList.contains('grid-anim'))) return;
     var wr = cv.getBoundingClientRect();
     var s = W / (wr.width || 1);
     var want = Math.min(3, (window.devicePixelRatio || 1) / s);
@@ -295,6 +307,9 @@
       if (vid.mix <= 0.001) vid.idx = -1;
     }
     var vm = vid.mix * vid.mix * (3 - 2 * vid.mix);
+    var key = Array.prototype.join.call(rectArr, ',') + '|' + vid.idx + ',' + vm.toFixed(4) + ',' + vid.t + '|' + texGen + '|' + cv.width + 'x' + cv.height;
+    if (key === drawn) return;
+    drawn = key;
     gl.uniform3f(uVidInfo, vid.idx, vm, vid.aspect);
 
     gl.uniform4fv(uRect, rectArr);
@@ -308,7 +323,6 @@
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
-    requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 })();

@@ -72,7 +72,7 @@
 
   // ---- shader -------------------------------------------------------------
   var N = 10;       // cards in the ring
-  var TEX = 5;      // distinct images
+  var TEX = 6;      // distinct images
   var VERT = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }';
   // Mipmapped textures give the cards a cheap wide blur at the end, where
   // they soften into the carousel's folded edges.
@@ -95,7 +95,7 @@
     'uniform float uSoft;',     // 0 .. 1: how much of the carousel's edge fold and blur is on
     'uniform vec2 uFold;',      // the carousel's fold: extra width at the edge, squash
     'uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2;',
-    'uniform sampler2D uT3; uniform sampler2D uT4;',
+    'uniform sampler2D uT3; uniform sampler2D uT4; uniform sampler2D uT5;',
     'float sdBox(vec2 p, vec2 b, float r){ vec2 q = abs(p) - b + r;',
     '  return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }',
     'float smin(float a, float b, float k){ if (k <= 0.0) return min(a, b);',
@@ -112,7 +112,8 @@
     '  if (i < 1.5) return TEX(uT1, uv, l);',
     '  if (i < 2.5) return TEX(uT2, uv, l);',
     '  if (i < 3.5) return TEX(uT3, uv, l);',
-    '  return TEX(uT4, uv, l); }',
+    '  if (i < 4.5) return TEX(uT4, uv, l);',
+    '  return TEX(uT5, uv, l); }',
     // A card's picture at a point on it (px from its centre, unrotated).
     'vec3 picture(vec3 fit, vec4 rect, vec2 local, float l){',
     '  vec2 uv = (local + rect.zw) / (2.0 * rect.zw);',

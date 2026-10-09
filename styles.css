@@ -867,6 +867,8 @@ html.photo-wait .profile-time {
     height: auto;
     min-height: 100%;
     overflow: visible;
+    padding-top: 49px;
+    box-sizing: border-box;
   }
 
   .bg-tint {
@@ -874,11 +876,12 @@ html.photo-wait .profile-time {
     height: 100%;
   }
 
-  /* The "keep the nav sticky" part: a real in-flow header (not the
-     desktop's absolutely-positioned overlay) that pins itself to the top
-     of the viewport as the rest of the page scrolls underneath it. */
+  /* The header bar, fixed to the top of the screen like on every other
+     page (position: sticky came unstuck in Safari, where the page's own
+     overflow settings left it scrolling partway with the content). The
+     page starts below it (.page's padding-top, the bar's height). */
   .nav {
-    position: sticky;
+    position: fixed;
     left: 0;
     top: 0;
     bottom: auto;
@@ -1288,34 +1291,28 @@ html.text-melt .cursor-label {
 }
 
 
-/* Grid view (grid.js): the four-squares button turns the carousel into a
-   two-column grid of the projects. The nav moves up beside the profile,
-   making a header row, with the projects in a row below; the carousel, its
-   details and the "Click" hint soften away. */
-.view-toggle {
-  position: fixed;
-  top: 17px;
-  right: 104px;
-  z-index: 900;
-  width: 24px;
-  height: 24px;
-  padding: 4px;
-  border: 0;
-  background: none;
-  color: rgba(0, 0, 0, 0.7);
-  cursor: pointer;
+/* Grid view (grid.js): the "Grid" switch turns the carousel into a
+   two-column grid of the projects. It's styled as the "Trail" switch
+   (.trail-toggle, transition.js) and sits in the top-right corner with
+   Trail 24px to its left. The nav moves up beside the profile, making a
+   header row, with the projects in a row below; the carousel, its details
+   and the "Click" hint soften away. */
+.trail-toggle.view-toggle {
+  right: 24px;
 }
 
-.view-toggle svg {
-  display: block;
-  fill: currentColor;
-  transition: transform 0.4s cubic-bezier(0.45, 0.05, 0.25, 1);
+/* On, its knob stays plain black (the turquoise jelly ball is Trail's). */
+.trail-toggle.view-toggle[aria-checked="true"] .trail-toggle-knob {
+  background: #000;
+  box-shadow: none;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .view-toggle:hover svg {
-    transform: scale(1.08);
-  }
+.trail-toggle.view-toggle[aria-checked="true"] .trail-toggle-track {
+  border-color: #000;
+}
+
+html.has-grid-toggle .trail-toggle:not(.view-toggle) {
+  right: calc(24px + var(--grid-toggle-w, 0px) + 24px);
 }
 
 html.grid-anim .carousel-wrap,
@@ -1373,18 +1370,22 @@ html.is-grid-leaving .cursor-hint {
   pointer-events: none;
 }
 
-html.is-grid .nav {
-  left: 370px;
-  top: 24px;
-  bottom: auto;
-}
+/* (desktop only: a window narrowed to the phone layout while in the grid
+   keeps the phone's own fixed header bar) */
+@media (min-width: 781px) {
+  html.is-grid .nav {
+    left: 370px;
+    top: 24px;
+    bottom: auto;
+  }
 
-/* The header scrolls away with the projects (grid.js sets --grid-scroll),
-   sitting above the grid's scroll area so it stays clickable. */
-html.is-grid .profile,
-html.is-grid .nav {
-  z-index: 7;
-  translate: 0 calc(var(--grid-scroll, 0) * -1px);
+  /* The header scrolls away with the projects (grid.js sets --grid-scroll),
+     sitting above the grid's scroll area so it stays clickable. */
+  html.is-grid .profile,
+  html.is-grid .nav {
+    z-index: 7;
+    translate: 0 calc(var(--grid-scroll, 0) * -1px);
+  }
 }
 
 /* Two rows: the profile and the nav side by side along the top, and the
@@ -1398,9 +1399,9 @@ html.is-grid .nav {
   z-index: 6;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 48px 32px;
+  gap: 64px 32px;
   align-content: start;
-  padding: 257px 0 72px;
+  padding: 300px 0 72px;
   overflow-y: auto;
   scrollbar-width: none;
   visibility: hidden;
@@ -1423,14 +1424,19 @@ html.is-grid-leaving .work-grid {
 .work-card {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
   color: inherit;
   text-decoration: none;
+}
+
+.work-card.is-soon {
+  cursor: default;
 }
 
 .work-card-media {
   position: relative;
   display: block;
+  margin-bottom: 20px;
   aspect-ratio: 676 / 446;
   overflow: hidden;
   border-radius: 2px;
@@ -1476,14 +1482,15 @@ html.is-grid-leaving .work-grid {
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: 15px;
-  line-height: 1.3;
+  line-height: 1.4;
   color: var(--ink);
 }
 
 .work-card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
+  margin-top: 14px;
 }
 
 .work-card-tags span {

@@ -384,7 +384,7 @@
     '.trail-toggle-track { position: relative; box-sizing: border-box; width: 30px; height: 18px;' +
     ' border-radius: 999px; border: 1px solid #000; background: transparent;' +
     ' transition: background-color 0.25s ease, border-color 0.25s ease; }' +
-    '.trail-toggle-knob { position: absolute; top: 2.5px; left: 2.5px; width: 11px; height: 11px;' +
+    '.trail-toggle-knob { position: absolute; top: 1.5px; left: 1.5px; width: 13px; height: 13px;' +
     ' border-radius: 50%; background: #000;' +
     ' transition: transform 0.25s cubic-bezier(0.3, 0.7, 0.3, 1), background-color 0.25s ease; }' +
     '.trail-toggle[aria-checked="false"] .trail-toggle-knob { transform: translateX(12px); }' +

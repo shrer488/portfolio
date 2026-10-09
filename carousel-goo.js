@@ -17,7 +17,7 @@
   if (!wrap || window.innerWidth < 780) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var slides = Array.prototype.slice.call(wrap.querySelectorAll('.slide'));
-  var N = Math.min(slides.length, 5);
+  var N = Math.min(slides.length, 6);
   if (!N) return;
 
   var cv = document.createElement('canvas');
@@ -50,21 +50,21 @@
            : '#define TEX(s, uv, l) texture2D(s, uv, l)',
     'precision highp float;',
     'uniform vec2 uRes; uniform float uDpr;',
-    'uniform vec4 uRect[5];',   // centre x, centre y, half w, half h (css px, y down)
-    'uniform vec3 uFit[5];',    // image aspect, fit (0 cover, 1 contain on white), texture
-    'uniform vec2 uTsz[5];',    // each texture's size in texels
+    'uniform vec4 uRect[6];',   // centre x, centre y, half w, half h (css px, y down)
+    'uniform vec3 uFit[6];',    // image aspect, fit (0 cover, 1 contain on white), texture
+    'uniform vec2 uTsz[6];',    // each texture's size in texels
     'uniform float uZone;',     // px at the top and bottom of the frame where images fold
     'uniform float uFlare;',    // extra width right at the frame edge
     'uniform float uSquash;',   // how much of the image is pulled into the fold
     'uniform float uBlur;',     // px of blur right at the frame edge
-    'uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2; uniform sampler2D uT3; uniform sampler2D uT4;',
+    'uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2; uniform sampler2D uT3; uniform sampler2D uT4; uniform sampler2D uT5;',
     // The hover video has its own texture and fades in over its card's still.
     'uniform sampler2D uVid; uniform vec3 uVidInfo;',   // card index, mix 0..1, video aspect
     'float sdBox(vec2 p, vec2 b, float r){ vec2 q = abs(p) - b + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }',
     'vec4 pick(float i, vec2 uv, float l){',
     '  if (i < 0.5) return TEX(uT0, uv, l); if (i < 1.5) return TEX(uT1, uv, l);',
     '  if (i < 2.5) return TEX(uT2, uv, l); if (i < 3.5) return TEX(uT3, uv, l);',
-    '  return TEX(uT4, uv, l); }',
+    '  if (i < 4.5) return TEX(uT4, uv, l); return TEX(uT5, uv, l); }',
     // The card's picture at a point on the flat image (px from its centre).
     'vec3 picture(vec3 fit, vec4 rect, vec2 local, float l){',
     '  vec2 uv = clamp((local + rect.zw) / (2.0 * rect.zw), 0.0, 1.0);',
@@ -91,7 +91,7 @@
     '  vec2 p = gl_FragCoord.xy / uDpr; p.y = uRes.y - p.y;',
     '  float field = 1e5, best = 1e5; bool hit = false; float shA = 0.0;',
     '  vec4 rect = uRect[0]; vec3 fit = uFit[0]; vec2 local = vec2(0.0); vec2 tsz = uTsz[0];',
-    '  for (int i = 0; i < 5; i++){',
+    '  for (int i = 0; i < 6; i++){',
     '    vec4 r = uRect[i]; if (r.z <= 0.0) continue;',
     // Towards the top and bottom of the frame each image folds over the
     // edge towards the viewer: the screen point is mapped back to a point
@@ -170,13 +170,13 @@
   function U(n) { return gl.getUniformLocation(prog, n); }
   var uTsz = U('uTsz');
   var uRes = U('uRes'), uDpr = U('uDpr'), uRect = U('uRect'), uFit = U('uFit'), uZone = U('uZone'), uFlare = U('uFlare'), uSquash = U('uSquash'), uBlur = U('uBlur');
-  for (var t = 0; t < 5; t++) gl.uniform1i(U('uT' + t), t);
-  gl.uniform1i(U('uVid'), 5);
+  for (var t = 0; t < 6; t++) gl.uniform1i(U('uT' + t), t);
+  gl.uniform1i(U('uVid'), 6);
   var uVidInfo = U('uVidInfo');
   // One texture for whichever hover video is playing, mipmapped like the
   // stills, filled through its own power-of-two canvas.
   var vidTex = gl.createTexture();
-  gl.activeTexture(gl.TEXTURE5);
+  gl.activeTexture(gl.TEXTURE6);
   gl.bindTexture(gl.TEXTURE_2D, vidTex);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
@@ -192,7 +192,7 @@
     var w2 = potSide(v.videoWidth), h2 = potSide(v.videoHeight);
     if (vidCv.width !== w2 || vidCv.height !== h2) { vidCv.width = w2; vidCv.height = h2; }
     vidCx.drawImage(v, 0, 0, w2, h2);
-    gl.activeTexture(gl.TEXTURE5);
+    gl.activeTexture(gl.TEXTURE6);
     gl.bindTexture(gl.TEXTURE_2D, vidTex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, vidCv);
     gl.generateMipmap(gl.TEXTURE_2D);
@@ -256,7 +256,7 @@
     if (on) size();
   });
 
-  var rectArr = new Float32Array(20), fitArr = new Float32Array(15), tszArr = new Float32Array(10);
+  var rectArr = new Float32Array(24), fitArr = new Float32Array(18), tszArr = new Float32Array(12);
   // The last picture drawn: when nothing on it has changed (no slide moved,
   // no video frame or fade, no new texture, same size) the frame is skipped,
   // so a resting carousel costs next to nothing.

@@ -98,6 +98,11 @@ window.addEventListener('load', function () {
   var canHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   // Projects that live off the site (a Figma deck, say) open in a new tab,
   // and their "View" pill gets the outgoing arrow.
+  // Projects without their case study yet (data-soon) say so and don't link.
+  function isSoon(inner) {
+    var slide = inner.closest('.slide');
+    return !!(slide && slide.hasAttribute('data-soon'));
+  }
   function isExternal(inner) {
     var slide = inner.closest('.slide');
     return /^https?:/.test((slide && slide.dataset.href) || '');
@@ -112,6 +117,7 @@ window.addEventListener('load', function () {
       if (viewCursor) {
         moveCursor(e);
         viewCursor.classList.toggle('is-external', isExternal(inner));
+        viewCursor.querySelector('.view-label').textContent = isSoon(inner) ? 'Coming Soon' : 'View';
         viewCursor.classList.add('visible');
         inner.style.cursor = 'none';
         inner.addEventListener('mousemove', moveCursor);
@@ -127,6 +133,7 @@ window.addEventListener('load', function () {
     });
     inner.addEventListener('click', function (e) {
       var slide = inner.closest('.slide');
+      if (isSoon(inner)) return;
       var href = (slide && slide.dataset.href) || 'case-study.html';
       if (isExternal(inner)) {
         window.open(href, '_blank', 'noopener');

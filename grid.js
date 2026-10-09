@@ -32,7 +32,9 @@
 
     var a = document.createElement('a');
     a.className = 'work-card';
-    a.href = slide.getAttribute('data-href') || '#';
+    // Projects still to come (data-soon) stay as plain cards, not links.
+    if (slide.hasAttribute('data-soon')) a.classList.add('is-soon');
+    else a.href = slide.getAttribute('data-href') || '#';
     if (/^https?:/.test(a.getAttribute('href'))) { a.target = '_blank'; a.rel = 'noopener'; }
     var media = document.createElement('span');
     media.className = 'work-card-media';
@@ -96,6 +98,8 @@
       };
       media.addEventListener('mouseenter', function (e) {
         follow(e);
+        vc.classList.toggle('is-external', a.target === '_blank');
+        vc.querySelector('.view-label').textContent = a.classList.contains('is-soon') ? 'Coming Soon' : 'View';
         vc.classList.add('visible');
         media.style.cursor = 'none';
         media.addEventListener('mousemove', follow);
@@ -107,6 +111,8 @@
       });
     }
     a.addEventListener('click', function (e) {
+      if (a.classList.contains('is-soon')) { e.preventDefault(); return; }
+      if (a.target === '_blank') return;   // off-site: a new tab, no transition
       if (window.pageTransition) {
         e.preventDefault();
         window.pageTransition.navigate(a.getAttribute('href'), e.clientX, e.clientY);
@@ -127,24 +133,23 @@
   }, { passive: true });
 
   // ---- the switch ----------------------------------------------------------
+  // A "Grid" switch, the same as the "Trail" one (transition.js) and just
+  // after it in the top-right corner; knob left and turquoise when on.
   var btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = 'view-toggle';
-  var ICON_GRID =
-    '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">' +
-    '<rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2"/>' +
-    '<rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2"/></svg>';
-  var ICON_STACK =
-    '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">' +
-    '<rect x="4" y="0.8" width="8" height="2.2" rx="1"/><rect x="1.5" y="4.6" width="13" height="6.8" rx="1.4"/>' +
-    '<rect x="4" y="13" width="8" height="2.2" rx="1"/></svg>';
+  btn.className = 'trail-toggle view-toggle';
+  btn.setAttribute('role', 'switch');
+  btn.innerHTML = '<span class="trail-toggle-track"><span class="trail-toggle-knob"></span></span>' +
+    '<span class="trail-toggle-label">Grid</span>';
   document.body.appendChild(btn);
+  // The Trail switch sits 24px to its left, wherever this one's width ends.
+  function placeTrail() { root.style.setProperty('--grid-toggle-w', btn.offsetWidth + 'px'); root.classList.add('has-grid-toggle'); }
+  placeTrail();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeTrail);
 
   var isGrid = false, busy = 0;
   function label() {
-    btn.innerHTML = isGrid ? ICON_STACK : ICON_GRID;
-    btn.setAttribute('aria-label', isGrid ? 'Show projects as a carousel' : 'Show projects as a grid');
-    btn.setAttribute('aria-pressed', isGrid ? 'true' : 'false');
+    btn.setAttribute('aria-checked', isGrid ? 'true' : 'false');
   }
   label();
 
@@ -199,11 +204,11 @@
              : '#define TEX(s, uv, l) texture2D(s, uv, l)',
       'precision highp float;',
       'uniform vec2 uRes; uniform float uDpr, uK, uAlpha;',
-      'uniform vec4 uRect[5];',   // centre x, centre y, half w, half h (css px, y down)
-      'uniform float uRot[5];',
-      'uniform float uCB[5];',    // each card's own blur while it moves, px
-      'uniform vec3 uFit[5];',    // image aspect, fit (0 cover, 1 contain on white), texture
-      'uniform vec2 uTsz[5];',    // texture sizes, texels
+      'uniform vec4 uRect[6];',   // centre x, centre y, half w, half h (css px, y down)
+      'uniform float uRot[6];',
+      'uniform float uCB[6];',    // each card's own blur while it moves, px
+      'uniform vec3 uFit[6];',    // image aspect, fit (0 cover, 1 contain on white), texture
+      'uniform vec2 uTsz[6];',    // texture sizes, texels
       // The carousel's own look (carousel-goo.js), faded in by uSoft so the
       // morph lands as (or leaves from) exactly what the carousel draws:
       // the fold and blur at the frame's top and bottom, the curve of the
@@ -211,14 +216,14 @@
       'uniform vec4 uFrame;',     // frame top, bottom, fold zone, blur at its edge (px)
       'uniform vec2 uFold;',      // extra width at the edge, squash
       'uniform float uSoft;',
-      'uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2; uniform sampler2D uT3; uniform sampler2D uT4;',
+      'uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2; uniform sampler2D uT3; uniform sampler2D uT4; uniform sampler2D uT5;',
       'float sdBox(vec2 p, vec2 b, float r){ vec2 q = abs(p) - b + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }',
       'float smin(float a, float b, float k){ if (k <= 0.0) return min(a, b); float h = max(k - abs(a - b), 0.0) / k; return min(a, b) - h * h * k * 0.25; }',
       'vec2 rot(vec2 v, float a){ float c = cos(a), s = sin(a); return vec2(c * v.x + s * v.y, -s * v.x + c * v.y); }',
       'vec4 pick(float i, vec2 uv, float l){',
       '  if (i < 0.5) return TEX(uT0, uv, l); if (i < 1.5) return TEX(uT1, uv, l);',
       '  if (i < 2.5) return TEX(uT2, uv, l); if (i < 3.5) return TEX(uT3, uv, l);',
-      '  return TEX(uT4, uv, l); }',
+      '  if (i < 4.5) return TEX(uT4, uv, l); return TEX(uT5, uv, l); }',
       'vec3 picture(vec3 fit, vec4 rect, vec2 local, float l){',
       '  vec2 uv = clamp((local + rect.zw) / (2.0 * rect.zw), 0.0, 1.0);',
       '  float box = rect.z / rect.w;',
@@ -238,7 +243,7 @@
       '  float ef = clamp(1.0 - min(p.y - uFrame.x, uFrame.y - p.y) / uFrame.z, 0.0, 1.0);',
       '  float fe = uSoft * ef * ef;',
       '  float side = p.y < fmid ? -1.0 : 1.0;',
-      '  for (int i = 0; i < 5; i++){',
+      '  for (int i = 0; i < 6; i++){',
       '    vec4 r = uRect[i]; if (r.z <= 0.0) continue;',
       '    vec2 pw = vec2(r.x + (p.x - r.x) / (1.0 + uFold.x * fe), p.y + side * uFold.y * uFrame.z * fe);',
       '    vec2 q = rot(pw - r.xy, uRot[i]);',
@@ -298,7 +303,7 @@
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     ['uRes', 'uDpr', 'uK', 'uAlpha', 'uRect', 'uRot', 'uCB', 'uFit', 'uTsz', 'uFrame', 'uFold', 'uSoft'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
-    for (var ti = 0; ti < 5; ti++) gl.uniform1i(gl.getUniformLocation(prog, 'uT' + ti), ti);
+    for (var ti = 0; ti < 6; ti++) gl.uniform1i(gl.getUniformLocation(prog, 'uT' + ti), ti);
     gl.uniform2f(U.uFold, 0.16, 0.7);   // carousel-goo.js's FLARE and SQUASH
   }
   // The pictures at the carousel's own resolution (carousel-goo.js), so
@@ -402,8 +407,8 @@
     var shw = toCarousel ? Math.min(ctr.hw * 0.85, Math.max(170, Math.min(w, h) * 0.3))
                          : Math.min(ctr.hw * 0.8, Math.max(130, Math.min(w, h) * 0.22));
     var back = { x: ctr.x, y: ctr.y, hw: shw, hh: shw * (ctr.hh / ctr.hw) };
-    var rects = new Float32Array(20), rots = new Float32Array(5), fits = new Float32Array(15);
-    var cbs = new Float32Array(5), tsz = new Float32Array(10);
+    var rects = new Float32Array(24), rots = new Float32Array(6), fits = new Float32Array(18);
+    var cbs = new Float32Array(6), tsz = new Float32Array(12);
     var t0 = performance.now();
     (function frame(now) {
       var t = (now - t0) / 1000, k = 0;

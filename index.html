@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:wght@400&family=Fraunces:opsz,wght@9..144,400&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="transition.css?v=18" />
-<link rel="stylesheet" href="styles.css?v=126" />
+<link rel="stylesheet" href="styles.css?v=136" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Observer.min.js" defer></script>
@@ -59,7 +59,7 @@
 
     <div class="profile">
       <div class="profile-photo" data-smear-img data-smear-strength="0.03" data-smear-wave="0.3" data-smear-fade="0.92">
-        <img src="assets/profile.png?v=4" alt="Riya Shrestha" />
+        <img src="assets/profile.webp" alt="Riya Shrestha" />
       </div>
       <div class="profile-info">
         <h1 class="profile-name">Riya Shrestha</h1>
@@ -95,18 +95,26 @@
           </div>
         </div>
 
-        <div class="slide" data-index="3" data-href="case-study-pro-challenges.html">
+        <div class="slide" data-index="3" data-soon>
           <div class="slide-inner">
             <img class="slide-img" src="assets/pro-challenges-hero.jpg" alt="Programiz PRO Challenges shown on a laptop, displaying a Pronic number coding challenge" />
             <img class="slide-blur" src="assets/pro-challenges-hero.jpg" alt="" aria-hidden="true" />
           </div>
         </div>
 
-        <div class="slide above" data-index="4" data-href="case-study-pinterest-basket.html">
+        <div class="slide" data-index="4" data-href="case-study-pinterest-basket.html">
           <div class="slide-inner">
             <img class="slide-img" src="assets/pin-hero.png" alt="Pinterest Basket — dragging pins into a basket" />
             <img class="slide-blur" src="assets/pin-hero.png" alt="" aria-hidden="true" />
             <video class="slide-video" muted loop playsinline preload="none" src="assets/pin-hero-video.mp4"></video>
+          </div>
+        </div>
+
+        <div class="slide above" data-index="5" data-href="https://found-marketing.vercel.app/">
+          <div class="slide-inner">
+            <img class="slide-img" src="assets/found-hero.png" alt="Found — a hand holding a phone showing a post in the Found app, beside the FOUND. wordmark and real-world inspiration photos" />
+            <img class="slide-blur" src="assets/found-hero.png" alt="" aria-hidden="true" />
+            <video class="slide-video" muted loop playsinline preload="none" src="assets/found-video.mp4"></video>
           </div>
         </div>
       </div>
@@ -230,6 +238,29 @@
           </div>
         </div>
       </div>
+
+      <div class="project-panel" data-index="5">
+        <div class="project-summary">
+          <h2 class="project-title">Found: Sharing real-world inspiration, pinned to where you found it</h2>
+          <p class="project-desc">My thesis at Parsons: a community app where designers share the inspiration they spot in everyday life &mdash; a photo, where they found it and why it inspired them. I designed and built it solo, from research to a live app, with Claude Code, Supabase and Vercel.</p>
+        </div>
+        <div class="project-meta">
+          <div class="meta-block">
+            <p class="meta-label">FEATURES</p>
+            <div class="meta-list">
+              <p>Social App</p>
+              <p>Location-based</p>
+              <p>Community Discovery</p>
+              <p>Solo Build</p>
+            </div>
+          </div>
+          <div class="meta-block">
+            <p class="meta-label">IMPACT</p>
+            <p class="meta-stat">19+</p>
+            <p class="meta-caption">users on launch day, showcased at Index Chinatown</p>
+          </div>
+        </div>
+      </div>
     </article>
 
     <div class="cursor-hint">
@@ -238,7 +269,7 @@
     </div>
 
     <div class="view-cursor" id="viewCursor" aria-hidden="true">
-      <span>View</span>
+      <span class="view-label">View</span>
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 11L11 3M11 3H4.5M11 3V9.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
@@ -247,11 +278,11 @@
 
 </div>
 </div>
-<script src="script.js?v=99" defer></script>
-<script src="grid.js?v=35" defer></script>
-<script src="carousel-goo.js?v=24" defer></script>
-<script src="intro.js?v=36" defer></script>
-<script src="transition.js?v=45"></script>
+<script src="script.js?v=100" defer></script>
+<script src="grid.js?v=38" defer></script>
+<script src="carousel-goo.js?v=25" defer></script>
+<script src="intro.js?v=37" defer></script>
+<script src="transition.js?v=46"></script>
 <script src="marbles.js?v=10" defer></script>
 <script src="smear.js?v=31" defer></script>
 <script src="textmelt.js?v=13" defer></script>

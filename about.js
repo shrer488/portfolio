@@ -17,13 +17,14 @@
   var thumbs = document.querySelectorAll('.about-snap-photos img');
   var activeCaption = caption ? caption.textContent : '';
 
+  var canHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;   // no hover states on touch
   thumbs.forEach(function (thumb) {
-    thumb.addEventListener('mouseenter', function () {
+    if (canHover) thumb.addEventListener('mouseenter', function () {
       if (!caption || !thumb.dataset.caption) return;
       caption.textContent = thumb.dataset.caption;
     });
 
-    thumb.addEventListener('mouseleave', function () {
+    if (canHover) thumb.addEventListener('mouseleave', function () {
       if (!caption) return;
       caption.textContent = activeCaption;
     });

@@ -364,7 +364,7 @@
   style.textContent +=
     '.trail-toggle { position: fixed; top: 20px; right: 24px; z-index: 900;' +
     ' display: flex; align-items: center; gap: 8px; padding: 0; border: 0; background: none;' +
-    " font-family: '42dot Sans', 'Helvetica Neue', Arial, sans-serif; font-size: 12px; line-height: 1;" +
+    " font-family: 'Lunchtype22', 'Helvetica Neue', Arial, sans-serif; font-size: 12px; line-height: 1;" +
     ' color: rgba(0, 0, 0, 0.7); }' +
     // Phones have no cursor trail, and the nav needs that corner there.
     '@media (max-width: 780px) { .trail-toggle { display: none; } }' +

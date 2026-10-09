@@ -93,9 +93,12 @@ window.addEventListener('load', function () {
     viewCursor.style.top = (e.clientY - r.top) / k + 'px';
   }
 
+  // Hover (the video and the "View" pill) is for mouse and trackpad only:
+  // a tap on a phone would leave it stuck on.
+  var canHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   Array.prototype.forEach.call(document.querySelectorAll('.slide-inner'), function (inner) {
     var video = inner.querySelector('.slide-video');
-    inner.addEventListener('mouseenter', function (e) {
+    if (canHover) inner.addEventListener('mouseenter', function (e) {
       if (video && videosReady) {
         video.currentTime = 0;
         video.play().catch(function () {});
@@ -107,7 +110,7 @@ window.addEventListener('load', function () {
         inner.addEventListener('mousemove', moveCursor);
       }
     });
-    inner.addEventListener('mouseleave', function () {
+    if (canHover) inner.addEventListener('mouseleave', function () {
       if (video) video.pause();
       if (viewCursor) {
         viewCursor.classList.remove('visible');

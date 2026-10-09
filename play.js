@@ -11,6 +11,7 @@
   // another, then the new ones rise in from below and settle. Same
   // timings and easing as there.
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var STEP = 14, MAXD = 280, SHIFT = 0.5;   // ms between words, cap, em of travel
 
   // Wrap each word in an inline-block span so it can move. Handles both
@@ -94,7 +95,7 @@
   items.forEach(function (item) {
     var num = item.dataset.num;
     var caption = item.dataset.caption;
-    if (!num || !caption) return;
+    if (!num || !caption || !canHover) return;   // no hover states on touch
 
     item.addEventListener('mouseenter', function () {
       clearTimeout(hideTimer);

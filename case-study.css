@@ -3,7 +3,7 @@
   --ink-70: rgba(0, 0, 0, 0.7);
   --ink-40: rgba(0, 0, 0, 0.4);
   --bg: #fafafa;
-  --font-sans: '42dot Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Lunchtype22', 'Helvetica Neue', Arial, sans-serif;
   --font-display: 'Bodoni Moda SC', 'Times New Roman', serif;
 }
 
@@ -57,8 +57,10 @@ img {
   transition: opacity 0.2s ease;
 }
 
-.nav-link:hover {
-  opacity: 0.7;
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover {
+    opacity: 0.7;
+  }
 }
 
 .nav-link.active {
@@ -80,9 +82,14 @@ img {
   -webkit-mask-image: linear-gradient(to bottom, black 0%, black 10%, transparent 10%);
 }
 
-.nav-link.active::before,
-.nav-link:hover::before {
+.nav-link.active::before {
   opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover::before {
+    opacity: 1;
+  }
 }
 
 .nav-link .txt {
@@ -153,8 +160,10 @@ img {
   transition: color 0.2s ease;
 }
 
-.cs-toc-link:hover {
-  color: var(--ink-70);
+@media (hover: hover) and (pointer: fine) {
+  .cs-toc-link:hover {
+    color: var(--ink-70);
+  }
 }
 
 .cs-toc-link.active {
@@ -191,7 +200,7 @@ img {
 
 .cs-title {
   margin: 0 0 24px;
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-weight: 800;
   font-size: clamp(28px, 4vw, 44px);
   line-height: 1.15;
@@ -340,8 +349,10 @@ img {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.cs-carousel-arrow:hover {
-  background: #f4f4f5;
+@media (hover: hover) and (pointer: fine) {
+  .cs-carousel-arrow:hover {
+    background: #f4f4f5;
+  }
 }
 
 .cs-carousel-arrow svg {
@@ -765,23 +776,20 @@ img {
 }
 
 .cs-footer-title {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-weight: 700;
   font-size: clamp(28px, 4vw, 40px);
   color: var(--ink);
   text-decoration: none;
 }
 
-.cs-footer-title:hover {
-  text-decoration: underline;
+@media (hover: hover) and (pointer: fine) {
+  .cs-footer-title:hover {
+    text-decoration: underline;
+  }
 }
 
 @media (max-width: 780px) {
-  .nav {
-    left: 24px;
-    top: 20px;
-  }
-
   /* No room for a fixed sidebar TOC alongside content at this width. */
   .cs-toc {
     display: none;

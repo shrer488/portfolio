@@ -7,7 +7,8 @@
 // after another (and the reverse on the way back).
 //
 // The grid is built from the carousel's own slides and project panels, so
-// it never drifts out of step with them. Desktop and tablet only.
+// it never drifts out of step with them. On phones it's the whole homepage:
+// one column, no carousel (styles.css).
 (function () {
   var root = document.documentElement;
   var page = document.querySelector('.page');
@@ -15,6 +16,7 @@
   var slides = Array.prototype.slice.call(document.querySelectorAll('.carousel .slide'));
   if (!page || !nav || !slides.length) return;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;   // no hover states on touch
 
   // ---- the grid ----------------------------------------------------------
   var grid = document.createElement('div');
@@ -39,7 +41,7 @@
     im.loading = 'lazy';
     if (img.style.objectFit === 'contain') im.classList.add('is-contain');
     media.appendChild(im);
-    if (vid) {
+    if (vid && canHover) {
       var v = document.createElement('video');
       v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'none';
       v.src = vid.getAttribute('src');
@@ -65,6 +67,14 @@
     h.className = 'work-card-title';
     h.textContent = title;
     a.appendChild(h);
+    // The description shows only in the phone layout's single column.
+    var descEl = panel && panel.querySelector('.project-desc');
+    if (descEl) {
+      var d = document.createElement('span');
+      d.className = 'work-card-desc';
+      d.textContent = descEl.textContent;
+      a.appendChild(d);
+    }
     if (tags.length) {
       var t = document.createElement('span');
       t.className = 'work-card-tags';
@@ -77,7 +87,7 @@
     }
     // The same "View" pill as the carousel's images follows the pointer.
     var vc = document.getElementById('viewCursor');
-    if (vc) {
+    if (vc && canHover) {
       // (it lives inside the scaled page, so pointer coordinates are mapped into it)
       var follow = function (e) {
         var r = page.style.transform ? page.getBoundingClientRect() : { left: 0, top: 0, width: page.offsetWidth }, k = r.width / (page.offsetWidth || 1) || 1;

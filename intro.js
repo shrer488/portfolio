@@ -39,6 +39,7 @@
 
   var slides = Array.prototype.slice.call(document.querySelectorAll('.carousel .slide'));
   if (!slides.length) return bail();
+  if (window.innerWidth < 780) return bail();   // phones have no carousel to land in
 
   var canvas = document.createElement('canvas');
   var gl = canvas.getContext('webgl', { premultipliedAlpha: true, antialias: false });

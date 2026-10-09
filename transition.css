@@ -1,3 +1,41 @@
+/* Diamond Grotesk (CC0, assets/fonts) for the display headings: the
+   intro's name, the homepage name and project titles, "Hi I'm Riya", the
+   Play numbers and the case study titles. It comes in one weight (its
+   only variable axis is italic); declaring the full weight range keeps
+   the browser from faking a bold where the headings ask for 700/800. */
+@font-face {
+  font-family: 'Diamond Grotesk';
+  src: url('assets/fonts/DiamondGrotesk-VF.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* Lunchtype22 (OFL, assets/fonts) for everything else: body copy, nav,
+   tags, labels. It comes in Light, Regular and Medium; Medium covers
+   500 and up, so the 600–800 weights land on it instead of a faked bold. */
+@font-face {
+  font-family: 'Lunchtype22';
+  src: url('assets/fonts/Lunchtype22-Light.ttf') format('truetype');
+  font-weight: 100 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lunchtype22';
+  src: url('assets/fonts/Lunchtype22-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lunchtype22';
+  src: url('assets/fonts/Lunchtype22-Medium.ttf') format('truetype');
+  font-weight: 500 900;
+  font-display: swap;
+}
+
+:root {
+  --font-heading: 'Diamond Grotesk', 'Lunchtype22', 'Helvetica Neue', Arial, sans-serif;
+}
+
 /* Viscous droplet page transition (drawn by transition.js on a canvas).
 
    Every page carries #pageTransition. Its default state is a plain,
@@ -65,4 +103,55 @@ body::before {
   pointer-events: none;
   opacity: 0.35;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.25  0 0 0 0 0.3  0 0 0 0 0.3  0 0 0 1.4 -0.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* The nav, the same on every page. On desktop the links stand alone (the
+   logo is hidden and .nav-tabs steps aside with display:contents); on
+   phones it's one header bar across the top: the logo, a black dot like
+   the cursor, on the left and the links in a row on the right. The
+   homepage (styles.css) keeps the same bar in its own flow, sticky. */
+.nav-logo {
+  display: none;
+}
+
+.nav-tabs {
+  display: contents;
+}
+
+@media (max-width: 780px) {
+  .nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: auto;
+    width: 100%;
+    box-sizing: border-box;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: #fafafa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    z-index: 50;
+  }
+
+  .nav .nav-logo {
+    display: block;
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #000;
+  }
+
+  .nav .nav-tabs {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav .nav-link,
+  .nav .nav-link.active {
+    font-size: 14px;
+  }
 }

@@ -60,6 +60,7 @@
     'uniform sampler2D uT0; uniform sampler2D uT1; uniform sampler2D uT2; uniform sampler2D uT3; uniform sampler2D uT4; uniform sampler2D uT5;',
     // The hover video has its own texture and fades in over its card's still.
     'uniform sampler2D uVid; uniform vec3 uVidInfo;',   // card index, mix 0..1, video aspect
+    'uniform vec4 uVidFit;',    // 1 = show the whole video (contain), then the colour around it
     'float sdBox(vec2 p, vec2 b, float r){ vec2 q = abs(p) - b + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }',
     'vec4 pick(float i, vec2 uv, float l){',
     '  if (i < 0.5) return TEX(uT0, uv, l); if (i < 1.5) return TEX(uT1, uv, l);',
@@ -83,8 +84,16 @@
     '  if (uVidInfo.y > 0.001 && abs(fit.z - uVidInfo.x) < 0.5) {',
     '    vec2 uv = clamp((local + rect.zw) / (2.0 * rect.zw), 0.0, 1.0);',
     '    float box = rect.z / rect.w, va = uVidInfo.z;',
-    '    if (va > box) uv.x = 0.5 + (uv.x - 0.5) * box / va; else uv.y = 0.5 + (uv.y - 0.5) * va / box;',
-    '    c = mix(c, TEX(uVid, uv, l).rgb, uVidInfo.y);',
+    '    vec3 v;',
+    '    if (uVidFit.x > 0.5) {',
+    '      if (va > box) uv.y = 0.5 + (uv.y - 0.5) * va / box; else uv.x = 0.5 + (uv.x - 0.5) * box / va;',
+    '      bool inV = uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0;',
+    '      v = inV ? TEX(uVid, uv, l).rgb : uVidFit.yzw;',
+    '    } else {',
+    '      if (va > box) uv.x = 0.5 + (uv.x - 0.5) * box / va; else uv.y = 0.5 + (uv.y - 0.5) * va / box;',
+    '      v = TEX(uVid, uv, l).rgb;',
+    '    }',
+    '    c = mix(c, v, uVidInfo.y);',
     '  }',
     '  return c; }',
     'void main(){',
@@ -172,7 +181,7 @@
   var uRes = U('uRes'), uDpr = U('uDpr'), uRect = U('uRect'), uFit = U('uFit'), uZone = U('uZone'), uFlare = U('uFlare'), uSquash = U('uSquash'), uBlur = U('uBlur');
   for (var t = 0; t < 6; t++) gl.uniform1i(U('uT' + t), t);
   gl.uniform1i(U('uVid'), 6);
-  var uVidInfo = U('uVidInfo');
+  var uVidInfo = U('uVidInfo'), uVidFit = U('uVidFit');
   // One texture for whichever hover video is playing, mipmapped like the
   // stills, filled through its own power-of-two canvas.
   var vidTex = gl.createTexture();
@@ -299,7 +308,7 @@
       if (vid.idx !== playing.i) { vid.idx = playing.i; vid.t = -1; vid.mix = 0; }
       var pv = playing.v;
       if (pv.currentTime !== vid.t) {
-        try { putVideo(pv); vid.t = pv.currentTime; vid.aspect = pv.videoWidth / pv.videoHeight; } catch (e) {}
+        try { putVideo(pv); vid.t = pv.currentTime; vid.aspect = pv.videoWidth / pv.videoHeight; vid.contain = pv.classList.contains('is-contain'); } catch (e) {}
       }
       if (vid.t >= 0) vid.mix = Math.min(1, vid.mix + vdt / VID_IN);
     } else {
@@ -311,6 +320,9 @@
     if (key === drawn) return;
     drawn = key;
     gl.uniform3f(uVidInfo, vid.idx, vm, vid.aspect);
+    // A video marked is-contain shows whole, on its own background colour
+    // (#F3F5F9) above and below.
+    gl.uniform4f(uVidFit, vid.contain ? 1 : 0, 243 / 255, 245 / 255, 249 / 255);
 
     gl.uniform4fv(uRect, rectArr);
     gl.uniform3fv(uFit, fitArr);

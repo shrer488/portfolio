@@ -470,6 +470,14 @@ html.photo-wait .profile-time {
   pointer-events: none;
 }
 
+/* A hover video wider than the card shows whole, with its own background
+   colour filling above and below (the grid's cards too). */
+.slide-video.is-contain,
+.work-card-media video.is-contain {
+  object-fit: contain;
+  background: #F3F5F9;
+}
+
 @media (hover: hover) and (pointer: fine) {
   html.videos-ready .slide-inner:hover .slide-video {
     opacity: 1;

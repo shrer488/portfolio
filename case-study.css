@@ -228,8 +228,8 @@ img {
 .cs-meta {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  max-width: 780px;
+  gap: 32px 24px;
+  max-width: 900px;
   margin: 56px 0;
 }
 
@@ -245,6 +245,7 @@ img {
 .cs-meta-value {
   margin: 0;
   font-size: 15px;
+  line-height: 1.5;
   font-weight: 500;
   color: var(--ink-70);
 }
@@ -1137,6 +1138,366 @@ img {
   align-self: flex-end;
   background: #d9fdd3;
   color: var(--ink);
+}
+
+/* A video in the place of a grey stand-in: the same width and spacing. */
+.cs-media--video {
+  max-width: 900px;
+  margin: 24px 0;
+}
+
+/* The hero video at the top: as wide as the old hero picture. */
+.cs-media--video.cs-media--hero-video {
+  max-width: 1170px;
+  margin: 0 0 8px;
+}
+
+/* The same thin frame as the embedded prototype. */
+.cs-media--video video,
+.cs-media--video img {
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+/* An interactive prototype in a fixed-height frame (its edit panel
+   scrolls inside). */
+.cs-prototype {
+  position: relative;
+  max-width: 900px;
+  margin: 24px 0;
+}
+
+/* "It's clickable": the first time the prototype scrolls into view a hand
+   taps one of its controls twice, with a ripple, then fades away
+   (case-study-widget-builder.html places it). */
+.cs-tap-hint {
+  position: absolute;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  margin: -4px 0 0 -16px;   /* puts the fingertip on the point */
+  pointer-events: none;
+  opacity: 0;
+}
+
+.cs-tap-hint.is-on {
+  animation: tap-hint-fade 3.6s ease forwards;
+}
+
+.cs-tap-hint svg {
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  transform-origin: 40% 10%;
+}
+
+.cs-tap-hint.is-on svg {
+  animation: tap-hint-press 1.2s ease-in-out 0.4s 2;
+}
+
+.cs-tap-hint::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 4px;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.35);
+  transform: scale(0);
+  opacity: 0;
+}
+
+.cs-tap-hint.is-on::before {
+  animation: tap-hint-ripple 1.2s ease-out 0.4s 2;
+}
+
+@keyframes tap-hint-fade {
+  0% { opacity: 0; transform: translate(14px, 14px); }
+  10% { opacity: 1; transform: translate(0, 0); }
+  85% { opacity: 1; transform: translate(0, 0); }
+  100% { opacity: 0; transform: translate(0, 0); }
+}
+
+@keyframes tap-hint-press {
+  0%, 30%, 70%, 100% { transform: scale(1); }
+  45%, 55% { transform: scale(0.82); }
+}
+
+@keyframes tap-hint-ripple {
+  0%, 40% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(0.3); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-tap-hint.is-on svg,
+  .cs-tap-hint.is-on::before {
+    animation: none;
+  }
+}
+
+/* The prototype sits in a browser window: a light top bar with the
+   traffic lights. (Not
+   positioned, so the tap hint still measures the frame from the figure.) */
+.cs-browser {
+  overflow: hidden;
+  border-radius: 12px;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 14px 32px -12px rgba(0, 0, 0, 0.18);
+}
+
+.cs-browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 14px;
+  background: #E6E6E8;
+}
+
+.cs-browser-lights {
+  display: flex;
+  gap: 7px;
+  margin-right: 8px;
+}
+
+.cs-browser-lights i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #EB4A5A;
+}
+
+.cs-browser-lights i:nth-child(2) { background: #F2B12B; }
+.cs-browser-lights i:nth-child(3) { background: #2BAA73; }
+
+.cs-prototype iframe {
+  display: block;
+  width: 100%;
+  height: 560px;
+  border: 0;
+  background: #F3F4F8;
+}
+
+/* Before/after slider: the two screenshots stacked in one frame; the
+   "before" one on top is clipped at the line (--pos), so dragging the
+   line wipes between them. A full-size, invisible range input takes the
+   drag and the arrow keys. */
+.cs-compare {
+  max-width: 900px;
+  margin: 24px 0;
+}
+
+.cs-compare-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 5863 / 3028;
+  user-select: none;
+  touch-action: pan-y;
+  cursor: ew-resize;
+}
+
+.cs-media .cs-compare-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  pointer-events: none;
+}
+
+.cs-compare-before {
+  clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+}
+
+.cs-compare-tag {
+  position: absolute;
+  top: 12px;
+  z-index: 2;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.72);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1;
+  color: #FFFFFF;
+  pointer-events: none;
+}
+
+.cs-compare-tag--before { left: 12px; }
+.cs-compare-tag--after { right: 12px; }
+
+.cs-compare-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--pos);
+  z-index: 3;
+  width: 2px;
+  margin-left: -1px;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 0 12px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+
+.cs-compare-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transform: translate(-50%, -50%);
+}
+
+.cs-compare-knob svg {
+  fill: none;
+  stroke: #1F2937;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cs-compare-range {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;   /* dragging is the frame's (pointer events); this takes the arrow keys */
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+.cs-compare-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 2px;
+  height: 100%;
+}
+
+.cs-compare-range::-moz-range-thumb {
+  width: 2px;
+  height: 100%;
+  border: 0;
+}
+
+.cs-compare-frame:has(.cs-compare-range:focus-visible) .cs-compare-knob {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
+/* The drag hint: a hand on the knob that follows the line as it moves. */
+.cs-drag-hint {
+  position: absolute;
+  top: 50%;
+  left: var(--pos);
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  margin: 6px 0 0 -14px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.cs-drag-hint svg {
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+.cs-drag-hint.is-on {
+  opacity: 1;
+}
+
+/* Grey stand-ins for images and videos still to come (sized to the
+   Figma frames by an inline aspect-ratio). --split shows a before/after
+   pair with a divider down the middle. */
+.cs-placeholder {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 900px;
+  margin: 24px 0;
+  border-radius: 4px;
+  background: #d9d9d9;
+}
+
+.cs-placeholder span {
+  position: relative;
+  z-index: 1;
+  padding: 4px 8px;
+  background: #d9d9d9;
+  font-size: 14px;
+  color: var(--ink-70);
+}
+
+.cs-placeholder--hero {
+  max-width: 1170px;
+  margin: 0 0 8px;
+}
+
+.cs-placeholder--split::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  border-left: 1px solid rgba(0, 0, 0, 0.45);
+}
+
+/* A text block that follows straight on from a picture, without the full
+   section padding above it. */
+.cs-section--tight {
+  padding: 40px 0;
+}
+
+.cs-subhead {
+  margin: 48px 0 16px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.cs-section--tight > .cs-subhead:first-child {
+  margin-top: 24px;
+}
+
+.cs-minorhead {
+  margin: 36px 0 8px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.cs-section--tight > .cs-minorhead:first-child {
+  margin-top: 0;
+}
+
+.cs-section p.cs-note {
+  font-size: 15px;
+  color: var(--ink-40);
+}
+
+.cs-list--numbered {
+  gap: 6px;
+  padding-left: 24px;
+  list-style: decimal;
 }
 
 /* A short first-person quote pulled out as its own editorial beat —

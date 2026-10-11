@@ -367,6 +367,16 @@
     lens.forEach(function (el) { el.classList.remove('is-on'); });
   });
 
+  // Over an embedded frame (the case study's prototype) the page stops
+  // hearing the pointer, so the dot would freeze at the frame's edge: hide
+  // it there and let the frame's own cursor show. It comes back with the
+  // next move outside.
+  document.addEventListener('mouseover', function (e) {
+    if (!e.target || e.target.tagName !== 'IFRAME') return;
+    dot.classList.remove('is-visible');
+    lens.forEach(function (el) { el.classList.remove('is-on'); });
+  });
+
   /* "Trail" switch, top right (knob on the left and turquoise when on): switches the hover text
      blob (smear.js) off and on. The choice is remembered in this browser and
      announced to smear.js with a 'trailchange' event. */

@@ -48,6 +48,7 @@
       var v = document.createElement('video');
       v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'none';
       v.src = vid.getAttribute('src');
+      if (vid.classList.contains('is-contain')) v.classList.add('is-contain');
       v.setAttribute('aria-hidden', 'true');
       media.appendChild(v);
       // Hover: start from the top and fade in once it actually has frames;

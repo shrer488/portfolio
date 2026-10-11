@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Edit Widget — Clevero Widget Builder prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" />
+<!-- The "Edit Widget" artboard of the Clevero Widget Builder prototype,
+     rebuilt as a plain page so the case study can embed it (iframe). Same
+     layout, colours and interactions: the widget preview on the left, the
+     edit panel on the right; every setting updates the preview live. -->
+<style>
+body{margin:0;background:#F3F4F8}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #2563EB;outline-offset:2px}
+.kebab{color:#5B6475}.kebab:hover,.kebab:focus-visible,.kebab[aria-expanded="true"]{color:#2563EB}
+button:disabled{cursor:default;opacity:.6}
+/* A fixed-height frame: the widget preview stays put on the left and the
+   edit panel scrolls on the right, its "Edit Widget" bar pinned at the
+   top. The panel is drawn a size smaller (zoom) so it reads as a compact
+   side panel next to the preview. Narrow frames stack the two and the
+   whole page scrolls instead. */
+.proto{height:100vh;overflow:hidden}
+.proto-main{height:100%;overflow-y:auto;padding-top:20px !important}
+.proto-main .proto-stage{margin-top:72px !important}
+.proto-panel{height:calc(100vh / 0.8);overflow-y:auto;zoom:.8}
+.proto-head{position:sticky;top:0;z-index:5}
+/* The hand cursor throughout the prototype, so it reads as something to
+   click; text fields keep their usual text cursor. */
+html, html *{cursor:pointer !important}
+input[type="text"]{cursor:text !important}
+@media (max-width: 700px){
+  .proto{height:auto;overflow:visible}
+  .proto-main{height:auto;overflow:visible}
+  .proto-main .proto-stage{margin-top:32px !important}
+  .proto-panel{height:auto;overflow:visible}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function () {
+  var FILTERS = [
+    'Orders where enrollment is pending',
+    'Memberships expiring within 30 days',
+    'Members with no changes in 2+ years',
+    'Memberships past expiry'
+  ];
+  var SWATCHES = [
+    { hex: '#FFBDB5', label: 'Pink' },
+    { hex: '#4FD1A5', label: 'Green' },
+    { hex: '#FFB800', label: 'Yellow' },
+    { hex: '#2563EB', label: 'Blue' },
+    { hex: '#8B5CF6', label: 'Purple' },
+    { hex: '#94A3B8', label: 'Gray' }
+  ];
+  var DARK = ['#2563EB', '#8B5CF6'];
+
+  var s = {
+    headingOn: true, heading: 'Financial', infoOn: false, infoText: '',
+    moreOn: true, deleteOn: true, dateOn: true, day: true, week: true, year: true,
+    range: 'Day', layout: 'fill', editingId: 1, tab: 'data', nextId: 6, menu: null, deleted: false,
+    elements: [
+      { id: 1, name: 'Pending Approval', color: '#FFBDB5', from: 'Orders where enrollment is pending', agg: 'Count', field: 'Order id' },
+      { id: 2, name: 'Expiring soon', color: '#4FD1A5', from: 'Memberships expiring within 30 days', agg: 'Count', field: 'Member id' },
+      { id: 3, name: 'Expiring soon', color: '#FFB800', from: 'Memberships expiring within 30 days', agg: 'Count', field: 'Member id' },
+      { id: 4, name: 'Stale Member Info (+2 Years Without Change)', color: '#FFB800', from: 'Members with no changes in 2+ years', agg: 'Count', field: 'Member id' },
+      { id: 5, name: 'Expired', color: '#FFB800', from: 'Memberships past expiry', agg: 'Count', field: 'Member id' }
+    ]
+  };
+
+  // ---- sample data: the same seeded records the prototype counts from ----
+  var recs = null, cache = {};
+  function records() {
+    if (recs) return recs;
+    var seed = 20240817;
+    function rnd() {
+      seed = (seed + 0x6D2B79F5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    var PRICES = [49, 79, 99, 129, 149, 199, 249];
+    var SETS = {
+      'Orders where enrollment is pending': { n: [138, 864, 5210], repeat: true },
+      'Memberships expiring within 30 days': { n: [7, 41, 388], repeat: false },
+      'Members with no changes in 2+ years': { n: [63, 212, 1946], repeat: false },
+      'Memberships past expiry': { n: [7, 52, 603], repeat: false }
+    };
+    var orderId = 48000, memberId = 9000;
+    recs = {};
+    Object.keys(SETS).forEach(function (k) {
+      var cfg = SETS[k], list = [];
+      for (var i = 0; i < cfg.n[2]; i++) {
+        var bucket = i < cfg.n[0] ? 0 : i < cfg.n[1] ? 1 : 2;
+        var again = cfg.repeat && list.length > 4 && rnd() < 0.12;
+        var member = again ? list[Math.floor(rnd() * list.length)].member : ++memberId;
+        list.push({ order: ++orderId, member: member, amount: PRICES[Math.floor(rnd() * PRICES.length)], bucket: bucket });
+      }
+      recs[k] = list;
+    });
+    return recs;
+  }
+  function value(e, range) {
+    var list = records()[e.from];
+    if (!list) return '0';
+    var key = [e.from, e.agg, e.field, range].join('|');
+    if (cache[key]) return cache[key];
+    var max = { Day: 0, Week: 1, Year: 2 }[range] || 0;
+    var rows = list.filter(function (r) { return r.bucket <= max; });
+    var text;
+    if (e.agg === 'Count') {
+      if (e.field === 'Amount') text = rows.length.toLocaleString('en-US');
+      else {
+        var prop = e.field === 'Member id' ? 'member' : 'order', seen = {}, n = 0;
+        rows.forEach(function (r) { if (!seen[r[prop]]) { seen[r[prop]] = true; n++; } });
+        text = n.toLocaleString('en-US');
+      }
+    } else {
+      var sum = rows.reduce(function (a, r) { return a + r.amount; }, 0);
+      text = e.agg === 'Sum' ? '$' + sum.toLocaleString('en-US') : '$' + (rows.length ? sum / rows.length : 0).toFixed(2);
+    }
+    return (cache[key] = text);
+  }
+  function imgInfo(e) {
+    var COLS = {
+      'Orders where enrollment is pending': ['Member photo', 'Product image'],
+      'Memberships expiring within 30 days': ['Member photo', 'Membership card'],
+      'Members with no changes in 2+ years': ['Member photo', 'Company logo'],
+      'Memberships past expiry': ['Member photo', 'Membership card']
+    };
+    var cols = COLS[e.imgFrom || e.from] || [];
+    return { cols: cols, col: cols.indexOf(e.imgCol) >= 0 ? e.imgCol : cols[0] || '' };
+  }
+
+  // ---- state changes ----------------------------------------------------
+  function set(patch) { Object.assign(s, patch); render(); }
+  function patchEl(id, patch) {
+    s.elements = s.elements.map(function (e) { return e.id === id ? Object.assign({}, e, patch) : e; });
+    render();
+  }
+  function el(id) { return s.elements.filter(function (e) { return e.id === id; })[0]; }
+  function toggleMenu(key) { set({ menu: s.menu === key ? null : key }); }
+
+  // ---- markup -------------------------------------------------------------
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function tg(on) { return on ? { track: '#C9D8FB', knob: '#2563EB', left: '18px' } : { track: '#D9DCE3', knob: '#6B7280', left: '2px' }; }
+  function lay(on) { return on ? { border: '#2563EB', bg: '#EAF1FF', ink: '#2563EB' } : { border: '#E1E4EA', bg: '#F4F5F7', ink: '#9AA1AD' }; }
+  var IMG_GLYPH = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" style="flex: none"><rect x="3" y="4" width="18" height="16" rx="2.5" style="fill: none; stroke: currentColor; stroke-width: 2"></rect><circle cx="8.5" cy="9.5" r="1.6" style="fill: currentColor"></circle><path d="m5 18 5-5 3 3 2-2 4 4" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round"></path></svg>';
+  var IMG16 = IMG_GLYPH.replace('width="13" height="13"', 'width="16" height="16"').replace('style="flex: none"', 'style="flex: none; color: #5B6475"');
+  var FUNNEL = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="flex: none; color: #5B6475"><path d="M4 5h16l-6 7v6l-4 1.5V12z" style="fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round"></path></svg>';
+  var VDOTS = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="flex: none; color: #5B6475"><circle cx="12" cy="5.5" r="1.6" style="fill: currentColor"></circle><circle cx="12" cy="12" r="1.6" style="fill: currentColor"></circle><circle cx="12" cy="18.5" r="1.6" style="fill: currentColor"></circle></svg>';
+  var CHEV = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="position: absolute; top: 10px; right: 12px; color: #5B6475; pointer-events: none"><path d="m6 9 6 6 6-6" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"></path></svg>';
+  var MENU = 'position: absolute; top: 42px; left: 0; right: 0; z-index: 20; padding: 4px 0; background: #FFFFFF; border-radius: 6px; box-shadow: 0 4px 16px rgba(31, 41, 55, 0.18)';
+  function opt(act, arg, label, on) {
+    return '<button type="button" data-act="' + act + '" data-arg="' + esc(arg) + '" style="display: block; width: 100%; padding: 8px 12px; border: 0; background: transparent; text-align: left; font-size: 14px; color: ' + (on ? '#2563EB' : '#1F2937') + '; font-weight: ' + (on ? '500' : '400') + '">' + esc(label) + '</button>';
+  }
+  function sw(id, on, labelId) {
+    var t = tg(on);
+    return '<button type="button" role="switch" aria-checked="' + on + '" ' + (labelId ? 'aria-labelledby="' + labelId + '"' : 'aria-label="Custom Image"') + ' data-act="' + id + '" style="position: relative; flex: none; width: 30px; height: 14px; padding: 0; border: 0; border-radius: 999px; background: ' + t.track + '"><span style="position: absolute; top: 2px; left: ' + t.left + '; width: 10px; height: 10px; border-radius: 50%; background: ' + t.knob + '"></span></button>';
+  }
+  function check(act, on, label, gap) {
+    return '<label style="display: flex; align-items: center; gap: 8px; min-height: ' + (gap || 24) + 'px; font-size: 16px; color: #374151"><input type="checkbox"' + (on ? ' checked' : '') + ' data-act="' + act + '" style="width: 16px; height: 16px; margin: 0; accent-color: #2563EB"><span>' + label + '</span></label>';
+  }
+  function marker(e, mk) {
+    var hasImg = !!(e.customImg && e.img);
+    if (s.layout !== 'icon') return '<span aria-hidden="true" style="flex: none; margin-top: ' + mk.mt + '; width: ' + mk.mw + '; height: ' + mk.mh + '; border-radius: ' + mk.mr + '; background: ' + e.color + '"></span>';
+    var inner = hasImg ? '<img src="' + esc(e.img) + '" alt="" style="width: 100%; height: 100%; object-fit: cover">'
+      : imgInfo(e).col === 'Member photo' ? '<span>' + esc((e.name || '').trim().charAt(0).toUpperCase()) + '</span>' : IMG_GLYPH;
+    return '<span aria-hidden="true" style="flex: none; margin-top: 0px; width: 20px; height: 20px; border-radius: 4px; overflow: hidden; background: ' + e.color + '; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; line-height: 1; color: ' + (DARK.indexOf(e.color) >= 0 ? '#FFFFFF' : '#1F2937') + '">' + inner + '</span>';
+  }
+
+  function view() {
+    var enabled = ['Day', 'Week', 'Year'].filter(function (r) { return s[r.toLowerCase()]; });
+    var range = enabled.indexOf(s.range) >= 0 ? s.range : enabled[0] || '';
+    var dataRange = range || 'Day';
+    var mk = { fill: { mw: '16px', mh: '16px', mr: '4px', mt: '2px' }, line: { mw: '4px', mh: '20px', mr: '2px', mt: '0px' }, icon: { mw: '16px', mh: '16px', mr: '4px', mt: '2px' } }[s.layout];
+    var h = [];
+    h.push('<div class="proto" style="display: flex; flex-wrap: wrap; background: #F3F4F8; color: #1F2937; font-family: \'Inter\', system-ui, sans-serif; font-size: 15px; line-height: 1.35">');
+    if (s.menu !== null) h.push('<button type="button" aria-label="Close menu" data-act="closeMenus" style="position: fixed; inset: 0; z-index: 10; background: transparent; border: 0; padding: 0; cursor: default"></button>');
+
+    // preview
+    h.push('<main class="proto-main" style="flex: 999 1 420px; min-width: 0; box-sizing: border-box; padding: 24px 32px 64px; display: flex; flex-direction: column">');
+    h.push('<div style="align-self: flex-start; display: flex; align-items: center; gap: 8px; min-height: 28px; font-size: 16px; color: #374151"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="m15 5-7 7 7 7" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"></path></svg><span>Add Widget</span></div>');
+    h.push('<div class="proto-stage" style="align-self: center; width: 346px; max-width: 100%; margin-top: 104px">');
+    if (!s.deleted) {
+      h.push('<section aria-label="Widget preview" style="box-sizing: border-box; background: #FFFFFF; border-radius: 8px; box-shadow: 0 2px 10px rgba(31, 41, 55, 0.12); padding: 4px 16px 4px">');
+      h.push('<div style="display: flex; align-items: center; gap: 8px; min-height: 52px">');
+      if (s.headingOn) h.push('<h2 style="margin: 0; font-size: 16px; font-weight: 600; color: #1F2937; min-width: 0; overflow-wrap: anywhere">' + esc(s.heading) + '</h2>');
+      if (s.headingOn && s.infoOn) {
+        var il = esc(s.infoText || 'Info');
+        h.push('<span role="img" aria-label="' + il + '" title="' + il + '" style="display: flex; color: #5B6475"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9" style="fill: none; stroke: currentColor; stroke-width: 2"></circle><path d="M12 11v6" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round"></path><circle cx="12" cy="7.6" r="1.1" style="fill: currentColor"></circle></svg></span>');
+      }
+      h.push('<div style="flex: 1 1 0"></div>');
+      if (s.dateOn && enabled.length) {
+        h.push('<div style="position: relative"><button type="button" aria-haspopup="true" aria-expanded="' + (s.menu === 'range') + '" data-act="toggleRange" style="display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 6px 0 8px; border: 1px solid #D5D9E0; border-radius: 6px; background: #FFFFFF; font-size: 14px; color: #5B6475"><span>' + range + '</span><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 9 6 6 6-6" style="fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round"></path></svg></button>');
+        if (s.menu === 'range') h.push('<div style="position: absolute; top: 30px; right: 0; z-index: 20; min-width: 96px; padding: 4px 0; background: #FFFFFF; border-radius: 6px; box-shadow: 0 4px 16px rgba(31, 41, 55, 0.18)">' + enabled.map(function (r) { return opt('pickRange', r, r, r === range); }).join('') + '</div>');
+        h.push('</div>');
+      }
+      if (s.moreOn && s.deleteOn) {
+        h.push('<div style="position: relative"><button type="button" aria-label="Widget options" aria-haspopup="true" aria-expanded="' + (s.menu === 'more') + '" data-act="toggleMore" style="display: flex; align-items: center; justify-content: center; width: 30px; height: 26px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: #5B6475"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="5" cy="12" r="2" style="fill: currentColor"></circle><circle cx="12" cy="12" r="2" style="fill: currentColor"></circle><circle cx="19" cy="12" r="2" style="fill: currentColor"></circle></svg></button>');
+        if (s.menu === 'more') h.push('<div style="position: absolute; top: 30px; right: 0; z-index: 20; min-width: 120px; padding: 4px 0; background: #FFFFFF; border-radius: 6px; box-shadow: 0 4px 16px rgba(31, 41, 55, 0.18)"><button type="button" data-act="deleteWidget" style="display: block; width: 100%; padding: 8px 12px; border: 0; background: transparent; text-align: left; font-size: 14px; color: #1F2937">Delete</button></div>');
+        h.push('</div>');
+      }
+      h.push('</div>');
+      s.elements.forEach(function (e, i) {
+        h.push('<div style="display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-top: ' + (i === 0 ? '0' : '1px solid #E1E4EA') + '">' + marker(e, mk) +
+          '<span style="flex: 1 1 auto; min-width: 0; font-size: 14.5px; line-height: 20px; color: #5B6475; overflow-wrap: anywhere">' + esc(e.name) + '</span>' +
+          '<span style="flex: none; padding-left: 16px; font-size: 16px; line-height: 20px; color: #1F2937">' + value(e, dataRange) + '</span></div>');
+      });
+      if (!s.elements.length) h.push('<p style="margin: 0; padding: 16px 0 20px; border-top: 1px solid #E1E4EA; font-size: 14px; color: #5B6475">No elements yet. Add one from the panel.</p>');
+      h.push('</section>');
+    } else {
+      h.push('<div style="box-sizing: border-box; padding: 32px 16px; border: 1.5px dashed #B8BECA; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center"><span style="font-size: 14.5px; color: #5B6475">Widget deleted</span><button type="button" data-act="restoreWidget" style="height: 32px; padding: 0 12px; border: 1px solid #2563EB; border-radius: 6px; background: #FFFFFF; font-size: 14px; font-weight: 500; color: #2563EB">Undo</button></div>');
+    }
+    h.push('</div></main>');
+
+    // edit panel
+    h.push('<aside class="proto-panel" aria-label="Edit widget" style="flex: 1 1 364px; min-width: 0; box-sizing: border-box; background: #FFFFFF; border-left: 1px solid #E1E4EA">');
+    h.push('<h1 class="proto-head" style="margin: 0; padding: 13px 16px; background: #F1F1F2; border-bottom: 1px solid #E1E4EA; font-size: 18px; font-weight: 600; color: #374151">Edit Widget</h1>');
+    h.push('<section style="padding: 24px 16px; border-bottom: 1px solid #E1E4EA; display: flex; flex-direction: column; gap: 8px"><h2 style="margin: 0 0 12px; font-size: 18px; font-weight: 600; color: #374151">Heading &amp; Controls</h2>');
+    h.push('<div style="display: flex; align-items: center; justify-content: space-between; min-height: 24px"><span id="lbl-heading" style="font-size: 16px; color: #4B5563">Heading</span>' + sw('toggleHeading', s.headingOn, 'lbl-heading') + '</div>');
+    if (s.headingOn) {
+      h.push('<div style="display: flex; flex-direction: column; gap: 10px"><input type="text" aria-label="Heading text" value="' + esc(s.heading) + '" data-act="setHeading" data-key="heading" style="box-sizing: border-box; width: 100%; height: 38px; padding: 0 12px; border: 0; border-radius: 4px; background: #F1F2F6; font-size: 16px; color: #374151">');
+      h.push('<label style="display: flex; align-items: center; gap: 8px; min-height: 24px; font-size: 16px; color: #374151"><input type="checkbox"' + (s.infoOn ? ' checked' : '') + ' data-act="toggleInfo" style="width: 16px; height: 16px; margin: 0 0 0 2px; accent-color: #2563EB"><span>Add info</span></label>');
+      if (s.infoOn) h.push('<input type="text" aria-label="Info text" placeholder="Shown when someone hovers the info icon" value="' + esc(s.infoText) + '" data-act="setInfoText" data-key="info" style="box-sizing: border-box; width: 100%; height: 38px; padding: 0 12px; border: 0; border-radius: 4px; background: #F1F2F6; font-size: 14.5px; color: #374151">');
+      h.push('</div>');
+    }
+    h.push('<div style="display: flex; align-items: center; justify-content: space-between; min-height: 24px; margin-top: 8px"><span id="lbl-more" style="font-size: 16px; color: #4B5563">More options</span>' + sw('toggleMoreOn', s.moreOn, 'lbl-more') + '</div>');
+    if (s.moreOn) h.push('<div style="padding: 8px 10px; border-radius: 4px; background: #F1F2F6">' + check('toggleDeleteOn', s.deleteOn, 'Delete') + '</div>');
+    h.push('<div style="display: flex; align-items: center; justify-content: space-between; min-height: 24px; margin-top: 8px"><span id="lbl-date" style="font-size: 16px; color: #4B5563">Date Filter</span>' + sw('toggleDateOn', s.dateOn, 'lbl-date') + '</div>');
+    if (s.dateOn) h.push('<div style="padding: 8px 10px; border-radius: 4px; background: #F1F2F6; display: flex; flex-direction: column; gap: 4px">' + check('toggleDay', s.day, 'Day', 28) + check('toggleWeek', s.week, 'Week', 28) + check('toggleYear', s.year, 'Year', 28) + '</div>');
+    h.push('</section>');
+
+    var lf = lay(s.layout === 'fill'), ll = lay(s.layout === 'line'), li = lay(s.layout === 'icon');
+    h.push('<section style="padding: 24px 16px; border-bottom: 1px solid #E1E4EA"><h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #374151">Layout and Styling</h2><div style="display: flex; flex-wrap: wrap; gap: 16px">' +
+      '<button type="button" aria-label="Color block marker" aria-pressed="' + (s.layout === 'fill') + '" data-act="pickLayout" data-arg="fill" style="width: 64px; height: 64px; padding: 0; border: 1px solid ' + lf.border + '; border-radius: 4px; background: ' + lf.bg + '; display: flex; align-items: center; justify-content: center"><span style="width: 28px; height: 28px; border-radius: 4px; background: ' + lf.ink + '"></span></button>' +
+      '<button type="button" aria-label="Line marker" aria-pressed="' + (s.layout === 'line') + '" data-act="pickLayout" data-arg="line" style="width: 64px; height: 64px; padding: 0; border: 1px solid ' + ll.border + '; border-radius: 4px; background: ' + ll.bg + '; display: flex; align-items: center; justify-content: center"><span style="width: 4px; height: 26px; border-radius: 2px; background: ' + ll.ink + '"></span></button>' +
+      '<button type="button" aria-label="Icon marker" aria-pressed="' + (s.layout === 'icon') + '" data-act="pickLayout" data-arg="icon" style="width: 64px; height: 64px; padding: 0; border: 1px solid ' + li.border + '; border-radius: 4px; background: ' + li.bg + '; color: ' + li.ink + '; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="32" height="32" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5" style="fill: none; stroke: currentColor; stroke-width: 1.8"></rect><circle cx="8.5" cy="9.5" r="1.6" style="fill: none; stroke: currentColor; stroke-width: 1.6"></circle><path d="m5 18 5-5 3 3 2-2 4 4" style="fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round"></path></svg></button>' +
+      '</div></section>');
+
+    h.push('<section style="padding: 24px 16px 48px"><div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 16px"><h2 style="margin: 0; font-size: 18px; font-weight: 600; color: #374151">Elements</h2><button type="button" data-act="addElement" style="height: 26px; padding: 0 6px; border: 1px solid #2563EB; border-radius: 4px; background: #FFFFFF; font-size: 15px; font-weight: 500; color: #2563EB">+ Add New Element</button></div><div style="display: flex; flex-direction: column; gap: 16px">');
+    s.elements.forEach(function (e) { h.push('<div>' + (s.editingId === e.id ? openEl(e, dataRange) : closedEl(e, dataRange)) + '</div>'); });
+    h.push('</div></section></aside></div>');
+    return h.join('');
+  }
+
+  function openEl(e, dataRange) {
+    var id = e.id, isData = s.tab === 'data', h = [];
+    h.push('<div style="border: 1px solid #E1E4EA; border-radius: 4px"><div style="display: flex; align-items: center; gap: 4px; background: #F1F2F6; border-bottom: 1px solid #E1E4EA; padding-right: 4px"><input type="text" aria-label="Element name" value="' + esc(e.name) + '" data-act="setName" data-id="' + id + '" data-key="name-' + id + '" style="flex: 1 1 auto; min-width: 0; box-sizing: border-box; height: 36px; padding: 0 12px; border: 0; background: transparent; font-size: 16px; color: #374151"><button type="button" aria-label="Collapse element" data-act="collapse" style="flex: none; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: #5B6475; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 15 6-6 6 6" style="fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round"></path></svg></button></div>');
+    h.push('<div style="display: flex; gap: 8px; padding: 8px 16px; border-bottom: 1px solid #E1E4EA"><button type="button" aria-pressed="' + isData + '" data-act="showData" style="height: 30px; padding: 0 8px; border: 0; border-radius: 4px; background: ' + (isData ? '#EAF1FF' : 'transparent') + '; font-size: 16px; color: ' + (isData ? '#2563EB' : '#374151') + '">Data</button><button type="button" aria-pressed="' + !isData + '" data-act="showStyling" style="height: 30px; padding: 0 8px; border: 0; border-radius: 4px; background: ' + (!isData ? '#EAF1FF' : 'transparent') + '; font-size: 16px; color: ' + (!isData ? '#2563EB' : '#374151') + '">Styling</button></div>');
+    if (isData) {
+      var idsOff = e.agg !== 'Count';
+      h.push('<div style="padding: 20px 16px; display: flex; flex-direction: column; gap: 8px"><span style="font-size: 16px; font-weight: 500; color: #374151">Primary Value</span><div style="box-sizing: border-box; height: 38px; border: 1px solid #D5D9E0; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #374151">' + value(e, dataRange) + '</div>');
+      h.push('<span style="margin-top: 20px; font-size: 16px; color: #374151">From</span><div style="position: relative"><button type="button" aria-haspopup="true" aria-expanded="' + (s.menu === 'from-' + id) + '" data-act="toggleFrom" data-id="' + id + '" style="box-sizing: border-box; width: 100%; height: 38px; padding: 0 10px; border: 1px solid #D5D9E0; border-radius: 4px; background: #FFFFFF; display: flex; align-items: center; gap: 8px; font-size: 14.5px; color: #374151; text-align: left">' + FUNNEL + '<span style="flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">' + esc(e.from || 'Select a saved filter') + '</span>' + VDOTS + '</button>');
+      if (s.menu === 'from-' + id) h.push('<div style="' + MENU + '">' + FILTERS.map(function (f) { return opt('pickFrom', f, f, f === e.from).replace('data-act', 'data-id="' + id + '" data-act'); }).join('') + '</div>');
+      h.push('</div><span style="margin-top: 20px; font-size: 16px; color: #374151">Show</span>');
+      h.push('<div style="position: relative"><select aria-label="Aggregation" data-act="setAgg" data-id="' + id + '" style="box-sizing: border-box; width: 100%; height: 38px; padding: 0 36px 0 12px; border: 0; border-radius: 4px; background: #F1F2F6; font-size: 16px; color: #374151; appearance: none; -webkit-appearance: none">' + ['Count', 'Sum', 'Average'].map(function (o) { return '<option value="' + o + '"' + (o === e.agg ? ' selected' : '') + '>' + o + '</option>'; }).join('') + '</select>' + CHEV + '</div>');
+      h.push('<div style="position: relative"><select aria-label="Field" data-act="setField" data-id="' + id + '" style="box-sizing: border-box; width: 100%; height: 38px; padding: 0 36px 0 12px; border: 0; border-radius: 4px; background: #F1F2F6; font-size: 16px; color: #374151; appearance: none; -webkit-appearance: none">' + ['Order id', 'Member id', 'Amount'].map(function (o) { return '<option value="' + o + '"' + (o === e.field ? ' selected' : '') + (idsOff && o !== 'Amount' ? ' disabled' : '') + '>' + o + '</option>'; }).join('') + '</select>' + CHEV + '</div></div>');
+    } else if (s.layout === 'icon') {
+      var info = imgInfo(e), hasImg = !!(e.customImg && e.img);
+      h.push('<div style="padding: 20px 16px; display: flex; flex-direction: column; gap: 8px"><span style="font-size: 18px; font-weight: 600; color: #374151">Image</span><span style="margin-top: 4px; font-size: 16px; color: #374151">From</span><div style="position: relative"><button type="button" aria-haspopup="true" aria-expanded="' + (s.menu === 'imgfrom-' + id) + '" data-act="toggleImgFrom" data-id="' + id + '" style="box-sizing: border-box; width: 100%; height: 38px; padding: 0 10px; border: 1px solid #D5D9E0; border-radius: 4px; background: #FFFFFF; display: flex; align-items: center; gap: 8px; font-size: 14.5px; color: #374151; text-align: left">' + FUNNEL + '<span style="flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">' + esc(e.imgFrom || e.from || 'Select a saved filter') + '</span>' + VDOTS + '</button>');
+      if (s.menu === 'imgfrom-' + id) h.push('<div style="' + MENU + '">' + FILTERS.map(function (f) { return opt('pickImgFrom', f, f, f === (e.imgFrom || e.from)).replace('data-act', 'data-id="' + id + '" data-act'); }).join('') + '</div>');
+      h.push('</div><span style="margin-top: 20px; font-size: 16px; color: #374151">Image column</span><div style="position: relative"><button type="button" aria-haspopup="true" aria-expanded="' + (s.menu === 'imgcol-' + id) + '"' + (info.cols.length ? '' : ' disabled') + ' data-act="toggleImgCol" data-id="' + id + '" style="box-sizing: border-box; width: 100%; height: 38px; padding: 0 12px; border: 0; border-radius: 4px; background: #F1F2F6; display: flex; align-items: center; gap: 8px; font-size: 16px; color: #374151; text-align: left">' + IMG16 + '<span style="flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">' + esc(info.col || 'Pick a source first') + '</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="flex: none; color: #5B6475"><path d="m6 9 6 6 6-6" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"></path></svg></button>');
+      if (s.menu === 'imgcol-' + id) h.push('<div style="' + MENU + '">' + info.cols.map(function (c) { var on = c === info.col; return '<button type="button" data-id="' + id + '" data-act="pickImgCol" data-arg="' + esc(c) + '" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 12px; border: 0; background: transparent; text-align: left; font-size: 14px; color: ' + (on ? '#2563EB' : '#1F2937') + '; font-weight: ' + (on ? '500' : '400') + '">' + IMG16 + '<span>' + esc(c) + '</span></button>'; }).join('') + '</div>');
+      h.push('</div><div style="display: flex; align-items: center; justify-content: space-between; min-height: 24px; margin-top: 12px"><span style="font-size: 16px; color: #4B5563">Custom Image</span>' + sw('toggleCustom" data-id="' + id, !!e.customImg) + '</div>');
+      if (e.customImg) {
+        h.push('<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 4px">' + (hasImg ? '<img src="' + esc(e.img) + '" alt="Custom image preview" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover">' : '') +
+          '<label style="position: relative; display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border: 1px solid #2563EB; border-radius: 4px; background: #FFFFFF; font-size: 14.5px; font-weight: 500; color: #2563EB; cursor: pointer"><span>' + (e.img ? 'Replace image' : 'Upload image') + '</span><input type="file" accept="image/*" data-act="uploadImg" data-id="' + id + '" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer"></label>' +
+          (hasImg ? '<button type="button" data-act="removeImg" data-id="' + id + '" style="height: 32px; padding: 0 8px; border: 0; border-radius: 4px; background: transparent; font-size: 14.5px; color: #4B5563">Remove</button>' : '') + '</div>');
+      }
+      h.push('</div>');
+    } else {
+      h.push('<div style="padding: 20px 16px; display: flex; flex-direction: column; gap: 12px"><span style="font-size: 16px; font-weight: 500; color: #374151">Color</span><div style="display: flex; flex-wrap: wrap; gap: 12px">' +
+        SWATCHES.map(function (w) { var on = w.hex === e.color; return '<button type="button" aria-label="' + w.label + '" aria-pressed="' + on + '" data-act="pickColor" data-id="' + id + '" data-arg="' + w.hex + '" style="width: 32px; height: 32px; padding: 0; border: 2px solid #FFFFFF; border-radius: 6px; background: ' + w.hex + '; box-shadow: 0 0 0 2px ' + (on ? '#2563EB' : '#D5D9E0') + '"></button>'; }).join('') + '</div></div>');
+    }
+    h.push('</div>');
+    return h.join('');
+  }
+
+  function closedEl(e, dataRange) {
+    var id = e.id, open = s.menu === 'el-' + id;
+    var mk = { mw: '16px', mh: '16px', mr: '4px', mt: '2px' };
+    return '<div style="position: relative; display: flex; align-items: flex-start; gap: 10px; padding: 14px 8px 14px 8px; border: 1px solid #E1E4EA; border-radius: 4px; background: #F9FAFB">' + marker(e, mk) +
+      '<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 14.5px; color: #5B6475; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">' + esc(e.name) + '</span><span style="font-size: 16px; color: #1F2937">' + value(e, dataRange) + '</span></div>' +
+      '<button type="button" aria-label="Options for ' + esc(e.name) + '" aria-haspopup="true" aria-expanded="' + open + '" data-act="toggleElMenu" data-id="' + id + '" class="kebab" style="flex: none; width: 28px; height: 28px; margin-top: -4px; padding: 0; border: 0; border-radius: 4px; background: transparent; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="5.5" r="1.7" style="fill: currentColor"></circle><circle cx="12" cy="12" r="1.7" style="fill: currentColor"></circle><circle cx="12" cy="18.5" r="1.7" style="fill: currentColor"></circle></svg></button>' +
+      (open ? '<div style="position: absolute; top: 38px; right: 8px; z-index: 20; min-width: 116px; padding: 4px 0; background: #FFFFFF; border-radius: 4px; box-shadow: 0 4px 16px rgba(31, 41, 55, 0.18)">' +
+        ['edit', 'duplicate', 'remove'].map(function (a, k) { return '<button type="button" data-act="' + a + '" data-id="' + id + '" style="display: block; width: 100%; padding: 7px 10px; border: 0; background: transparent; text-align: left; font-size: 14.5px; color: #1F2937">' + ['Edit', 'Duplicate', 'Delete'][k] + '</button>'; }).join('') + '</div>' : '') +
+      '</div>';
+  }
+
+  // ---- events -------------------------------------------------------------
+  var app = document.getElementById('app');
+  var ACTS = {
+    closeMenus: function () { set({ menu: null }); },
+    toggleRange: function () { toggleMenu('range'); },
+    pickRange: function (a) { set({ range: a, menu: null }); },
+    toggleMore: function () { toggleMenu('more'); },
+    deleteWidget: function () { set({ deleted: true, menu: null }); },
+    restoreWidget: function () { set({ deleted: false }); },
+    toggleHeading: function () { set({ headingOn: !s.headingOn }); },
+    toggleInfo: function () { set({ infoOn: !s.infoOn }); },
+    toggleMoreOn: function () { set({ moreOn: !s.moreOn, menu: null }); },
+    toggleDeleteOn: function () { set({ deleteOn: !s.deleteOn }); },
+    toggleDateOn: function () { set({ dateOn: !s.dateOn, menu: null }); },
+    toggleDay: function () { set({ day: !s.day }); },
+    toggleWeek: function () { set({ week: !s.week }); },
+    toggleYear: function () { set({ year: !s.year }); },
+    pickLayout: function (a) { set({ layout: a }); },
+    addElement: function () {
+      s.elements = s.elements.concat([{ id: s.nextId, name: 'New element', color: '#2563EB', from: '', agg: 'Count', field: 'Order id' }]);
+      set({ editingId: s.nextId, tab: 'data', nextId: s.nextId + 1, menu: null });
+    },
+    collapse: function () { set({ editingId: null, menu: null }); },
+    showData: function () { set({ tab: 'data' }); },
+    showStyling: function () { set({ tab: 'styling', menu: null }); },
+    toggleFrom: function (a, id) { toggleMenu('from-' + id); },
+    pickFrom: function (a, id) { s.menu = null; patchEl(id, { from: a }); },
+    toggleImgFrom: function (a, id) { toggleMenu('imgfrom-' + id); },
+    pickImgFrom: function (a, id) { s.menu = null; patchEl(id, { imgFrom: a }); },
+    toggleImgCol: function (a, id) { toggleMenu('imgcol-' + id); },
+    pickImgCol: function (a, id) { s.menu = null; patchEl(id, { imgCol: a }); },
+    toggleCustom: function (a, id) { patchEl(id, { customImg: !el(id).customImg }); },
+    removeImg: function (a, id) { patchEl(id, { img: '' }); },
+    pickColor: function (a, id) { patchEl(id, { color: a }); },
+    toggleElMenu: function (a, id) { toggleMenu('el-' + id); },
+    edit: function (a, id) { set({ editingId: id, tab: 'data', menu: null }); },
+    duplicate: function (a, id) {
+      var i = s.elements.indexOf(el(id)), next = s.elements.slice();
+      next.splice(i + 1, 0, Object.assign({}, el(id), { id: s.nextId }));
+      s.elements = next;
+      set({ nextId: s.nextId + 1, menu: null });
+    },
+    remove: function (a, id) {
+      s.elements = s.elements.filter(function (x) { return x.id !== id; });
+      set({ editingId: s.editingId === id ? null : s.editingId, menu: null });
+    }
+  };
+  app.addEventListener('click', function (ev) {
+    var t = ev.target.closest('[data-act]');
+    if (!t || t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.disabled) return;
+    var fn = ACTS[t.getAttribute('data-act')];
+    if (fn) fn(t.getAttribute('data-arg'), +t.getAttribute('data-id'));
+  });
+  app.addEventListener('change', function (ev) {
+    var t = ev.target, act = t.getAttribute('data-act'), id = +t.getAttribute('data-id');
+    if (t.type === 'checkbox') { if (ACTS[act]) ACTS[act](); return; }
+    if (act === 'setAgg') patchEl(id, t.value === 'Count' ? { agg: 'Count' } : { agg: t.value, field: 'Amount' });
+    else if (act === 'setField') patchEl(id, { field: t.value });
+    else if (act === 'uploadImg') {
+      var file = t.files && t.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function () { patchEl(id, { img: String(reader.result) }); };
+      reader.readAsDataURL(file);
+    }
+  });
+  // Typing updates the preview live; the field keeps its focus and caret.
+  app.addEventListener('input', function (ev) {
+    var t = ev.target, act = t.getAttribute('data-act');
+    if (act === 'setHeading') set({ heading: t.value });
+    else if (act === 'setInfoText') set({ infoText: t.value });
+    else if (act === 'setName') patchEl(+t.getAttribute('data-id'), { name: t.value });
+  });
+
+  function render() {
+    var a = document.activeElement, key = a && a.getAttribute && a.getAttribute('data-key');
+    var sel = key ? [a.selectionStart, a.selectionEnd] : null;
+    // The redraw replaces the panel, so keep where it (and the preview side)
+    // was scrolled to.
+    var keep = ['.proto-panel', '.proto-main'].map(function (q) { var n = app.querySelector(q); return n ? n.scrollTop : 0; });
+    var pageY = window.scrollY;
+    app.innerHTML = view();
+    ['.proto-panel', '.proto-main'].forEach(function (q, i) { var n = app.querySelector(q); if (n) n.scrollTop = keep[i]; });
+    if (window.scrollY !== pageY) window.scrollTo(0, pageY);
+    if (key) {
+      var f = app.querySelector('[data-key="' + key + '"]');
+      if (f) { f.focus({ preventScroll: true }); try { f.setSelectionRange(sel[0], sel[1]); } catch (e) {} }
+    }
+  }
+  render();
+
+})();
+</script>
+</body>
+</html>

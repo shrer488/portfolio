@@ -115,260 +115,180 @@
       }, 150);
     });
   });
-
-  // Lightbox: click any tile to see it large, with the same number/
-  // caption treatment as the left rail, plus a thumbnail strip to jump
-  // between images — matches the Figma expanded-image frame.
-  var lightbox = document.getElementById('lightbox');
-  var lightboxImg = document.getElementById('lightboxImg');
-  var lightboxVideo = document.getElementById('lightboxVideo');
-  var lightboxIndex = document.getElementById('lightboxIndex');
-  var lightboxCaption = document.getElementById('lightboxCaption');
-  var lightboxClose = document.getElementById('lightboxClose');
-  var lightboxPrev = document.getElementById('lightboxPrev');
-  var lightboxNext = document.getElementById('lightboxNext');
-  var lightboxStrip = document.getElementById('lightboxStrip');
-  var lightboxStage = document.querySelector('.lightbox-stage');
-  if (!lightbox || !lightboxImg || !lightboxStrip) return;
-
-  var thumbs = [];
-
-  items.forEach(function (item, i) {
-    var num = item.dataset.num;
-    var caption = item.dataset.caption;
-    if (!num || !caption) return;
-
-    var video = item.querySelector('video');
-    var mainImg = item.querySelector('.play-stack-front') || item.querySelector('img');
-    // A video-only tile has no <img> to key off of — its poster frame
-    // stands in for the thumbnail strip (which is always plain <img>s).
-    var thumbSrc = mainImg ? mainImg.src : (video ? video.poster : '');
-    if (!thumbSrc) return;
-
-    var thumb = document.createElement('button');
-    thumb.type = 'button';
-    thumb.className = 'lightbox-thumb';
-    thumb.innerHTML = '<img src="' + thumbSrc + '" alt="" />';
-    thumb.addEventListener('click', function () {
-      if (lightbox.classList.contains('is-open')) {
-        switchImage(i);
-      } else {
-        openLightbox(i);
-      }
-    });
-    lightboxStrip.appendChild(thumb);
-    thumbs.push(thumb);
-
-    item.addEventListener('click', function () {
-      openLightbox(i);
-    });
-  });
-
-  // Just paints the given item's content into the lightbox — no animation
-  // of its own. Both openLightbox (instant; the popup itself is already
-  // animating in, so the content doesn't need its own fade) and
-  // switchImage (crossfades, see below) go through this.
-  function renderLightbox(i) {
-    var item = items[i];
-    var num = item.dataset.num;
-    var caption = item.dataset.caption;
-    var video = item.querySelector('video');
-    var mainImg = item.querySelector('.play-stack-front') || item.querySelector('img');
-    if (!num || !caption || (!mainImg && !video)) return false;
-
-    // Video tiles play for real in the lightbox (unlike the grid, which
-    // just loops silently in the background) — swap which element is
-    // visible rather than keeping both around at once.
-    if (video) {
-      var targetSrc = video.currentSrc || video.getAttribute('src');
-      lightboxImg.style.display = 'none';
-      lightboxImg.removeAttribute('src');
-      lightboxVideo.style.display = '';
-      lightboxVideo.poster = video.poster || '';
-      lightboxVideo.loop = true;
-      if (lightboxVideo.getAttribute('src') !== targetSrc) {
-        lightboxVideo.src = targetSrc;
-      }
-      lightboxVideo.currentTime = 0;
-      lightboxVideo.play().catch(function () {});
-    } else {
-      lightboxVideo.pause();
-      lightboxVideo.style.display = 'none';
-      lightboxVideo.removeAttribute('src');
-      lightboxImg.style.display = '';
-      lightboxImg.src = mainImg.src;
-      lightboxImg.alt = mainImg.alt || '';
-    }
-
-    // Stepping between images in the lightbox swaps the caption the same
-    // way; opening it just shows the text.
-    var stepping = lightbox.classList.contains('is-open');
-    swapText(lightboxIndex, num, stepping && lightboxIndex.textContent !== num);
-    swapText(lightboxCaption, caption, stepping && lightboxCaption.textContent !== caption);
-
-    thumbs.forEach(function (thumb, ti) {
-      thumb.classList.toggle('is-active', ti === i);
-    });
-
-    lightbox.dataset.activeIndex = String(i);
-    return true;
-  }
-
-  function openLightbox(i) {
-    if (!renderLightbox(i)) return;
-    lightbox.classList.add('is-open');
-    lightbox.setAttribute('aria-hidden', 'false');
-    lockScroll();
-  }
-
-  // Used to move to a different image while the lightbox is already open
-  // (arrow keys, scroll — see advance() below). Swapping lightboxImg.src
-  // instantly made moving through images feel like a hard cut; fading the
-  // stage out, swapping underneath, then fading back in reads as one
-  // continuous, smoother motion instead.
-  var SWITCH_FADE_MS = 180;
-  var switchTimer = null;
-
-  function switchImage(i) {
-    lightboxStage.classList.add('is-switching');
-    clearTimeout(switchTimer);
-    switchTimer = setTimeout(function () {
-      renderLightbox(i);
-      lightboxStage.classList.remove('is-switching');
-    }, SWITCH_FADE_MS);
-  }
-
-  function closeLightbox() {
-    lightbox.classList.remove('is-open');
-    lightbox.setAttribute('aria-hidden', 'true');
-    lightboxVideo.pause();
-    unlockScroll();
-  }
-
-  // Freezes the page at its current scroll position (rather than just
-  // hiding overflow) so the background doesn't jump to the top while
-  // the lightbox is open, then restores it on close.
-  var savedScrollY = 0;
-
-  function lockScroll() {
-    savedScrollY = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = -savedScrollY + 'px';
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-  }
-
-  function unlockScroll() {
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
-    window.scrollTo(0, savedScrollY);
-  }
-
-  lightboxClose.addEventListener('click', closeLightbox);
-
-  lightbox.addEventListener('click', function (e) {
-    if (e.target === lightbox) closeLightbox();
-  });
-
-  if (lightboxPrev) lightboxPrev.addEventListener('click', function () { advance(-1); });
-  if (lightboxNext) lightboxNext.addEventListener('click', function () { advance(1); });
-
-  // Shared by the arrow keys and the wheel handler below, so "next image"
-  // means the same thing regardless of input method.
-  function advance(direction) {
-    var current = Number(lightbox.dataset.activeIndex || 0);
-    var next = direction > 0
-      ? (current + 1) % items.length
-      : (current - 1 + items.length) % items.length;
-    switchImage(next);
-  }
-
-  document.addEventListener('keydown', function (e) {
-    if (!lightbox.classList.contains('is-open')) return;
-    if (e.key === 'Escape') {
-      closeLightbox();
-    } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-      advance(e.key === 'ArrowRight' ? 1 : -1);
-    }
-  });
-
-  // Scrolling while the lightbox is open steps through images one at a
-  // time instead of doing nothing (the page itself is scroll-locked while
-  // open — see lockScroll).
-  //
-  // This accumulates scroll distance rather than reacting to a single
-  // tick: a low per-tick threshold (an earlier pass used 12) meant almost
-  // any trackpad movement counted, and a slow, steady scroll kept
-  // re-triggering every time the cooldown expired — racing through
-  // several images from one continuous gesture, which is what read as
-  // janky/uncontrollable. Requiring a real accumulated distance makes one
-  // deliberate swipe advance exactly one image; drifting below that (or
-  // pausing) resets the count instead of leaving it to fire late.
-  var wheelLocked = false;
-  var wheelAccum = 0;
-  var wheelResetTimer = null;
-  var WHEEL_COOLDOWN_MS = 400;
-  var WHEEL_SWITCH_THRESHOLD = 120;
-  var WHEEL_IDLE_RESET_MS = 300;
-
-  lightbox.addEventListener('wheel', function (e) {
-    if (!lightbox.classList.contains('is-open')) return;
-    e.preventDefault();
-    if (wheelLocked) return;
-
-    var delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-    if (Math.abs(delta) < 1) return;
-
-    // Reversing direction mid-gesture restarts the accumulation the
-    // other way instead of fighting the previous direction's progress.
-    if ((delta > 0 && wheelAccum < 0) || (delta < 0 && wheelAccum > 0)) {
-      wheelAccum = 0;
-    }
-    wheelAccum += delta;
-
-    clearTimeout(wheelResetTimer);
-    wheelResetTimer = setTimeout(function () {
-      wheelAccum = 0;
-    }, WHEEL_IDLE_RESET_MS);
-
-    if (Math.abs(wheelAccum) < WHEEL_SWITCH_THRESHOLD) return;
-
-    wheelLocked = true;
-    wheelAccum = 0;
-    clearTimeout(wheelResetTimer);
-    advance(delta > 0 ? 1 : -1);
-    setTimeout(function () {
-      wheelLocked = false;
-    }, WHEEL_COOLDOWN_MS);
-  }, { passive: false });
 })();
 
-// Columns stepper (top-left): 1, 2 or 3 columns of pictures, remembered in
-// this browser. Pick a number (or use the arrow keys while it has focus). One wide column gets a gentler hover grow, so a tile
-// never spills over the gap into the next.
+// Columns meter (top-left, upright): 1, 2 or 3 columns of pictures,
+// remembered in this browser. Click or drag along the ruler (it snaps to
+// the nearest setting) or use the arrow keys. The bar springs along and the
+// ticks it passes darken; the pictures simply re-flow (animating them made
+// the page lag). One wide column gets a gentler hover grow, so a tile never
+// spills into the next.
 (function () {
   var grid = document.querySelector('.play-grid');
-  var box = document.querySelector('.play-stepper');
-  if (!grid || !box) return;
-  var nums = Array.prototype.slice.call(box.querySelectorAll('.play-stepper-num'));
-  var cur = 2;
-  function set(n, save) {
-    n = Math.max(1, Math.min(3, n));
-    cur = n;
+  var meter = document.querySelector('.play-meter');
+  if (!grid || !meter) return;
+  var ticksBox = meter.querySelector('.play-meter-ticks');
+  var ticks = Array.prototype.slice.call(ticksBox.querySelectorAll('i'));
+  var cur = 0;
+
+  function sweep(from, to) {
+    var a = (from - 1) * 6, b = (to - 1) * 6, step = a < b ? 1 : -1, k = 0;
+    for (var t = a + step; t !== b; t += step, k++) {
+      (function (tick, delay) {
+        setTimeout(function () {
+          tick.classList.add('is-pass');
+          setTimeout(function () { tick.classList.remove('is-pass'); }, 200);
+        }, delay);
+      })(ticks[t], k * 35);
+    }
+  }
+  function apply(n) {
     grid.style.setProperty('--play-cols', n);
     grid.style.setProperty('--play-hover', n === 1 ? 1.012 : n === 2 ? 1.025 : 1.03);
-    box.style.setProperty('--i', n - 1);
-    nums.forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.cols === n)); });
+    window.dispatchEvent(new Event('playcols'));   // the tiles re-deal (below)
+  }
+  function set(n, save) {
+    n = Math.max(1, Math.min(3, n));
+    if (n === cur) return;
+    var first = !cur;
+    if (!first) sweep(cur, n);
+    cur = n;
+    meter.style.setProperty('--p', (n - 1) / 2);
+    meter.setAttribute('aria-valuenow', n);
+    meter.setAttribute('aria-valuetext', n + (n === 1 ? ' column' : ' columns'));
     if (save) { try { localStorage.setItem('playCols', n); } catch (e) {} }
+    apply(n);
   }
   var saved = 2;
   try { saved = +localStorage.getItem('playCols') || 2; } catch (e) {}
   set(saved >= 1 && saved <= 3 ? saved : 2, false);
-  nums.forEach(function (b) { b.addEventListener('click', function () { set(+b.dataset.cols, true); }); });
-  box.addEventListener('keydown', function (e) {
+
+  function at(e) {
+    var r = ticksBox.getBoundingClientRect();
+    var p = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
+    set(Math.round(p * 2) + 1, true);
+  }
+  var dragging = false;
+  meter.addEventListener('pointerdown', function (e) {
+    dragging = true; at(e);
+    try { meter.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  meter.addEventListener('pointermove', function (e) { if (dragging) at(e); });
+  meter.addEventListener('pointerup', function () { dragging = false; });
+  meter.addEventListener('pointercancel', function () { dragging = false; });
+  meter.addEventListener('keydown', function (e) {
     if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { set(cur - 1, true); e.preventDefault(); }
     else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { set(cur + 1, true); e.preventDefault(); }
+    else if (e.key === 'Home') { set(1, true); e.preventDefault(); }
+    else if (e.key === 'End') { set(3, true); e.preventDefault(); }
   });
+})();
+
+// Reading order: CSS columns fill top to bottom, so the numbering ran down
+// the first column. Instead deal each category's tiles into one stack per
+// column in turn (tile 1 to the first column, 2 to the second, 3 to the
+// third, 4 back to the first...), so 01, 02, 03 run across the top. The
+// number of columns follows the meter on desktop, and the screen on
+// tablets (2) and phones (1); re-dealt when that changes.
+(function () {
+  var cats = Array.prototype.slice.call(document.querySelectorAll('.play-cat-items'));
+  var grid = document.querySelector('.play-grid');
+  if (!cats.length || !grid) return;
+  var lists = cats.map(function (c) { return Array.prototype.slice.call(c.querySelectorAll('.play-item')); });
+  var dealt = 0;
+  function count() {
+    var w = window.innerWidth;
+    if (w <= 780) return 1;
+    if (w <= 900) return 2;
+    return parseInt(getComputedStyle(grid).getPropertyValue('--play-cols'), 10) || 2;
+  }
+  function deal() {
+    var n = count();
+    if (n === dealt) return;
+    dealt = n;
+    cats.forEach(function (c, k) {
+      var stacks = [];
+      for (var i = 0; i < n; i++) {
+        var st = document.createElement('div');
+        st.className = 'play-stack';
+        stacks.push(st);
+      }
+      lists[k].forEach(function (item, i) { stacks[i % n].appendChild(item); });
+      c.textContent = '';
+      stacks.forEach(function (st) { c.appendChild(st); });
+      c.classList.add('is-stacked');
+    });
+    window.dispatchEvent(new Event('playdealt'));   // the videos re-check (below)
+  }
+  deal();
+  window.addEventListener('playcols', deal);
+  var rt = 0;
+  window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(deal, 120); });
+})();
+
+// Tiles that link out (.play-item--link): over one, the cursor becomes a
+// pill with the tile's call to action ("Get Extension ↗", data-cta) and a small preview of the site sits beside it (a picture of
+// the page rather than the live page, which would make the hover lag).
+// Clicking opens the site in a new tab (it's a plain link). Mouse only.
+(function () {
+  if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  var links = Array.prototype.slice.call(document.querySelectorAll('.play-item--link'));
+  if (!links.length) return;
+  var pill = document.createElement('div');
+  pill.className = 'view-cursor play-view-cursor';
+  pill.setAttribute('aria-hidden', 'true');
+  pill.innerHTML = '<span class="play-view-label">View</span><svg viewBox="0 0 14 14" width="13" height="13"><path d="M3 11L11 3M11 3H4.5M11 3V9.5" /></svg>';
+  var card = document.createElement('div');
+  card.className = 'play-preview';
+  card.setAttribute('aria-hidden', 'true');
+  card.innerHTML = '<img alt="" />';
+  document.body.appendChild(pill);
+  document.body.appendChild(card);
+  var img = card.querySelector('img');
+  function move(e) {
+    var x = e.clientX, y = e.clientY;
+    pill.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0) translate(-50%, -50%)';
+    // The card sits down and to the right of the pointer, flipping to the
+    // other side near the right or bottom edge of the window.
+    var w = card.offsetWidth, h = card.offsetHeight;
+    var cx = x + 36 + w > window.innerWidth - 12 ? x - 36 - w : x + 36;
+    var cy = Math.min(y + 24, window.innerHeight - h - 12);
+    card.style.transform = 'translate3d(' + cx + 'px, ' + cy + 'px, 0)';
+  }
+  links.forEach(function (tile) {
+    var src = tile.getAttribute('data-preview');
+    if (src) { var pre = new Image(); pre.src = src; }   // ready before the first hover
+    tile.addEventListener('mouseenter', function (e) {
+      if (src) img.src = src;
+      pill.querySelector('.play-view-label').textContent = tile.getAttribute('data-cta') || 'View';
+      move(e);
+      pill.classList.add('visible');
+      card.classList.toggle('is-on', !!src);
+    });
+    tile.addEventListener('mousemove', move);
+    tile.addEventListener('mouseleave', function () {
+      pill.classList.remove('visible');
+      card.classList.remove('is-on');
+    });
+  });
+})();
+
+// Videos play only while they're on screen (and pause once scrolled past),
+// so the page isn't decoding every clip at once; each one only starts
+// downloading as it comes near. Re-checked after the tiles are re-dealt,
+// since moving a video pauses it.
+(function () {
+  var vids = Array.prototype.slice.call(document.querySelectorAll('.play-item video[data-autoplay]'));
+  if (!vids.length) return;
+  var seen = new Set();
+  function run(v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+  if (typeof IntersectionObserver === 'undefined') { vids.forEach(function (v) { v.autoplay = true; run(v); }); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { seen.add(e.target); run(e.target); }
+      else { seen.delete(e.target); e.target.pause(); }
+    });
+  }, { rootMargin: '200px 0px' });
+  vids.forEach(function (v) { io.observe(v); });
+  window.addEventListener('playdealt', function () { seen.forEach(run); });
 })();

@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:wght@400&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="case-study.css?v=93" />
-<link rel="stylesheet" href="transition.css?v=18" />
+<link rel="stylesheet" href="case-study.css?v=100" />
+<link rel="stylesheet" href="transition.css?v=19" />
 </head>
 <body>
 <div class="page-transition" id="pageTransition" aria-hidden="true"></div>
@@ -68,7 +68,7 @@
     </div>
   </div>
 
-  <section class="cs-section" id="overview" style="padding-bottom: 0;">
+  <section class="cs-section" id="overview">
     <p class="cs-label">Overview</p>
     <h2 class="cs-section-head">What is Basket?</h2>
     <p>Pinterest is where people collect inspiration. Boards are how they organize it.</p>
@@ -77,58 +77,58 @@
     <p class="cs-hmw">This is a speculative project &mdash; part of a studio class at Parsons School of Design. I was the lead designer, owning end-to-end process from in-person user research and ideation all the way to an interactive prototype for the Baskets feature in Pinterest.</p>
   </section>
 
-  <figure class="cs-media cs-media--inline" style="max-width: 760px; margin: 64px 0 96px;">
+  <figure class="cs-media cs-media--inline">
     <img src="assets/pin-basket-icon-select.jpg" alt="Saving a pin with the new Basket icon highlighted in red among the regular board icons" />
   </figure>
 
-  <section class="cs-section" id="problem" style="padding-bottom: 0;">
+  <section class="cs-section" id="problem">
     <p class="cs-label">Problem</p>
     <h2 class="cs-section-head">Imagine you have 40 boards, you see a pin you like, and now have to add it to one of the boards.</h2>
   </section>
 
-  <figure class="cs-media cs-media--inline" style="max-width: 760px; margin: 56px 0;">
+  <figure class="cs-media cs-media--inline">
     <video src="assets/pin-problem-demo.mp4?v=2" autoplay muted loop playsinline aria-label="Trying to save a pin: cannot find the board, forgot its name, can't decide which one to use, or just want to save it without thinking about boards" style="border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;"></video>
   </figure>
 
-  <section class="cs-section" style="padding: 32px 0;">
+  <section class="cs-section">
     <p>This led to problems like&hellip;</p>
   </section>
 
-  <div class="cs-media-grid" style="grid-template-columns: repeat(3, 1fr); gap: 48px; max-width: 960px; margin-top: 56px; margin-bottom: 56px;">
+  <div class="cs-media-grid" style="grid-template-columns: repeat(3, 1fr);">
     <figure class="cs-media">
-      <img src="assets/pin-boards-problem.png" alt="A Pinterest profile with many similarly named boards — portfolio, portfolio concept, Portfolioo, Portfolio concept 1" style="aspect-ratio: 966 / 924; object-fit: cover; border: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 32px;" />
-      <p class="cs-media-caption" style="text-align: left; font-size: 16px; margin: 0;"><strong style="display: block; font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 4px;">Multiple boards, same name</strong> Near-identical boards make it hard to tell which one is actually the right one.</p>
+      <img src="assets/pin-boards-problem.png" alt="A Pinterest profile with many similarly named boards — portfolio, portfolio concept, Portfolioo, Portfolio concept 1" style="aspect-ratio: 966 / 924; object-fit: cover; border: 1px solid rgba(0, 0, 0, 0.1);" />
+      <p class="cs-media-caption"><strong>Multiple boards, same name</strong> Near-identical boards make it hard to tell which one is actually the right one.</p>
     </figure>
     <figure class="cs-media">
-      <img src="assets/pin-problem-forgot-name.jpg" alt="A pin about to be saved, with a Pinterest board search panel open showing similarly named boards like art, brand 1, Classy, Concept 1" style="aspect-ratio: 966 / 924; object-fit: cover; border: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 32px;" />
-      <p class="cs-media-caption" style="text-align: left; font-size: 16px; margin: 0;"><strong style="display: block; font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 4px;">Pin to a random board</strong> Probably never to return, since nothing ties it back to what it was for.</p>
+      <img src="assets/pin-problem-forgot-name.jpg" alt="A pin about to be saved, with a Pinterest board search panel open showing similarly named boards like art, brand 1, Classy, Concept 1" style="aspect-ratio: 966 / 924; object-fit: cover; border: 1px solid rgba(0, 0, 0, 0.1);" />
+      <p class="cs-media-caption"><strong>Pin to a random board</strong> Probably never to return, since nothing ties it back to what it was for.</p>
     </figure>
     <figure class="cs-media">
-      <img src="assets/pin-problem-abandoned.jpg" alt="A pin left unsaved and abandoned among a stack of other pins" style="aspect-ratio: 966 / 924; object-fit: cover; border: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 32px;" />
-      <p class="cs-media-caption" style="text-align: left; font-size: 16px; margin: 0;"><strong style="display: block; font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 4px;">Abandon the pin</strong> Altogether, rather than deal with deciding where it belongs.</p>
+      <img src="assets/pin-problem-abandoned.jpg" alt="A pin left unsaved and abandoned among a stack of other pins" style="aspect-ratio: 966 / 924; object-fit: cover; border: 1px solid rgba(0, 0, 0, 0.1);" />
+      <p class="cs-media-caption"><strong>Abandon the pin</strong> Altogether, rather than deal with deciding where it belongs.</p>
     </figure>
   </div>
 
-  <section class="cs-section" style="padding: 32px 0;">
+  <section class="cs-section">
     <p>The difference is between how we think and how Pinterest's pin-to-board flow is architectured.</p>
   </section>
 
-  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 680px; margin-top: 56px;">
-    <figure class="cs-media" style="margin: 0;">
+  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr);">
+    <figure class="cs-media">
       <img src="assets/pin-how-we-think-v2.jpg?v=3" alt="Human Brain Workflow diagram: see, process, organize — one input branches into a labeled process, then organizes cleanly" style="aspect-ratio: auto; width: 100%; height: auto; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;" />
     </figure>
-    <figure class="cs-media" style="margin: 0;">
+    <figure class="cs-media">
       <img src="assets/pin-pinterest-flow-v2.jpg?v=3" alt="Pinterest Pin-to-Board Workflow diagram: see, cognitive load, organize — a tangled, forced structure" style="aspect-ratio: auto; width: 100%; height: auto; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;" />
     </figure>
   </div>
 
-  <section class="cs-section" style="padding: 32px 0;">
+  <section class="cs-section">
     <div class="cs-quote cs-quote--question">
       <p>So the goal became to design for how people actually think: non-linear, intuitive, &amp; often unfinished.</p>
     </div>
   </section>
 
-  <section class="cs-section" id="research" style="padding-bottom: 0;">
+  <section class="cs-section" id="research">
     <p class="cs-label">Research</p>
     <h2 class="cs-section-head">Every participant said organizing boards was hard.</h2>
     <p>I interviewed five Pinterest users: two who use it professionally, two advanced users who pin for pleasure, and one seasonal user. I asked how they save, name, and organize their pins, then synthesized their answers into shared themes.</p>
@@ -139,11 +139,11 @@
     </ul>
   </section>
 
-  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 960px; margin-top: 56px; margin-bottom: 56px;">
-    <figure class="cs-media" style="margin: 0;">
+  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr);">
+    <figure class="cs-media">
       <img src="assets/pin-research-interviews.jpg" alt="Interview notes from five participants — Melody, Katie, Allison, Sohail, and Kinza — covering how they use, organize, and name their Pinterest boards" style="aspect-ratio: auto; width: 100%; height: auto; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;" />
     </figure>
-    <figure class="cs-media" style="margin: 0;">
+    <figure class="cs-media">
       <img src="assets/pin-research-synthesis.jpg" alt="Synthesis board grouping interview notes into themes: organizing boards is difficult, forgetting about boards, syncing inspiration across platforms, search, and being affected by ads" style="aspect-ratio: auto; width: 100%; height: auto; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;" />
     </figure>
   </div>
@@ -161,7 +161,7 @@
     <p>After testing the ideas with users, almost all the users liked the idea of Baskets.</p>
   </section>
 
-  <div class="cs-carousel" style="max-width: 1080px; margin-top: 32px;">
+  <div class="cs-carousel">
     <div class="cs-carousel-viewport">
       <div class="cs-carousel-track">
         <figure class="cs-carousel-slide">
@@ -192,7 +192,7 @@
     </div>
   </div>
 
-  <section class="cs-section" id="design" style="padding-bottom: 0;">
+  <section class="cs-section" id="design">
     <p class="cs-label">Design</p>
     <h2 class="cs-section-head">Here is why Basket works for how users actually think.</h2>
     <ul class="cs-list">
@@ -200,36 +200,36 @@
     </ul>
   </section>
 
-  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: 56px 0;">
+  <figure class="cs-media cs-media--inline">
     <video src="assets/pin-basket-flyout.mp4" autoplay muted loop playsinline aria-label="The Basket flow: pins collected in the Basket, then pinned to a board, downloaded, or organized later" style="border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;"></video>
   </figure>
 
-  <section class="cs-section" style="padding: 32px 0 0;">
+  <section class="cs-section">
     <ul class="cs-list">
       <li><strong>Intuitive.</strong> Like collecting apples, you drag and drop pins to the basket. Humans collect things before making sense of them. Basket goes back to the natural way people collect things: dump everything in one place, then make sense of it later. With an aim to keep that tactile feel, Basket lets users drag and drop items into it and allows them to sort through them later.</li>
     </ul>
   </section>
 
-  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 960px; margin-top: 56px; margin-bottom: 56px;">
-    <figure class="cs-media" style="margin: 0;">
+  <div class="cs-media-grid" style="grid-template-columns: repeat(2, 1fr);">
+    <figure class="cs-media">
       <img src="assets/pin-apples-basket.jpg" alt="A basket of apples, evoking the tactile, intuitive feeling of collecting things before making sense of them" style="aspect-ratio: 4 / 3; object-fit: cover;" />
     </figure>
-    <figure class="cs-media" style="margin: 0;">
+    <figure class="cs-media">
       <video src="assets/pin-drag-drop.mp4" autoplay muted loop playsinline aria-label="Dragging and dropping pins into the Basket icon in Pinterest's sidebar" style="aspect-ratio: 4 / 3; object-fit: cover;"></video>
     </figure>
   </div>
 
-  <section class="cs-section" style="padding: 32px 0 0;">
+  <section class="cs-section">
     <ul class="cs-list">
       <li><strong>Unfinished.</strong> Basket's AI helps you organize your unfinished boards while still being in control. Basket integrates AI in a way that feels assistive, not directive &mdash; it suggests relevant boards based on patterns in saved pins, or creates new ones when needed. This stops you from creating a new board every time you can't find the one you were looking for, and fixes the problem of multiple boards having the same name. But most importantly, using AI is optional &mdash; users can always organize everything manually, maintaining full control over where their inspirations end up.</li>
     </ul>
   </section>
 
-  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: 56px 0;">
+  <figure class="cs-media cs-media--inline">
     <video src="assets/pin-ai-organize.mp4" autoplay muted loop playsinline aria-label="The Basket AI-organized panel suggesting boards and tags for saved pins" style="border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;"></video>
   </figure>
 
-  <section class="cs-section" style="padding: 32px 0 0;">
+  <section class="cs-section">
     <p>Basket turns a rigid action into a fluid workflow, making curation feel less like sorting and more like discovering intent over time.</p>
   </section>
 
@@ -241,7 +241,7 @@
     <p class="cs-label">Impact</p>
     <h2 class="cs-section-head">90% of participants said they would use Basket.</h2>
     <p>This project was presented in front of 20+ people and was recognized as something they would definitely use and be benefited by. The feature was also shown to the interview participants later, and all of them had positive feedback about it.</p>
-    <p class="cs-label" style="margin-top: 40px;">Quotes from users</p>
+    <h3 class="cs-subhead">Quotes from users</h3>
     <ul class="cs-list">
       <li>&ldquo;I really like the ability to just add things to a basket without categorizing them right away. This eliminates the user error of adding pins to the wrong board.&rdquo; <strong>&mdash; Hannah Farnham, Digital Designer @ Zero Studios</strong></li>
       <li>&ldquo;I like how physical and tactile the drag and drop action feels and matches how I think when saving anything.&rdquo; <strong>&mdash; Workshop Attendee</strong></li>

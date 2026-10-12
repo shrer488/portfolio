@@ -28,7 +28,9 @@
 
   function finished() { window.dispatchEvent(new Event('textmelt:done')); }
 
-  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  // Skipped for reduced motion, and on phones (where the text should just
+  // be there; the melt-in made the page look stuck while it loaded).
+  if (window.innerWidth < 780 || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
     root.classList.remove('text-melt', 'photo-wait');
     setTimeout(finished, 0);
     return;

@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:wght@400&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="play.css?v=38" />
-<link rel="stylesheet" href="transition.css?v=18" />
+<link rel="stylesheet" href="play.css?v=66" />
+<link rel="stylesheet" href="transition.css?v=19" />
 </head>
 <body>
 <div class="page-transition" id="pageTransition" aria-hidden="true"></div>
@@ -32,81 +32,105 @@
     <p class="play-bio" id="playBio" data-default="I&rsquo;m a Product Designer with 5+ years of experience working on complex products ranging from learning platforms to AI-native and B2B tools.">I&rsquo;m a Product Designer with 5+ years of experience working on complex products ranging from learning platforms to AI-native and B2B tools.</p>
   </aside>
 
+  <div class="play-stepper" role="group" aria-label="Columns" style="--i: 1;">
+    <div class="play-stepper-pill">
+      <div class="play-stepper-window">
+        <div class="play-stepper-strip">
+          <button type="button" class="play-stepper-num" data-cols="1" aria-pressed="false" aria-label="1 column">1</button>
+          <button type="button" class="play-stepper-num" data-cols="2" aria-pressed="true" aria-label="2 columns">2</button>
+          <button type="button" class="play-stepper-num" data-cols="3" aria-pressed="false" aria-label="3 columns">3</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <main class="play-grid">
-    <div class="play-col">
-      <figure class="play-item" data-num="01" data-caption="Digital paintings — acrylic studies exploring color, form, and light.">
-        <img src="assets/play-digital-paintings.png" alt="Digital painting study" style="object-position: 15% center;" />
-      </figure>
-      <figure class="play-item" data-num="03" data-caption="Ink illustrations — a lighthouse, a whirlpool, and a door underwater.">
-        <img src="assets/play-ink-illustrations.webp" alt="Three black-and-white ink illustrations: a lighthouse, boats over a whirlpool, and a stone doorway underwater" />
-      </figure>
-      <figure class="play-item" data-num="04" data-caption="Projection mapping — a moth animation mapped live in MadMapper.">
-        <img src="assets/play-projection-moth.webp" alt="A moth animation mapped onto physical panels in MadMapper" />
-      </figure>
-      <figure class="play-item" data-num="05" data-caption="Product design — a dashboard concept for tracking team assignments.">
-        <img src="assets/play-programiz-teams-dashboard.webp" alt="A Teams dashboard concept for assignment tracking, shown on a laptop" />
-      </figure>
-    </div>
+    <section class="play-cat" id="products" aria-labelledby="cat-products">
+      <h2 class="play-cat-title" id="cat-products">Products &amp; Experiments</h2>
+      <div class="play-cat-items">
+        <figure class="play-item" data-num="01" data-caption="Product design — a dashboard concept for tracking team assignments.">
+          <img src="assets/play-programiz-teams-dashboard.webp" alt="A Teams dashboard concept for assignment tracking, shown on a laptop" />
+        </figure>
+        <figure class="play-item" data-num="02" data-caption="UI exploration — a hospital booking site concept.">
+          <img src="assets/play-hospital-site-ui.webp" alt="A hospital appointment-booking website UI concept" />
+        </figure>
+        <figure class="play-item" data-num="03" data-caption="roam — an app concept for real-time, location-based events.">
+          <img src="assets/play-roam-app.webp" alt="Roam app concept — a hand holding a phone with a live map of nearby events" />
+        </figure>
+        <figure class="play-item" data-num="04" data-caption="roam — walking through the map, opening nearby moments pinned by other people.">
+          <video src="assets/play-roam-phone-demo.mp4" poster="assets/play-roam-phone-demo-poster.jpg" autoplay muted loop playsinline preload="none"></video>
+        </figure>
+        <figure class="play-item" data-num="05" data-caption="roam — a promo animation: your spontaneous moments.">
+          <video src="assets/play-roam-promo.mp4" poster="assets/play-roam-promo-poster.jpg" autoplay muted loop playsinline preload="none"></video>
+        </figure>
+        <figure class="play-item" data-num="06" data-caption="FOUND. — a concept for a social app built around real-world inspiration.">
+          <img src="assets/play-found-app.webp" alt="FOUND app concept — a hand holding a phone next to collaged street inspiration" />
+        </figure>
+        <figure class="play-item" data-num="07" data-caption="Oryn — a speculative AR interface for resonating with people and objects around you.">
+          <video src="assets/play-oryn-concept.mp4" poster="assets/play-oryn-concept-poster.jpg" autoplay muted loop playsinline preload="none"></video>
+        </figure>
+        <figure class="play-item" data-num="08" data-caption="Oryn — the full concept video, walking through onboarding and calibration.">
+          <video src="assets/play-oryn-full.mp4" poster="assets/play-oryn-full-poster.jpg" autoplay muted loop playsinline preload="none"></video>
+        </figure>
+      </div>
+    </section>
 
-    <div class="play-col">
-      <figure class="play-item" data-num="06" data-caption="Newari Culture — a digital illustration series inspired by Kathmandu's heritage.">
-        <img src="assets/play-newari-illustration.png" alt="Newari Culture digital illustration" />
-      </figure>
-      <figure class="play-item play-item--large" data-num="07" data-caption="Nooks — sketchbook explorations in pen and ink.">
-        <img src="assets/play-nooks-pen-paper.png" alt="Pen-on-paper sketch, full page" style="object-position: 30% center;" />
-      </figure>
-      <figure class="play-item" data-num="08" data-caption="Photography — a moment caught on camera.">
-        <img src="assets/play-img6596.png" alt="Photo" style="object-position: 60% 30%;" />
-      </figure>
-      <figure class="play-item" data-num="09" data-caption="UI exploration — coding-challenge screens for a learning platform.">
-        <img src="assets/play-pro-challenges-ui.webp" alt="Coding challenge and console UI screens for a learning platform concept" />
-      </figure>
-      <figure class="play-item" data-num="10" data-caption="Parsons x University of Arizona — placing at the AI Startup Design Hackathon.">
-        <img src="assets/play-hackathon-award.webp" alt="A team posing with trophies under a screen reading AI Startup Design Hackathon" />
-      </figure>
-    </div>
+    <section class="play-cat" id="art" aria-labelledby="cat-art">
+      <h2 class="play-cat-title" id="cat-art">Art &amp; Illustration</h2>
+      <div class="play-cat-items">
+        <figure class="play-item" data-num="09" data-caption="Digital paintings — acrylic studies exploring color, form, and light.">
+          <img src="assets/play-digital-paintings.png" alt="Digital painting study" style="object-position: 15% center;" />
+        </figure>
+        <figure class="play-item" data-num="10" data-caption="Ink illustrations — a lighthouse, a whirlpool, and a door underwater.">
+          <img src="assets/play-ink-illustrations.webp" alt="Three black-and-white ink illustrations: a lighthouse, boats over a whirlpool, and a stone doorway underwater" />
+        </figure>
+        <figure class="play-item" data-num="11" data-caption="Newari Culture — a digital illustration series inspired by Kathmandu's heritage.">
+          <img src="assets/play-newari-illustration.png" alt="Newari Culture digital illustration" />
+        </figure>
+        <figure class="play-item play-item--large" data-num="12" data-caption="Nooks — sketchbook explorations in pen and ink.">
+          <img src="assets/play-nooks-pen-paper.png" alt="Pen-on-paper sketch, full page" style="object-position: 30% center;" />
+        </figure>
+      </div>
+    </section>
 
-    <div class="play-col">
-      <figure class="play-item" data-num="11" data-caption="Photography — a moment caught on camera.">
-        <img src="assets/play-img6436.png" alt="Photo" />
-      </figure>
-      <figure class="play-item" data-num="12" data-caption="UI exploration — a user management dashboard concept.">
-        <img src="assets/play-user-dashboard-ui.webp" alt="A user management dashboard UI concept with subscription plan details" />
-      </figure>
-      <figure class="play-item" data-num="13" data-caption="roam — an app concept for real-time, location-based events.">
-        <img src="assets/play-roam-app.webp" alt="Roam app concept — a hand holding a phone with a live map of nearby events" />
-      </figure>
-      <figure class="play-item" data-num="14" data-caption="Parsons — a moment with the cohort between studio crits.">
-        <img src="assets/play-parsons-team.webp" alt="A group photo of a Parsons design cohort" />
-      </figure>
-    </div>
+    <section class="play-cat" id="motion" aria-labelledby="cat-motion">
+      <h2 class="play-cat-title" id="cat-motion">Motion &amp; Projection</h2>
+      <div class="play-cat-items">
+        <figure class="play-item" data-num="13" data-caption="Projection mapping — a moth animation mapped live in MadMapper.">
+          <img src="assets/play-projection-moth.webp" alt="A moth animation mapped onto physical panels in MadMapper" />
+        </figure>
+        <figure class="play-item" data-num="14" data-caption="Projection mapping — interface panels mapped onto a folding screen, glowing green in the dark.">
+          <img src="assets/play-img6596.png" alt="Green interface graphics projection-mapped onto a three-panel folding screen on a table in a dark room" />
+        </figure>
+        <figure class="play-item" data-num="15" data-caption="Projection mapping — mapping fire-like textures onto panels live in MadMapper.">
+          <img src="assets/play-img6436.png" alt="Orange and yellow textures projected onto standing panels, with the MadMapper scene open on a laptop in front" />
+        </figure>
+        <figure class="play-item" data-num="16" data-caption="Projection mapping — light mapped onto a hanging, frayed textile sculpture.">
+          <img src="assets/play-projection-textile.jpg" alt="Pink and purple light projection-mapped onto a large hanging frayed textile sculpture in a dark studio" />
+        </figure>
+        <figure class="play-item" data-num="17" data-caption="Breathe — a concept for visualizing local air quality as something you can feel.">
+          <video src="assets/play-breathe.mp4" poster="assets/play-breathe-poster.jpg" autoplay muted loop playsinline preload="none"></video>
+        </figure>
+        <figure class="play-item" data-num="18" data-caption="Breathe — live on a large screen at Parsons, showing Honolulu's air as you breathe out.">
+          <img src="assets/play-breathe-display.jpg" alt="The Breathe visualization on a tall screen against an orange wall, a glowing green and violet orb above Honolulu air-quality readings" />
+        </figure>
+      </div>
+    </section>
 
-    <div class="play-col">
-      <figure class="play-item" data-num="15" data-caption="UI exploration — a hospital booking site concept.">
-        <img src="assets/play-hospital-site-ui.webp" alt="A hospital appointment-booking website UI concept" />
-      </figure>
-      <figure class="play-item" data-num="16" data-caption="FOUND. — a concept for a social app built around real-world inspiration.">
-        <img src="assets/play-found-app.webp" alt="FOUND app concept — a hand holding a phone next to collaged street inspiration" />
-      </figure>
-      <figure class="play-item" data-num="17" data-caption="FOUND. — showing the app at a Parsons exhibition.">
-        <img src="assets/play-found-exhibition.webp" alt="The FOUND app displayed on devices at a Parsons exhibition table" />
-      </figure>
-      <figure class="play-item" data-num="18" data-caption="Oryn — a speculative AR interface for resonating with people and objects around you.">
-        <video src="assets/play-oryn-concept.mp4" poster="assets/play-oryn-concept-poster.jpg" autoplay muted loop playsinline preload="none"></video>
-      </figure>
-      <figure class="play-item" data-num="19" data-caption="Oryn — the full concept video, walking through onboarding and calibration.">
-        <video src="assets/play-oryn-full.mp4" poster="assets/play-oryn-full-poster.jpg" autoplay muted loop playsinline preload="none"></video>
-      </figure>
-      <figure class="play-item" data-num="20" data-caption="Breathe — a concept for visualizing local air quality as something you can feel.">
-        <video src="assets/play-breathe.mp4" poster="assets/play-breathe-poster.jpg" autoplay muted loop playsinline preload="none"></video>
-      </figure>
-      <figure class="play-item" data-num="21" data-caption="roam — walking through the map, opening nearby moments pinned by other people.">
-        <video src="assets/play-roam-phone-demo.mp4" poster="assets/play-roam-phone-demo-poster.jpg" autoplay muted loop playsinline preload="none"></video>
-      </figure>
-      <figure class="play-item" data-num="22" data-caption="roam — a promo animation: your spontaneous moments.">
-        <video src="assets/play-roam-promo.mp4" poster="assets/play-roam-promo-poster.jpg" autoplay muted loop playsinline preload="none"></video>
-      </figure>
-    </div>
+    <section class="play-cat" id="moments" aria-labelledby="cat-moments">
+      <h2 class="play-cat-title" id="cat-moments">Moments</h2>
+      <div class="play-cat-items">
+        <figure class="play-item" data-num="19" data-caption="Parsons x University of Arizona — placing at the AI Startup Design Hackathon.">
+          <img src="assets/play-hackathon-award.webp" alt="A team posing with trophies under a screen reading AI Startup Design Hackathon" />
+        </figure>
+        <figure class="play-item" data-num="20" data-caption="Parsons — a moment with the cohort between studio crits.">
+          <img src="assets/play-parsons-team.webp" alt="A group photo of a Parsons design cohort" />
+        </figure>
+        <figure class="play-item" data-num="21" data-caption="FOUND. — showing the app at a Parsons exhibition.">
+          <img src="assets/play-found-exhibition.webp" alt="The FOUND app displayed on devices at a Parsons exhibition table" />
+        </figure>
+      </div>
+    </section>
   </main>
 
   <div class="lightbox" id="lightbox" aria-hidden="true">
@@ -132,8 +156,8 @@
     </div>
   </div>
 
-  <script src="play.js?v=18"></script>
-  <script src="play-edit.js?v=1"></script>
+  <script src="play.js?v=29"></script>
+  <script src="play-edit.js?v=2"></script>
 
 <script src="transition.js?v=47"></script>
 <script src="smear.js?v=31" data-smear=".nav-link, .play-index, .play-bio" defer></script>

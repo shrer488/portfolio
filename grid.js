@@ -196,7 +196,10 @@
   cv.className = 'morph-canvas';
   cv.setAttribute('aria-hidden', 'true');
   document.body.appendChild(cv);
-  var gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false });
+  // Phones never show the grid switch (their project list is the grid, in
+  // one column), so they skip the morph's WebGL setup and the loading of
+  // every project picture into it, which only cost them memory and time.
+  var gl = window.innerWidth >= 780 ? cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false }) : null;
   var prog = null, U = {};
   var lodExt = gl && gl.getExtension('EXT_shader_texture_lod');
   if (gl) {

@@ -16,7 +16,7 @@
   document.head.appendChild(script);
 
   function initEditMode() {
-    var cols = Array.prototype.slice.call(document.querySelectorAll('.play-col'));
+    var cols = Array.prototype.slice.call(document.querySelectorAll('.play-cat-items'));
     cols.forEach(function (col) {
       // Shared `group` lets a tile be dragged out of one column and
       // dropped into another, not just reordered within its own.

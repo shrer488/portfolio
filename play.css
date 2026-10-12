@@ -195,8 +195,142 @@ img {
 .play-grid {
   margin-left: 374px;
   padding: 45px 48px 128px 0;
-  column-count: 3;
+}
+
+/* Categories (Products & Experiments, Art & Illustration, ...): each its
+   own block, well apart from the next. Its name sits just left of the
+   pictures, in the gap between the hover rail and the grid (32px clear of
+   the images, right-aligned), and stays pinned (sticky) while its
+   category is on screen. The name and the tiles share one grid cell, so
+   the name takes no room in the column; it is pulled left into the gap. */
+.play-cat {
+  display: grid;
+}
+
+.play-cat + .play-cat {
+  margin-top: 200px;
+}
+
+.play-cat > * {
+  grid-area: 1 / 1;
+}
+
+.play-cat-title {
+  position: sticky;
+  top: 24px;
+  z-index: 5;
+  align-self: start;
+  justify-self: start;
+  width: 104px;
+  margin: 0 0 0 -136px;   /* its right edge 32px short of the pictures, its left clear of the hover rail */
+  text-align: right;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.play-cat-items {
+  column-count: var(--play-cols, 2);
   column-gap: 20px;
+}
+
+/* Columns stepper, top-left corner (play.js): an upright light pill
+   holding the numbers 1, 2, 3 (its accessible name is "Columns"); the current
+   one sits in the middle in bold black, the others fading away above and
+   below. Picking one (click it, or the arrow keys while it has focus), the
+   column of numbers springs up or down to centre the new one. Desktop
+   only. */
+.play-stepper {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.play-stepper-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 30px;
+  padding: 4px 0;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 999px;
+  background: #F1F1F3;
+}
+
+/* The numbers: a short window onto a column that slides to keep the
+   current number in the middle; the window's ends fade the column out. */
+.play-stepper-window {
+  position: relative;
+  width: 24px;
+  height: 60px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+}
+
+.play-stepper-strip {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(calc(-10px - var(--i) * 20px));
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.play-stepper-num {
+  width: 24px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 20px;
+  color: rgba(0, 0, 0, 0.28);
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.play-stepper-num[aria-pressed="true"] {
+  font-weight: 700;
+  color: var(--ink);
+  transform: scale(1.12);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .play-stepper-num:not([aria-pressed="true"]):hover {
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.play-stepper :focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .play-stepper-strip,
+  .play-stepper-num {
+    transition-duration: 0.01s;
+  }
+}
+
+@media (max-width: 900px) {
+  .play-stepper {
+    display: none;
+  }
 }
 
 /* Masonry via natural image height (not a forced aspect-ratio box) — each
@@ -229,7 +363,7 @@ img {
 
 /* Scaling the whole tile (not just its image) so it visibly grows on
    hover — transform doesn't participate in layout, so the surrounding
-   grid/columns never reflow. Kept small (1.08) since a bigger scale
+   grid/columns never reflow. Kept small (1.03, within the 20px gap between tiles) since a bigger scale
    pushed the tile visibly over its neighbors, reading as a layout bug
    rather than an intentional hover state.
 
@@ -239,7 +373,7 @@ img {
    tapped until something else on the page was touched. */
 @media (hover: hover) and (pointer: fine) {
   .play-item:hover {
-    transform: scale(1.08);
+    transform: scale(var(--play-hover, 1.03));
     z-index: 5;
   }
 }
@@ -300,9 +434,33 @@ img {
   }
 
   .play-grid {
-    column-count: 2;
     margin-left: 0;
     padding: 0 24px 96px;
+  }
+
+  .play-cat-items {
+    column-count: 2;
+  }
+
+  /* No corner to sit in here: the name heads its own category instead,
+     pinned under the top of the screen while the category scrolls by. */
+  .play-cat > * {
+    grid-area: auto;
+  }
+
+  .play-cat + .play-cat {
+    margin-top: 112px;
+  }
+
+  .play-cat-title {
+    justify-self: stretch;
+    width: auto;
+    margin: 0 -24px 16px;
+    text-align: left;
+    padding: 12px 24px;
+    top: 0;
+    background: var(--bg, #FAFAFA);
+    font-size: 12px;
   }
 }
 
@@ -313,9 +471,17 @@ img {
   }
 
   .play-grid {
-    column-count: 1;
     padding-left: 24px;
     padding-right: 24px;
+  }
+
+  .play-cat-items {
+    column-count: 1;
+  }
+
+  /* Under the phone's fixed nav bar. */
+  .play-cat-title {
+    top: 49px;
   }
 }
 

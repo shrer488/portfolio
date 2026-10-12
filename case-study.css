@@ -1565,3 +1565,157 @@ img {
   left: 0;
   color: var(--ink-40);
 }
+
+/* ---- Rhythm -------------------------------------------------------------
+   One set of spacing for every case study, set here rather than per page:
+   blocks in the content column sit 40px apart (text to a picture, a
+   picture to its follow-on text), two pictures in a row 24px apart, a new
+   sub-topic (a section opening on a sub-heading) 80px down, and a new
+   labelled section (Overview, Problem...) 128px down. Pictures, videos,
+   grids and carousels are left-aligned and up to 900px wide; the hero
+   picture at the top up to 1170px. Headings step down from the 28px section
+   heading to the 22px sub-heading and the 18px small heading. (The doubled
+   .cs-content keeps these ahead of the components' own margins.) */
+.cs-content {
+  --gap: 40px;
+  --gap-media: 24px;
+  --gap-sub: 80px;
+  --gap-major: 128px;
+}
+
+.cs-content.cs-content > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.cs-content.cs-content > .cs-section,
+.cs-content.cs-content > .cs-stats {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.cs-hero {
+  padding-bottom: 0;
+}
+
+.cs-content.cs-content > * + * {
+  margin-top: var(--gap);
+}
+
+.cs-content.cs-content > :is(figure.cs-media, .cs-carousel, .cs-media-grid, .cs-chat-mock, .cs-edge-cases, .cs-diagram, .cs-flow)
+  + :is(figure.cs-media, .cs-carousel, .cs-media-grid, .cs-chat-mock, .cs-edge-cases, .cs-diagram, .cs-flow) {
+  margin-top: var(--gap-media);
+}
+
+.cs-content.cs-content > .cs-media-caption {
+  margin-top: 12px;
+}
+
+.cs-content.cs-content > .cs-section:has(> :is(.cs-subhead, .cs-minorhead, .cs-section-head):first-child) {
+  margin-top: var(--gap-sub);
+}
+
+.cs-content.cs-content > .cs-section:has(> .cs-label:first-child) {
+  margin-top: var(--gap-major);
+}
+
+.cs-content.cs-content > .cs-footer {
+  margin-top: 160px;
+}
+
+/* A details block kept inside the header follows the same 40px step. */
+.cs-hero > .cs-meta {
+  margin: 40px 0 0;
+}
+
+/* Widths and alignment of pictures. */
+.cs-content.cs-content > figure.cs-media,
+.cs-content.cs-content > .cs-carousel,
+.cs-content.cs-content > .cs-media-grid {
+  max-width: 900px;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Diagrams, card rows and stats share that 900px width; the narrow ones
+   (step flows, the chat mock) keep their own width but line up on the
+   left like everything else. */
+.cs-content.cs-content > :is(.cs-diagram, .cs-edge-cases, .cs-stats) {
+  max-width: 900px;
+}
+
+.cs-content.cs-content > :is(.cs-flow, .cs-chat-mock) {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.cs-content.cs-content > .cs-media-caption {
+  max-width: 900px;
+}
+
+/* Only the picture at the top of a case study runs wider. */
+.cs-content.cs-content > figure:is(.cs-media--hero, .cs-media--hero-video) {
+  max-width: 1170px;
+}
+
+.cs-media-grid {
+  gap: 24px;
+}
+
+.cs-media-grid > .cs-media {
+  margin: 0;
+}
+
+/* Card captions under grid pictures: a small heading, then a line. */
+.cs-media-grid .cs-media-caption {
+  margin: 16px 0 0;
+  text-align: left;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink-70);
+}
+
+.cs-media-grid .cs-media-caption strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Inside a section: whatever opens it sits flush at its top. */
+.cs-content .cs-section > :first-child {
+  margin-top: 0;
+}
+
+.cs-section > .cs-label + .cs-subhead {
+  margin-top: 0;
+}
+
+.cs-section p + .cs-thesis {
+  margin-top: 32px;
+}
+
+@media (max-width: 780px) {
+  .cs-content {
+    --gap: 32px;
+    --gap-media: 16px;
+    --gap-sub: 56px;
+    --gap-major: 88px;
+  }
+
+  .cs-content.cs-content > .cs-footer {
+    margin-top: 112px;
+  }
+
+  .cs-hero {
+    padding-top: 0;
+  }
+
+  /* Grids stack to one column on phones (their column counts are set on
+     each grid in the page). */
+  .cs-media-grid,
+  .cs-diagram-cols {
+    grid-template-columns: 1fr !important;
+  }
+}

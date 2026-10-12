@@ -154,4 +154,11 @@ body::before {
   .nav .nav-link.active {
     font-size: 14px;
   }
+
+  /* The soft blur on the nav links (a blurred copy behind each word) only
+     showed as a grey line over the active link at this size: off here. */
+  .nav .nav-link::before,
+  .nav .nav-link.active::before {
+    display: none;
+  }
 }

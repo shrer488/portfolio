@@ -344,3 +344,31 @@
     }, WHEEL_COOLDOWN_MS);
   }, { passive: false });
 })();
+
+// Columns stepper (top-left): 1, 2 or 3 columns of pictures, remembered in
+// this browser. Pick a number (or use the arrow keys while it has focus). One wide column gets a gentler hover grow, so a tile
+// never spills over the gap into the next.
+(function () {
+  var grid = document.querySelector('.play-grid');
+  var box = document.querySelector('.play-stepper');
+  if (!grid || !box) return;
+  var nums = Array.prototype.slice.call(box.querySelectorAll('.play-stepper-num'));
+  var cur = 2;
+  function set(n, save) {
+    n = Math.max(1, Math.min(3, n));
+    cur = n;
+    grid.style.setProperty('--play-cols', n);
+    grid.style.setProperty('--play-hover', n === 1 ? 1.012 : n === 2 ? 1.025 : 1.03);
+    box.style.setProperty('--i', n - 1);
+    nums.forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.cols === n)); });
+    if (save) { try { localStorage.setItem('playCols', n); } catch (e) {} }
+  }
+  var saved = 2;
+  try { saved = +localStorage.getItem('playCols') || 2; } catch (e) {}
+  set(saved >= 1 && saved <= 3 ? saved : 2, false);
+  nums.forEach(function (b) { b.addEventListener('click', function () { set(+b.dataset.cols, true); }); });
+  box.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { set(cur - 1, true); e.preventDefault(); }
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { set(cur + 1, true); e.preventDefault(); }
+  });
+})();

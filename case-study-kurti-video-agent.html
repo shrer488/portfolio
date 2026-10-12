@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:wght@400&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="case-study.css?v=92" />
-<link rel="stylesheet" href="transition.css?v=18" />
+<link rel="stylesheet" href="case-study.css?v=99" />
+<link rel="stylesheet" href="transition.css?v=19" />
 </head>
 <body>
 <div class="page-transition" id="pageTransition" aria-hidden="true"></div>
@@ -117,7 +117,7 @@
 
   <section class="cs-section">
     <p>At first, the problem looked simple: make video editing faster.</p>
-    <p class="cs-thesis" style="margin-top: 32px;">Once I started working on it, I realized the system would need to understand how he edits, what information matters in each video and which decisions should remain under his control.</p>
+    <p class="cs-thesis">Once I started working on it, I realized the system would need to understand how he edits, what information matters in each video and which decisions should remain under his control.</p>
   </section>
 
   <section class="cs-section" id="idea">
@@ -133,25 +133,25 @@
     <p>I focused on one creator and one repeatable workflow so I could test the idea before investing in a larger system.</p>
   </section>
 
-  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin-left: 0;">
+  <figure class="cs-media cs-media--inline">
     <img src="assets/kurti-architecture.png" alt="Kurti Video Agent workflow: a one-time setup that builds style profiles from reference videos, and a per-video runtime that classifies, cuts, verifies and captions footage sent over WhatsApp" />
   </figure>
 
   <section class="cs-section" id="challenges">
     <p class="cs-label">Challenges</p>
-    <h2 class="cs-section-head">1. Building it on a small budget.</h2>
+    <h3 class="cs-subhead">1. Building it on a small budget.</h3>
     <p>This was a passion project, so I wanted to prove the agent could work before paying for expensive models and infrastructure.</p>
   </section>
 
-  <figure class="cs-media cs-media--inline" style="max-width: 720px; margin: -40px 0 -40px 0;">
+  <figure class="cs-media cs-media--inline">
     <img src="assets/kurti-budget-swap.jpg" alt="Tools tested and swapped based on cost and efficiency: GPT-4o to Gemini Flash, a dedicated database to Google Drive, cloud infrastructure to my own laptop as the server, a paid WhatsApp integration to a free Tally form" />
   </figure>
 
-  <section class="cs-section" style="padding-top: 88px;">
+  <section class="cs-section">
     <p>Instead of asking AI to scan my dad's entire TikTok account, I handpicked 15&ndash;20 strong reference videos and organized them in a spreadsheet. This made the workflow faster, cheaper and easier to control.</p>
   </section>
 
-  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: -24px 0 0 0;">
+  <figure class="cs-media cs-media--inline">
     <video src="assets/kurti-spreadsheet.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Screen recording of the reference-video spreadsheet, with TikTok links grouped by outfit type" style="width: 100%; height: auto; border-radius: 4px; border: 1px solid rgba(0, 0, 0, 0.1); display: block;"></video>
   </figure>
 
@@ -160,7 +160,7 @@
   </section>
 
   <section class="cs-section">
-    <h2 class="cs-section-head">2. Teaching AI how to edit like him.</h2>
+    <h3 class="cs-subhead">2. Teaching AI how to edit like him.</h3>
     <p>My first attempt used reference videos and timestamps to tell the AI where to cut. But every recording had different timing, so the results were inconsistent.</p>
     <p>I shifted from timing references to visual anchor points. For a full kurti set, the agent learned to look for:</p>
   </section>
@@ -186,15 +186,15 @@
   </section>
 
   <section class="cs-section">
-    <h2 class="cs-section-head">3. Designing a workflow he would actually use.</h2>
+    <h3 class="cs-subhead">3. Designing a workflow he would actually use.</h3>
     <p>The first version used a Tally form for submitting the video and kurti name, with Google Drive for retrieving the result. It helped me test the agent quickly, but user testing showed that my dad would not use the workflow independently &mdash; it required too many unfamiliar steps outside the apps he already used. And because the video was being uploaded to Google Drive multiple times, the quality of the video was degrading.</p>
   </section>
 
-  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: -24px 0 0 0;">
+  <figure class="cs-media cs-media--inline">
     <img src="assets/kurti-tally-flow-new.jpg" alt="Tally flow: upload footage to Drive, fill out Tally form, Gmail, wait for edited video email, copy caption, go to Drive, download video &mdash; loses video quality with every Drive upload" />
   </figure>
 
-  <figure class="cs-media cs-media--inline" style="max-width: 960px; margin: 24px 0 0 0;">
+  <figure class="cs-media cs-media--inline">
     <video src="assets/kurti-tally-demo.mp4" poster="assets/kurti-tally-demo-poster.jpg" controls playsinline preload="metadata" aria-label="Screen recording of the first version: submitting footage and a kurti name through a Tally form and retrieving the result from Google Drive" style="width: 100%; height: auto; border-radius: 4px; border: 1px solid rgba(0, 0, 0, 0.1); display: block;"></video>
   </figure>
 
@@ -204,7 +204,7 @@
 
   <section class="cs-section">
     <p>Since he used WhatsApp every day, I moved the entire experience there. He could send the raw footage and kurti name, then receive the edited video and caption in the same conversation.</p>
-    <p class="cs-thesis" style="margin-top: 32px;">The agent became easier to use because it fit into his existing behavior.</p>
+    <p class="cs-thesis">The agent became easier to use because it fit into his existing behavior.</p>
   </section>
 
   <section class="cs-section" id="impact">

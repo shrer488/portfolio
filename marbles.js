@@ -13,6 +13,8 @@
 (function () {
   var hint = document.querySelector('.cursor-hint');
   if (!hint) return;
+  // Phones never show the hint that drops them, so they skip the canvas.
+  if (window.innerWidth < 780) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   var R = 8;               // ball radius, px (16px across, the size of the cursor dot)

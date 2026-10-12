@@ -503,10 +503,9 @@ img {
   display: block;
 }
 
-/* Over a linking tile (play.js): the "View ↗" pill in place of the cursor
-   (the site's dot steps aside for any .view-cursor.visible), and a small
-   preview of the site beside it, slightly rounded, with the case studies'
-   thin grey border. Mouse only. */
+/* Over a linking tile (play.js): a pill with the tile's call to action in
+   place of the cursor (the site's dot steps aside for any
+   .view-cursor.visible). Mouse only. */
 .play-view-cursor {
   position: fixed;
   top: 0;
@@ -537,32 +536,6 @@ img {
 }
 
 .play-view-cursor.visible {
-  opacity: 1;
-}
-
-.play-preview {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 10000;
-  width: 240px;
-  overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
-  background: #FFFFFF;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-.play-preview img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.play-preview.is-on {
   opacity: 1;
 }
 

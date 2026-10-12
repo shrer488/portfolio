@@ -227,9 +227,8 @@
 })();
 
 // Tiles that link out (.play-item--link): over one, the cursor becomes a
-// pill with the tile's call to action ("Get Extension ↗", data-cta) and a small preview of the site sits beside it (a picture of
-// the page rather than the live page, which would make the hover lag).
-// Clicking opens the site in a new tab (it's a plain link). Mouse only.
+// pill with the tile's call to action ("Get Extension ↗", data-cta).
+// Clicking opens the link in a new tab (it's a plain link). Mouse only.
 (function () {
   if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   var links = Array.prototype.slice.call(document.querySelectorAll('.play-item--link'));
@@ -238,38 +237,19 @@
   pill.className = 'view-cursor play-view-cursor';
   pill.setAttribute('aria-hidden', 'true');
   pill.innerHTML = '<span class="play-view-label">View</span><svg viewBox="0 0 14 14" width="13" height="13"><path d="M3 11L11 3M11 3H4.5M11 3V9.5" /></svg>';
-  var card = document.createElement('div');
-  card.className = 'play-preview';
-  card.setAttribute('aria-hidden', 'true');
-  card.innerHTML = '<img alt="" />';
   document.body.appendChild(pill);
-  document.body.appendChild(card);
-  var img = card.querySelector('img');
+  var label = pill.querySelector('.play-view-label');
   function move(e) {
-    var x = e.clientX, y = e.clientY;
-    pill.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0) translate(-50%, -50%)';
-    // The card sits down and to the right of the pointer, flipping to the
-    // other side near the right or bottom edge of the window.
-    var w = card.offsetWidth, h = card.offsetHeight;
-    var cx = x + 36 + w > window.innerWidth - 12 ? x - 36 - w : x + 36;
-    var cy = Math.min(y + 24, window.innerHeight - h - 12);
-    card.style.transform = 'translate3d(' + cx + 'px, ' + cy + 'px, 0)';
+    pill.style.transform = 'translate3d(' + e.clientX + 'px, ' + e.clientY + 'px, 0) translate(-50%, -50%)';
   }
   links.forEach(function (tile) {
-    var src = tile.getAttribute('data-preview');
-    if (src) { var pre = new Image(); pre.src = src; }   // ready before the first hover
     tile.addEventListener('mouseenter', function (e) {
-      if (src) img.src = src;
-      pill.querySelector('.play-view-label').textContent = tile.getAttribute('data-cta') || 'View';
+      label.textContent = tile.getAttribute('data-cta') || 'View';
       move(e);
       pill.classList.add('visible');
-      card.classList.toggle('is-on', !!src);
     });
     tile.addEventListener('mousemove', move);
-    tile.addEventListener('mouseleave', function () {
-      pill.classList.remove('visible');
-      card.classList.remove('is-on');
-    });
+    tile.addEventListener('mouseleave', function () { pill.classList.remove('visible'); });
   });
 })();
 

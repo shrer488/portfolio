@@ -264,6 +264,9 @@
 
     var href = link.getAttribute('href');
     if (!href || href.charAt(0) === '#') return;
+    // Email, phone and other non-page links (mailto:, tel:...) just open
+    // their app over the page: no closing transition.
+    if (link.protocol !== 'http:' && link.protocol !== 'https:') return;
     if (link.target === '_blank' || link.hasAttribute('download')) return;
     if (link.hostname && link.hostname !== window.location.hostname) return;
 
@@ -428,4 +431,39 @@
   function mountToggle() { document.body.appendChild(toggle); }
   if (document.body) mountToggle();
   else document.addEventListener('DOMContentLoaded', mountToggle);
+})();
+
+/* Case studies: over the "Go to Next Project" link, a small card with
+   that project's homepage picture (data-preview) follows the pointer. The
+   picture only loads on the first hover. Mouse only. */
+(function () {
+  if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  function init() {
+    var link = document.querySelector('.cs-footer-title[data-preview]');
+    if (!link) return;
+    var card = document.createElement('div');
+    card.className = 'cs-next-preview';
+    card.setAttribute('aria-hidden', 'true');
+    var img = document.createElement('img');
+    img.alt = '';
+    img.decoding = 'async';
+    card.appendChild(img);
+    document.body.appendChild(card);
+    function move(e) {
+      var w = card.offsetWidth, h = card.offsetHeight;
+      var x = e.clientX + 24, y = e.clientY - h - 16;   // up and to the right of the pointer
+      if (x + w > window.innerWidth - 12) x = e.clientX - 24 - w;
+      if (y < 12) y = e.clientY + 24;
+      card.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0)';
+    }
+    link.addEventListener('mouseenter', function (e) {
+      if (!img.src) img.src = link.getAttribute('data-preview');
+      move(e);
+      card.classList.add('is-on');
+    });
+    link.addEventListener('mousemove', move);
+    link.addEventListener('mouseleave', function () { card.classList.remove('is-on'); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();

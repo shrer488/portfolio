@@ -791,10 +791,36 @@ img {
   text-decoration: none;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .cs-footer-title:hover {
-    text-decoration: underline;
-  }
+/* Over the next-project link (transition.js), a small card with that
+   project's homepage picture follows the pointer, in place of an
+   underline. Mouse only. */
+.cs-next-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  width: 220px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  background: #FFFFFF;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.94;
+  transition: opacity 0.25s ease, scale 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cs-next-preview img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 676 / 446;   /* the homepage card's shape */
+  object-fit: cover;
+}
+
+.cs-next-preview.is-on {
+  opacity: 1;
+  scale: 1;
 }
 
 @media (max-width: 780px) {
@@ -1718,4 +1744,77 @@ img {
   .cs-diagram-cols {
     grid-template-columns: 1fr !important;
   }
+}
+
+/* Contact, at the very end of every case study (after the next project):
+   a line of copy with a dark "Let's talk" pill under it that opens an email
+   (mailto, subject filled in); the address itself isn't shown. */
+.cs-content.cs-content > .cs-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 780px;
+  margin-top: 0;
+  padding: 64px 0 128px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);   /* the same divider as above the next project */
+}
+
+/* The two closing blocks follow one pattern: a divider, 64px, a small
+   label, then the line itself (the next project large, the contact
+   question a step down), and 64px before the next divider. */
+.cs-content.cs-content > .cs-footer:has(+ .cs-contact) {
+  padding-bottom: 64px;
+}
+
+.cs-contact .cs-footer-label {
+  margin-bottom: 12px;
+}
+
+.cs-contact-text {
+  margin: 0 0 24px;
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.cs-contact-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 999px;
+  background: #1C1C1E;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  color: #FFFFFF;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.cs-contact-button svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cs-contact-button:hover {
+    background: #000000;
+  }
+
+  .cs-contact-button:hover svg {
+    transform: translate(2px, -2px);
+  }
+}
+
+.cs-contact-button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
 }

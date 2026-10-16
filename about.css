@@ -179,6 +179,9 @@ img {
 }
 
 .about-snap-photos {
+  /* Never squeezed: on a narrow screen the caption wraps instead, so
+     the photos can't spill into the gap and touch it. */
+  flex: none;
   height: 100%;
   display: flex;
   align-items: center;
@@ -241,6 +244,8 @@ img {
 }
 
 .about-snap-caption {
+  flex: 1 1 auto;
+  min-width: 0;
   margin: 0;
   font-size: 12px;
   line-height: 1.5;
@@ -461,5 +466,21 @@ img {
   .about-timeline-row {
     grid-template-columns: 1fr;
     gap: 4px;
+  }
+
+  /* Too narrow for the caption beside the photos: it goes underneath. */
+  .about-snap {
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .about-snap-photos {
+    height: 68px;
+  }
+
+  .about-snap-caption {
+    max-width: none;
   }
 }

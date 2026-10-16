@@ -394,13 +394,13 @@
     '@media (max-width: 780px) { .trail-toggle { display: none; } }' +
     // An outlined track. On: knob on the left, knob and outline turquoise.
     // Off: knob slides right, knob and outline black.
-    '.trail-toggle-track { position: relative; box-sizing: border-box; width: 30px; height: 18px;' +
+    '.trail-toggle-track { position: relative; box-sizing: border-box; width: 28px; height: 14px;' +
     ' border-radius: 999px; border: 1px solid #000; background: transparent;' +
     ' transition: background-color 0.25s ease, border-color 0.25s ease; }' +
-    '.trail-toggle-knob { position: absolute; top: 1.5px; left: 1.5px; width: 13px; height: 13px;' +
+    '.trail-toggle-knob { position: absolute; top: 1px; left: 1px; width: 10px; height: 10px;' +
     ' border-radius: 50%; background: #000;' +
     ' transition: transform 0.25s cubic-bezier(0.3, 0.7, 0.3, 1), background-color 0.25s ease; }' +
-    '.trail-toggle[aria-checked="false"] .trail-toggle-knob { transform: translateX(12px); }' +
+    '.trail-toggle[aria-checked="false"] .trail-toggle-knob { transform: translateX(14px); }' +
     // On, the knob is the glowy aqua jelly ball from the homepage (marbles.js):
     // a bright core, deeper turquoise edge, a glossy shine and highlight,
     // and a soft glow.

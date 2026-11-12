@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI — Riya Shrestha</title>
+<link rel="icon" href="favicon.svg?v=1" type="image/svg+xml" />
+<link rel="icon" href="favicon-32.png?v=1" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=1" />
+<link rel="stylesheet" href="ai.css?v=5" />
+<link rel="stylesheet" href="transition.css?v=19" />
+</head>
+<body>
+<div class="page-transition" id="pageTransition" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-logo" aria-label="Riya Shrestha, home"></a>
+    <div class="nav-tabs">
+      <a href="index.html#work" class="nav-link" data-text="work"><span class="txt">work</span></a>
+      <a href="ai.html" class="nav-link active" data-text="ai"><span class="txt">ai</span></a>
+      <a href="play.html" class="nav-link" data-text="play"><span class="txt">play</span></a>
+      <a href="https://shrer488.github.io/" class="nav-link" data-text="code" target="_blank" rel="noopener"><span class="txt">code</span></a>
+      <a href="about.html" class="nav-link" data-text="about"><span class="txt">about</span></a>
+      <a href="https://drive.google.com/file/d/1MjZRS-VFL3iZb-hdfJ6qo4EGznF8m0Jv/view?usp=sharing" class="nav-link" data-text="resume" target="_blank" rel="noopener"><span class="txt">resume</span></a>
+    </div>
+  </nav>
+
+  <aside class="ai-side">
+    <h1 class="ai-title">AI Experiments</h1>
+    <p class="ai-intro">Things I&rsquo;ve made with AI: a gallery to walk through, tools to play with, and apps that do real work. Each one opens the real thing.</p>
+  </aside>
+
+  <!--
+    Adding an experiment: copy an <article class="ai-row"> into the right
+    section and change its number, text and link.
+    - A live site: put its address in the .ai-preview's data-src (it loads
+      as you scroll to it) and the same address in the row's links.
+    - No live site: put a <video> or <img> inside .ai-preview instead and
+      leave out data-src.
+    - data-cta is the label on the cursor over the preview.
+  -->
+  <main class="ai-list">
+
+    <section class="ai-cat" aria-labelledby="cat-gallery">
+      <h2 class="ai-cat-title" id="cat-gallery">Art Gallery</h2>
+      <div class="ai-cat-items">
+
+      <article class="ai-row">
+        <div class="ai-text">
+          <p class="ai-num">01</p>
+          <p class="ai-kind">Art Gallery</p>
+          <h3 class="ai-name">Ink &amp; Water</h3>
+          <p class="ai-desc">A walkable 3D exhibition of my artwork. Walk with WASD or the arrow keys, click a painting to see it up close, and press E near a bench to sit.</p>
+          <p class="ai-made"><span>Made with</span> Three.js</p>
+          <a class="ai-open" href="https://shrer488.github.io/Art-Gallery/" target="_blank" rel="noopener">Walk the gallery <svg viewBox="0 0 14 14" width="11" height="11" aria-hidden="true"><path d="M3.5 10.5L10.5 3.5M10.5 3.5H5M10.5 3.5V9" /></svg></a>
+        </div>
+        <a class="ai-preview" href="https://shrer488.github.io/Art-Gallery/" target="_blank" rel="noopener" data-cta="Walk the gallery" aria-label="Ink &amp; Water — walk the gallery (opens in a new tab)">
+          <video src="assets/ai-ink-water.mp4" poster="assets/ai-ink-water-poster.jpg" muted loop playsinline preload="none" data-autoplay></video>
+        </a>
+      </article>
+      </div>
+    </section>
+
+    <section class="ai-cat" aria-labelledby="cat-tools">
+      <h2 class="ai-cat-title" id="cat-tools">Interactive Tools</h2>
+      <div class="ai-cat-items">
+
+      <article class="ai-row">
+        <div class="ai-text">
+          <p class="ai-num">02</p>
+          <p class="ai-kind">Interactive Tools</p>
+          <h3 class="ai-name">Smile Bloom</h3>
+          <p class="ai-desc">Smile at your webcam and flowers bloom behind you. Pick from six real-flower sets, then take a photo or record a clip. Works best in desktop Chrome.</p>
+          <p class="ai-made"><span>Made with</span> MediaPipe face tracking</p>
+          <a class="ai-open" href="https://shrer488.github.io/Smile-Bloom/" target="_blank" rel="noopener">Try it <svg viewBox="0 0 14 14" width="11" height="11" aria-hidden="true"><path d="M3.5 10.5L10.5 3.5M10.5 3.5H5M10.5 3.5V9" /></svg></a>
+        </div>
+        <a class="ai-preview" href="https://shrer488.github.io/Smile-Bloom/" target="_blank" rel="noopener" data-cta="Try it" aria-label="Smile Bloom — try it (opens in a new tab)">
+          <video src="assets/ai-smile-bloom.mp4" poster="assets/ai-smile-bloom-poster.jpg" muted loop playsinline preload="none" data-autoplay></video>
+        </a>
+      </article>
+      </div>
+    </section>
+
+    <section class="ai-cat" aria-labelledby="cat-apps">
+      <h2 class="ai-cat-title" id="cat-apps">Apps &amp; Agents</h2>
+      <div class="ai-cat-items">
+
+      <article class="ai-row">
+        <div class="ai-text">
+          <p class="ai-num">03</p>
+          <p class="ai-kind">Apps &amp; Agents</p>
+          <h3 class="ai-name">Kurti Video Agent</h3>
+          <p class="ai-desc">Send raw footage and a kurti name over WhatsApp; get back a TikTok-ready video and a caption in about 7 minutes, down from 1&ndash;2 hours of editing.</p>
+          <p class="ai-made"><span>Made with</span> Claude Code, Gemini, GPT-4o Vision, n8n, FFmpeg</p>
+          <a class="ai-open" href="case-study-kurti-video-agent.html">Read the case study <svg viewBox="0 0 14 14" width="11" height="11" aria-hidden="true"><path d="M3.5 10.5L10.5 3.5M10.5 3.5H5M10.5 3.5V9" /></svg></a>
+        </div>
+        <a class="ai-preview" href="case-study-kurti-video-agent.html" data-cta="Read the case study" aria-label="Kurti Video Agent — read the case study">
+          <video src="assets/kurti-agent-demo.mp4" poster="assets/kurti-agent-thumb.jpg?v=4" muted loop playsinline preload="none" data-autoplay></video>
+        </a>
+      </article>
+
+      <article class="ai-row">
+        <div class="ai-text">
+          <p class="ai-num">04</p>
+          <p class="ai-kind">Apps &amp; Agents</p>
+          <h3 class="ai-name">FOUND.</h3>
+          <p class="ai-desc">A community app where designers share the inspiration they spot in everyday life, pinned to where they found it. Designed and built solo for my Parsons thesis.</p>
+          <p class="ai-made"><span>Made with</span> Claude Code, Supabase, Vercel</p>
+          <a class="ai-open" href="https://found-marketing.vercel.app/" target="_blank" rel="noopener">View app <svg viewBox="0 0 14 14" width="11" height="11" aria-hidden="true"><path d="M3.5 10.5L10.5 3.5M10.5 3.5H5M10.5 3.5V9" /></svg></a>
+        </div>
+        <a class="ai-preview" href="https://found-marketing.vercel.app/" target="_blank" rel="noopener" data-cta="View app" aria-label="FOUND. — view the app (opens in a new tab)">
+          <video src="assets/found-video.mp4" poster="assets/found-hero.png" muted loop playsinline preload="none" data-autoplay></video>
+        </a>
+      </article>
+      </div>
+    </section>
+
+  </main>
+
+<script src="ai.js?v=1" defer></script>
+<script src="transition.js?v=57"></script>
+<script src="smear.js?v=31" data-smear=".nav-link, .ai-title, .ai-intro" defer></script>
+</body>
+</html>

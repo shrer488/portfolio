@@ -514,7 +514,10 @@ img {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 9px 15px;
+  /* Lunchtype22's letters sit 1px above the middle of their line box,
+     so 1px more padding on top centers the text, and the arrow is lifted
+     1px to line up with it. */
+  padding: 10px 15px 8px;
   border-radius: 999px;
   background: #1C1C1E;
   font-family: var(--font-sans);
@@ -528,6 +531,7 @@ img {
 }
 
 .play-view-cursor svg {
+  transform: translateY(-1px);
   fill: none;
   stroke: currentColor;
   stroke-width: 1.5;

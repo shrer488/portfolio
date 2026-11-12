@@ -1,0 +1,432 @@
+:root {
+  --ink: #000;
+  --ink-70: rgba(0, 0, 0, 0.7);
+  --ink-40: rgba(0, 0, 0, 0.4);
+  --line: rgba(0, 0, 0, 0.08);
+  --bg: #fafafa;
+  --font-sans: 'Lunchtype22', 'Helvetica Neue', Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+/* Same nav as play.css / about.css: bottom-left on desktop, the phone
+   header bar comes from transition.css. */
+.nav {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  text-transform: lowercase;
+  z-index: 50;
+}
+
+.nav-link {
+  position: relative;
+  display: inline-block;
+  color: var(--ink-70);
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover {
+    opacity: 0.7;
+  }
+}
+
+.nav-link.active {
+  font-size: 20px;
+  line-height: 0.9;
+  opacity: 1;
+}
+
+.nav-link::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: inherit;
+  filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  mask-image: linear-gradient(to bottom, black 0%, black 10%, transparent 10%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 10%, transparent 10%);
+}
+
+.nav-link.active::before {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover::before {
+    opacity: 1;
+  }
+}
+
+.nav-link .txt {
+  position: relative;
+  display: inline-block;
+}
+
+/* Left rail: the page title and intro in the top-left corner, 24px in
+   from both edges like the nav below it, fixed while the list scrolls. */
+.ai-side {
+  position: fixed;
+  left: 24px;
+  top: 24px;
+  width: 207px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.ai-side > * {
+  pointer-events: auto;
+}
+
+.ai-title {
+  margin: 0 0 16px;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 39px;
+  line-height: 0.994;
+  letter-spacing: -0.01em;
+}
+
+.ai-intro {
+  margin: 0;
+  width: 207px;
+  font-size: 12px;
+  line-height: 1.333;
+  color: var(--ink-70);
+}
+
+/* Right column: one experiment per row, each labeled with its category
+   under its number (.ai-kind). */
+.ai-list {
+  margin-left: 374px;
+  padding: 45px 48px 160px 0;
+  max-width: 1440px;
+}
+
+.ai-cat {
+  position: relative;
+}
+
+/* The section headings stay for screen readers only. */
+.ai-cat-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ai-row {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+/* Sections are spaced and divided just like the rows inside them. */
+.ai-cat + .ai-cat,
+.ai-row + .ai-row {
+  margin-top: 64px;
+  padding-top: 64px;
+  border-top: 1px solid var(--line);
+}
+
+.ai-text {
+  position: sticky;
+  top: 24px;
+}
+
+.ai-num {
+  margin: 0 0 6px;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  color: var(--ink-40);
+}
+
+.ai-kind {
+  margin: 0 0 14px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+}
+
+.ai-name {
+  margin: 0 0 10px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.ai-desc {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ink-70);
+}
+
+.ai-made {
+  margin: 0 0 20px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink-70);
+}
+
+.ai-made span {
+  display: block;
+  margin-bottom: 2px;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+}
+
+.ai-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* Lunchtype22's letters sit 1px above the middle of their line box
+     (10px ascent over 3px descent), so 1px more padding on top than
+     below centers the text in the pill, and the arrow is lifted 1px to
+     line up with it. */
+  padding: 9px 14px 7px;
+  border-radius: 999px;
+  background: #1C1C1E;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.ai-open svg,
+.ai-cursor svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ai-open svg,
+.ai-cursor svg {
+  transform: translateY(-1px);
+}
+
+.ai-open svg {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ai-open:hover {
+    background: #000;
+  }
+  .ai-open:hover svg {
+    transform: translate(1px, -2px);
+  }
+}
+
+.ai-open:focus-visible,
+.ai-preview:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* The preview: a 16:10 window onto the live site. ai.js loads the site
+   into an iframe as the row nears the screen, laid out at desktop size
+   (1440 wide) and scaled down to fit. The iframe ignores the mouse, so
+   the whole window is one link that opens the real thing. */
+.ai-preview {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #ececee;
+  box-shadow: inset 0 0 0 1px var(--line);
+  isolation: isolate;
+}
+
+.ai-preview iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1440px;
+  height: 900px;
+  border: 0;
+  transform-origin: 0 0;
+  transform: scale(var(--s, 0.5));
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: -1;
+}
+
+.ai-preview.is-loaded iframe {
+  opacity: 1;
+}
+
+/* A recording instead of a live site: shown whole, at its own shape. */
+.ai-preview:not([data-src]) {
+  aspect-ratio: auto;
+}
+
+.ai-preview video,
+.ai-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* "Loading" note behind the iframe until it's ready. */
+.ai-preview[data-src]::before {
+  content: 'Loading live preview';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink-40);
+  z-index: -2;
+}
+
+/* A small "LIVE" tag in the corner of live previews. */
+.ai-preview[data-src]::after {
+  content: 'Live';
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px 5px 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-70);
+  background-image: radial-gradient(circle at 12px 50%, #2fb36b 3px, transparent 3.5px);
+  background-color: rgba(255, 255, 255, 0.8);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.ai-preview.is-loaded::after {
+  opacity: 1;
+}
+
+/* Over a preview (ai.js): the cursor becomes a pill with its call to
+   action, the same pill as Play's linked tiles. Mouse only. */
+.ai-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 15px 8px;   /* see .ai-open */
+  border-radius: 999px;
+  background: #1C1C1E;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  color: #fff;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.ai-cursor.visible {
+  opacity: 1;
+}
+
+.ai-preview {
+  cursor: pointer;
+}
+
+/* Tablet: the rail joins the flow above the list, category names head
+   their own section, and each row stacks its preview over its text. */
+@media (max-width: 900px) {
+  .ai-side {
+    position: static;
+    width: auto;
+    padding: 72px 24px 40px;
+  }
+
+  .ai-intro {
+    width: auto;
+    max-width: 420px;
+  }
+
+  .ai-list {
+    margin-left: 0;
+    padding: 0 24px 120px;
+  }
+
+
+
+
+  .ai-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .ai-row .ai-preview {
+    order: -1;
+  }
+
+  .ai-text {
+    position: static;
+  }
+
+  .ai-cat + .ai-cat,
+  .ai-row + .ai-row {
+    margin-top: 48px;
+    padding-top: 48px;
+  }
+}
+
+/* Phones: the nav is a bar along the top (transition.css). */
+@media (max-width: 780px) {
+  .ai-side {
+    padding-top: 88px;
+  }
+}

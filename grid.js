@@ -28,7 +28,9 @@
     var img = slide.querySelector('.slide-img');
     var vid = slide.querySelector('.slide-video');
     var title = panel ? panel.querySelector('.project-title').textContent : '';
-    var tags = panel ? Array.prototype.map.call(panel.querySelectorAll('.meta-list p'), function (p) { return p.textContent; }) : [];
+    // Each tag keeps its data-type, so the project's type (the first
+    // feature, .meta-type) is highlighted on the card too.
+    var tags = panel ? Array.prototype.map.call(panel.querySelectorAll('.meta-list p'), function (p) { return { text: p.textContent, type: p.getAttribute('data-type') }; }) : [];
 
     var a = document.createElement('a');
     a.className = 'work-card';
@@ -84,7 +86,8 @@
       t.className = 'work-card-tags';
       tags.forEach(function (tag) {
         var s = document.createElement('span');
-        s.textContent = tag;
+        s.textContent = tag.text;
+        if (tag.type) { s.className = 'work-card-type'; s.setAttribute('data-type', tag.type); }
         t.appendChild(s);
       });
       a.appendChild(t);

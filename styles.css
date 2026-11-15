@@ -599,6 +599,42 @@ html.photo-wait .profile-time {
   gap: 12px;
 }
 
+/* What kind of project it is (AI, B2B SaaS, ...): the first feature in
+   FEATURES (.meta-type), set in full ink with a small colored dot so it
+   reads first. Grid view's cards highlight the same tag (grid.js gives it
+   .work-card-type). Each type has its own dot color; add a new one here
+   with its data-type. */
+.meta-list .meta-type,
+.work-card-tags .work-card-type {
+  color: var(--ink);
+}
+
+/* The dot is inline (not a flex gap), so the words after it keep their
+   normal spacing when script.js splits them into .swap-word spans. */
+.meta-list .meta-type::before,
+.work-card-tags .work-card-type::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  border-radius: 50%;
+  vertical-align: 0.1em;
+  background: var(--type-color, #8e8e93);
+}
+
+.work-card-tags .work-card-type {
+  border-color: rgba(0, 0, 0, 0.22);
+}
+
+[data-type="ai"]       { --type-color: #8b5cf6; }
+[data-type="b2b"]      { --type-color: #2f6fed; }
+[data-type="internal"] { --type-color: #0e9f8a; }
+[data-type="edtech"]   { --type-color: #f59e0b; }
+[data-type="concept"]  { --type-color: #ec4899; }
+[data-type="consumer"] { --type-color: #22a559; }
+
+
 .project-title {
   margin: 0;
   font-family: var(--font-heading);
